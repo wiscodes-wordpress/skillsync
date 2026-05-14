@@ -1,16 +1,23 @@
 # skillsync
 
-Shared **Cursor Agent Skills** and small **consumer tooling** so multiple repositories (WordPress plugins, Supabase apps, and so on) can vendor one Git source of truth.
+Shared **Cursor Agent Skills**, **project rules**, **`ss-*` slash commands**, **harness skeletons**, and **consumer tooling** so multiple repositories can vendor one Git source of truth.
 
 ## Repository layout
 
 | Path | Purpose |
 |------|---------|
-| `skills/<name>/SKILL.md` | Portable skills (add new folders here). |
-| `tools/link-skills.cjs` | Symlink or copy selected skills into a consumer’s `.cursor/skills/`. |
-| `tools/verify-skills.cjs` | Verify linked skills resolve to a real `SKILL.md`. |
-| `skillsync.config.example.json` | Example consumer config (copy to a consumer repo as `skillsync.config.json`). |
-| `docs/consumer-setup.md` | Submodule + `package.json` wiring. |
+| `skills/<name>/SKILL.md` | Portable skills. |
+| `rules/*.mdc` | Shared Cursor project rules (materialize into `.cursor/rules/`). |
+| `commands/ss-*.md` | Shared **skillsync** slash commands (materialize into `.cursor/commands/`). |
+| `harness/*.md` | Shared harness skeletons (planner, generator, critic). |
+| `tools/link-skills.cjs` | Symlink or copy selected skills → `.cursor/skills/`. |
+| `tools/verify-skills.cjs` | Verify linked skills. |
+| `tools/link-rules.cjs` | Symlink or copy selected rules → `.cursor/rules/`. |
+| `tools/verify-rules.cjs` | Verify linked rules. |
+| `tools/link-commands.cjs` | Symlink or copy selected commands → `.cursor/commands/`. |
+| `tools/verify-commands.cjs` | Verify linked commands. |
+| `skillsync.config.example.json` | Example consumer config. |
+| `docs/consumer-setup.md` | Submodule + `package.json` + `ss-*` naming. |
 
 ## Consumer quick start
 

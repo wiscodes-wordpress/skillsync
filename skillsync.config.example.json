@@ -1,5 +1,16 @@
 {
 	"vendorRoot": ".cursor/vendor/skillsync",
 	"linkMode": "symlink",
-	"linkedSkills": []
+	"linkedSkills": [],
+	"linkedRules": [
+		"typescript-ai-rules.mdc",
+		"react-patterns.mdc",
+		"frontend-testing.mdc"
+	],
+	"linkedCommands": [
+		"ss-workflow.md",
+		"ss-plan.md",
+		"ss-implement.md",
+		"ss-review.md"
+	]
 }
