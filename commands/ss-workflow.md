@@ -11,7 +11,7 @@
 
 | # | Phase | Purpose | Shared `ss-*` command (when linked) |
 |---|--------|---------|-------------------------------------|
-| 1 | **Branch** | Traceable branch from default; clean tree. | *(consumer wrapper — e.g. branch script)* |
+| 1 | **Branch** | **Story / issue branch** from default: clean tree, `git fetch`, checkout default, `pull --ff-only`, `git checkout -b` with a name tied to the tracker key + slug (consumer script or docs). | *(consumer wrapper — e.g. `yarn branch:story PROJECT-123 short-slug`; `DRY_RUN=1` preview)* |
 | 2 | **Grill / align** | 1:1 story alignment before technical planning. | *(consumer / skill — e.g. grill-me)* |
 | 3 | **Harness planner** | Spec → slices → verification → **`.harness/state.md`** + **`## Next Action`**. | **`/ss-plan`** → [`ss-plan.md`](./ss-plan.md) |
 | 4 | **Slice to issues** | Tracker-ready stories/subtasks (optional if solo). | *(consumer wrapper)* |
@@ -19,6 +19,10 @@
 | 6 | **Critic** | Quality gate; state + verdict. | **`/ss-review`** → [`ss-review.md`](./ss-review.md) |
 | 7 | **Close / merge** | PR + tracker hygiene per consumer docs. | *(consumer wrapper)* |
 | 8 | **QA handoff** | Next QA item / snapshot per consumer scripts. | *(consumer wrapper)* |
+
+## Phase 1 — Branch (detail)
+
+When the repo ties Git to Jira (or another tracker), complete any **shaping** the consumer documents, then **check out or create the story branch** before **`/ss-plan`**. From a **clean** working tree at the repo root, follow the consumer’s branch recipe (often the same sequence as the table: fetch → default branch → fast-forward pull → new branch). Many repos ship a helper such as **`yarn branch:story PROJECT-123 short-slug`**; use **`DRY_RUN=1`** (or equivalent) for a **no-git-write preview**. Base-branch env overrides, **`--rename` / `--push`**, and naming ↔ traceability rules belong in the consumer’s issue-tracker / agent docs. See also the prerequisite on [`ss-plan.md`](./ss-plan.md).
 
 ## Harness files (shared skeleton)
 
