@@ -60,7 +60,7 @@ Cursor loads **project rules** from **`.cursor/rules/`** only — not from paths
 
 ## Slash commands and `ss-*`
 
-Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared **skillsync** commands use the **`ss-*`** prefix (**s**kill**s**ync) and live under **`commands/`** here. List basenames in **`linkedCommands`** and run **`link-commands.cjs`** / **`verify-commands.cjs`** so consumers get `/ss-workflow`, `/ss-plan`, `/ss-implement`, `/ss-review`, etc.
+Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared **skillsync** commands use the **`ss-*`** prefix (**s**kill**s**ync) and live under **`commands/`** here. List basenames in **`linkedCommands`** and run **`link-commands.cjs`** / **`verify-commands.cjs`** so consumers get `/ss-workflow`, `/ss-plan`, `/ss-implement`, `/ss-review`, `/ss-submit-pr`, etc.
 
 Product repos usually keep **thin wrappers** (e.g. `qb-*`) that add tracker-specific steps and point at these shared files or harness addenda.
 

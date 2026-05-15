@@ -11,6 +11,7 @@
 		"ss-workflow.md",
 		"ss-plan.md",
 		"ss-implement.md",
-		"ss-review.md"
+		"ss-review.md",
+		"ss-submit-pr.md"
 	]
 }

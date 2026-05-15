@@ -6,7 +6,7 @@ This repository is the **shared home** for portable Cursor **Agent Skills**, **p
 
 - **Generic** skills (testing, React performance, diagnosis, TDD, handoff, etc.) under **`skills/<name>/`** with a **`SKILL.md`** entry point.
 - **Shared rules** under **`rules/`** (TypeScript, React, frontend testing conventions).
-- **Product-neutral commands** under **`commands/`** using the **`ss-*`** prefix (**s**kill**s**ync). Consumers symlink these into **`.cursor/commands/`** so Cursor discovers **`/ss-plan`**, **`/ss-workflow`**, etc.
+- **Product-neutral commands** under **`commands/`** using the **`ss-*`** prefix (**s**kill**s**ync). Consumers symlink these into **`.cursor/commands/`** so Cursor discovers **`/ss-plan`**, **`/ss-workflow`**, **`/ss-submit-pr`**, etc.
 - **Harness skeletons** under **`harness/`** (planner, generator, critic) referenced by those commands.
 
 ## What does *not* belong here
