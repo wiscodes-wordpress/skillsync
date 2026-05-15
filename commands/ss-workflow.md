@@ -17,7 +17,7 @@
 | 4 | **Slice to issues** | Tracker-ready stories/subtasks (optional if solo). | *(consumer wrapper)* |
 | 5 | **Implement** | One slice; generator harness; run planner checks. | **`/ss-implement`** → [`ss-implement.md`](./ss-implement.md) |
 | 6 | **Critic** | Quality gate; state + verdict. | **`/ss-review`** → [`ss-review.md`](./ss-review.md) |
-| 7 | **PR open → merge → tracker** | Open PR for review (**`/ss-submit-pr`**); after approval, merge + tracker hygiene per consumer docs. | **`/ss-submit-pr`** → [`ss-submit-pr.md`](./ss-submit-pr.md); merge/tracker *(consumer wrapper)* |
+| 7 | **PR open → merge → tracker** | Open PR (**`/ss-submit-pr`**); merge; **Jira Done** + harness reset (**`/ss-close-story`** + [`jira-close-story`](../skills/jira-close-story/SKILL.md) when using Jira/MCP). Rest per consumer docs. | **`/ss-submit-pr`**, **`/ss-close-story`** → [`ss-submit-pr.md`](./ss-submit-pr.md), [`ss-close-story.md`](./ss-close-story.md); merge / non-Jira tracker *(consumer wrapper)* |
 | 8 | **QA handoff** | Next QA item / snapshot per consumer scripts. | *(consumer wrapper)* |
 
 ## Phase 1 — Branch (detail)
@@ -35,6 +35,6 @@ Consumers may add **local** files under `.cursor/harness/` (for example `critic-
 ## Naming: `ss-*`
 
 - **`ss`** = **skillsync**-hosted, **product-neutral** slash commands.
-- Link these files into the consumer **`.cursor/commands/`** with `link-commands.cjs` (see `docs/consumer-setup.md`) so Cursor discovers `/ss-workflow`, `/ss-plan`, `/ss-implement`, `/ss-review`, `/ss-submit-pr`.
+- Link these files into the consumer **`.cursor/commands/`** with `link-commands.cjs` (see `docs/consumer-setup.md`) so Cursor discovers `/ss-workflow`, `/ss-plan`, `/ss-implement`, `/ss-review`, `/ss-submit-pr`, `/ss-close-story`.
 
 This command will be available in chat with `/ss-workflow` when this file is linked into the consumer **`.cursor/commands/`** directory.

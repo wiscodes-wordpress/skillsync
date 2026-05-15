@@ -1,7 +1,10 @@
 {
 	"vendorRoot": ".cursor/vendor/skillsync",
 	"linkMode": "symlink",
-	"linkedSkills": [],
+	"linkedSkills": [
+		"jira-close-story",
+		"submit-github-pr"
+	],
 	"linkedRules": [
 		"typescript-ai-rules.mdc",
 		"react-patterns.mdc",
@@ -12,6 +15,7 @@
 		"ss-plan.md",
 		"ss-implement.md",
 		"ss-review.md",
-		"ss-submit-pr.md"
+		"ss-submit-pr.md",
+		"ss-close-story.md"
 	]
 }

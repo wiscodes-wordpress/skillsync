@@ -17,7 +17,7 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 ## Consumer configuration
 
 1. Copy `skillsync.config.example.json` from this repo into the **consumer repository root** as `skillsync.config.json`.
-2. Set `linkedSkills` to folder names from `<vendorRoot>/skills/<name>/`.
+2. Set `linkedSkills` to folder names from `<vendorRoot>/skills/<name>/` (omit entries you do not need — e.g. drop `jira-close-story` if you do not use Jira/MCP, or `submit-github-pr` if you only use local PR flows).
 3. Optionally set `linkedRules` to basenames of `.mdc` files from `<vendorRoot>/rules/` (see **Project rules** below).
 4. Optionally set `linkedCommands` to basenames of `.md` files from `<vendorRoot>/commands/` (see **Slash commands** below — **`ss-*`** shared commands).
 5. Optionally set `linkMode` to `copy` if symlinks are not viable on your OS.
@@ -60,7 +60,7 @@ Cursor loads **project rules** from **`.cursor/rules/`** only — not from paths
 
 ## Slash commands and `ss-*`
 
-Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared **skillsync** commands use the **`ss-*`** prefix (**s**kill**s**ync) and live under **`commands/`** here. List basenames in **`linkedCommands`** and run **`link-commands.cjs`** / **`verify-commands.cjs`** so consumers get `/ss-workflow`, `/ss-plan`, `/ss-implement`, `/ss-review`, `/ss-submit-pr`, etc.
+Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared **skillsync** commands use the **`ss-*`** prefix (**s**kill**s**ync) and live under **`commands/`** here. List basenames in **`linkedCommands`** and run **`link-commands.cjs`** / **`verify-commands.cjs`** so consumers get `/ss-workflow`, `/ss-plan`, `/ss-implement`, `/ss-review`, `/ss-submit-pr`, `/ss-close-story`, etc.
 
 Product repos usually keep **thin wrappers** (e.g. `qb-*`) that add tracker-specific steps and point at these shared files or harness addenda.
 
