@@ -14,7 +14,7 @@
 | 1 | **Branch** | **Story / issue branch** from default: clean tree, `git fetch`, checkout default, `pull --ff-only`, `git checkout -b` with a name tied to the tracker key + slug (consumer script or docs). | *(consumer wrapper — e.g. `yarn branch:story PROJECT-123 short-slug`; `DRY_RUN=1` preview)* |
 | 2 | **Grill / align** | 1:1 story alignment before technical planning. | **Step 1 of [`/ss-plan`](./ss-plan.md)** — [`grill-me`](../skills/grill-me/SKILL.md) (or [`grill-with-docs`](../skills/grill-with-docs/SKILL.md) / consumer wrapper per repo docs) |
 | 3 | **Harness planner** | Spec → slices → verification → **`.harness/state.md`** + **`## Next Action`**. | **Steps 2–3 of [`/ss-plan`](./ss-plan.md)** → [`ss-plan.md`](./ss-plan.md) |
-| 4 | **Slice to issues** | Tracker-ready stories/subtasks (optional if solo). | *(consumer wrapper)* |
+| 4 | **Slice to issues** | Tracker-ready stories/subtasks (optional if solo). | **`/ss-to-issues`** → [`ss-to-issues.md`](./ss-to-issues.md) + [`to-issues`](../skills/to-issues/SKILL.md); consumer wrapper for project defaults |
 | 5 | **Implement** | One slice; generator harness; run planner checks. | **`/ss-implement`** → [`ss-implement.md`](./ss-implement.md) |
 | 6 | **Critic** | Quality gate; state + verdict. | **`/ss-review`** → [`ss-review.md`](./ss-review.md) |
 | 7 | **PR open → merge → tracker** | Open PR (**`/ss-submit-pr`**); merge; **Jira Done** + harness reset (**`/ss-close-story`** + [`jira-close-story`](../skills/jira-close-story/SKILL.md) when using Jira/MCP). Rest per consumer docs. | **`/ss-submit-pr`**, **`/ss-close-story`** → [`ss-submit-pr.md`](./ss-submit-pr.md), [`ss-close-story.md`](./ss-close-story.md); merge / non-Jira tracker *(consumer wrapper)* |
@@ -35,6 +35,6 @@ Consumers may add **local** files under `.cursor/harness/` (for example `critic-
 ## Naming: `ss-*`
 
 - **`ss`** = **skillsync**-hosted, **product-neutral** slash commands.
-- Link these files into the consumer **`.cursor/commands/`** with `link-commands.cjs` (see `docs/consumer-setup.md`) so Cursor discovers `/ss-workflow`, `/ss-plan`, `/ss-implement`, `/ss-review`, `/ss-submit-pr`, `/ss-close-story`.
+- Link these files into the consumer **`.cursor/commands/`** with `link-commands.cjs` (see `docs/consumer-setup.md`) so Cursor discovers `/ss-workflow`, `/ss-plan`, `/ss-to-issues`, `/ss-implement`, `/ss-review`, `/ss-submit-pr`, `/ss-close-story`.
 
 This command will be available in chat with `/ss-workflow` when this file is linked into the consumer **`.cursor/commands/`** directory.

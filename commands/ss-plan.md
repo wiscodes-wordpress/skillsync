@@ -12,4 +12,6 @@ Repos that maintain `CONTEXT.md` / ADRs may substitute [`grill-with-docs`](../sk
 
 Consumer repos with product addenda chain this command with a local `*-qb` harness file or a thin wrapper (for example `qb-plan`).
 
+**Optional next step:** When the team tracks slices in Jira/GitHub, run **`/ss-to-issues`** ([`ss-to-issues.md`](./ss-to-issues.md) + [`to-issues`](../skills/to-issues/SKILL.md)) to publish approved vertical slices as tracker issues before **`/ss-implement`**.
+
 This command will be available in chat with `/ss-plan` when this file is linked into the consumer **`.cursor/commands/`** directory (see `docs/consumer-setup.md`).

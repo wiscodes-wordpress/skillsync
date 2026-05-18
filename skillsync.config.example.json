@@ -3,7 +3,8 @@
 	"linkMode": "symlink",
 	"linkedSkills": [
 		"jira-close-story",
-		"submit-github-pr"
+		"submit-github-pr",
+		"to-issues"
 	],
 	"linkedRules": [
 		"typescript-ai-rules.mdc",
@@ -16,6 +17,7 @@
 		"ss-implement.md",
 		"ss-review.md",
 		"ss-submit-pr.md",
-		"ss-close-story.md"
+		"ss-close-story.md",
+		"ss-to-issues.md"
 	]
 }
