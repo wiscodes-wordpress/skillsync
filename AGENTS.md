@@ -4,7 +4,7 @@ This repository is the **shared home** for portable Cursor **Agent Skills**, **p
 
 ## What belongs here
 
-- **Generic** skills (testing, React performance, diagnosis, TDD, handoff, GitHub PR open via `gh`, Jira close via MCP, etc.) under **`skills/<name>/`** with a **`SKILL.md`** entry point.
+- **Generic** skills (testing, React performance, diagnosis, TDD, handoff, GitHub PR open via `gh`, Jira close via MCP, WordPress plugin/block/performance/security packs, etc.) under **`skills/<name>/`** with a **`SKILL.md`** entry point.
 - **Shared rules** under **`rules/`** (TypeScript, React, frontend testing conventions).
 - **Product-neutral commands** under **`commands/`** using the **`ss-*`** prefix (**s**kill**s**ync). Consumers symlink these into **`.cursor/commands/`** so Cursor discovers **`/ss-plan`**, **`/ss-workflow`**, **`/ss-submit-pr`**, **`/ss-close-story`**, etc.
 - **Harness skeletons** under **`harness/`** (planner, generator, critic) referenced by those commands.

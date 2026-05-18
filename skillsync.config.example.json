@@ -4,7 +4,19 @@
 	"linkedSkills": [
 		"jira-close-story",
 		"submit-github-pr",
-		"to-issues"
+		"to-issues",
+		"wordpress-advanced-architecture",
+		"wordpress-content",
+		"wordpress-penetration-testing",
+		"wordpress-performance-best-practices",
+		"wordpress-plugin-fundamentals",
+		"wordpress-security-validation",
+		"wordpress-testing-qa",
+		"wp-abilities-api",
+		"wp-block-development",
+		"wp-block-themes",
+		"wp-performance",
+		"wp-plugin-development"
 	],
 	"linkedRules": [
 		"typescript-ai-rules.mdc",
