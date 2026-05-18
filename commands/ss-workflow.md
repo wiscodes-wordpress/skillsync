@@ -12,8 +12,8 @@
 | # | Phase | Purpose | Shared `ss-*` command (when linked) |
 |---|--------|---------|-------------------------------------|
 | 1 | **Branch** | **Story / issue branch** from default: clean tree, `git fetch`, checkout default, `pull --ff-only`, `git checkout -b` with a name tied to the tracker key + slug (consumer script or docs). | *(consumer wrapper — e.g. `yarn branch:story PROJECT-123 short-slug`; `DRY_RUN=1` preview)* |
-| 2 | **Grill / align** | 1:1 story alignment before technical planning. | *Prerequisite on [`ss-plan`](./ss-plan.md); [`grill-me`](../skills/grill-me/SKILL.md), [`grill-with-docs`](../skills/grill-with-docs/SKILL.md), or consumer wrapper* |
-| 3 | **Harness planner** | Spec → slices → verification → **`.harness/state.md`** + **`## Next Action`**. | **`/ss-plan`** → [`ss-plan.md`](./ss-plan.md) |
+| 2 | **Grill / align** | 1:1 story alignment before technical planning. | **Step 1 of [`/ss-plan`](./ss-plan.md)** — [`grill-me`](../skills/grill-me/SKILL.md) (or [`grill-with-docs`](../skills/grill-with-docs/SKILL.md) / consumer wrapper per repo docs) |
+| 3 | **Harness planner** | Spec → slices → verification → **`.harness/state.md`** + **`## Next Action`**. | **Steps 2–3 of [`/ss-plan`](./ss-plan.md)** → [`ss-plan.md`](./ss-plan.md) |
 | 4 | **Slice to issues** | Tracker-ready stories/subtasks (optional if solo). | *(consumer wrapper)* |
 | 5 | **Implement** | One slice; generator harness; run planner checks. | **`/ss-implement`** → [`ss-implement.md`](./ss-implement.md) |
 | 6 | **Critic** | Quality gate; state + verdict. | **`/ss-review`** → [`ss-review.md`](./ss-review.md) |
