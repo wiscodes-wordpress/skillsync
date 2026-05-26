@@ -3,7 +3,7 @@ name: jira-close-story
 description: >
   Close or transition Jira issues to Done after merge (or when updating the board):
   subtasks first when closing a parent, optional assignee and fix version updates,
-  then transitions via Atlassian MCP. Clears local .harness handoff files on success.
+  then transitions via Atlassian MCP. Clears local .harness handoff files and removes pr-body.md on success.
   Use when user closes a Jira story/task, says post-merge Jira cleanup, /ss-close-story,
   or wants subtasks marked Done before the parent.
 ---
@@ -41,8 +41,9 @@ At repository root (adjust only if consumer docs define different paths):
 
 1. Ensure **`.harness/`** exists.
 2. Write **empty** **`.harness/state.md`** and **`.harness/qa-current.md`** (normal file write — **not** via MCP).
+3. **Delete** **`.harness/pr-body.md`** if it exists (PR draft artifact from **`/ss-submit-pr`**; remove — do not empty).
 
-This clears planner/QA handoff context for the next slice.
+This clears planner/QA handoff context and PR body drafts for the next slice.
 
 ## Ask mode / no MCP / read-only
 
@@ -52,6 +53,7 @@ Print a **manual checklist** for the human:
 - [ ] Assignee / fix version per team policy (Jira UI or REST).
 - [ ] Transition issue(s) to Done.
 - [ ] Empty `.harness/state.md` and `.harness/qa-current.md` after Jira is correct.
+- [ ] Delete `.harness/pr-body.md` if present.
 
 ## Consumer wrappers
 
