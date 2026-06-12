@@ -1,5 +1,22 @@
 # Shared Agent Skills
 
-Place portable Cursor Agent Skills in subfolders of `skills/`, each containing a `SKILL.md` file (see [Cursor Agent Skills](https://cursor.com/docs/skills)).
+Portable Cursor Agent Skills live under `skills/`, each in a folder with a `SKILL.md` entry point (see [Cursor Agent Skills](https://cursor.com/docs/skills)).
 
-Consumers link selected folder names into their own `.cursor/skills/<name>/` using `tools/link-skills.cjs` and `skillsync.config.json` in the consumer repository.
+## Layout
+
+Follows [Matt Pocock's skills repo](https://github.com/mattpocock/skills) category folders:
+
+| Folder | Purpose |
+|--------|---------|
+| **`engineering/`** | Code work — TDD, triage, PR/issue workflow, React/TS review, **WordPress pack** (`wordpress-*`, `wp-*`) |
+| **`productivity/`** | Grilling, handoff, teaching, communication |
+| **`personal/`** | Author-specific skills (not linked by default) |
+
+Consumers link by **skill name only** in `skillsync.config.json` (e.g. `"tdd"`, `"wp-block-development"`). `link-skills.cjs` resolves `engineering/<name>`, `productivity/<name>`, etc. automatically.
+
+```bash
+node .cursor/vendor/skillsync/tools/link-skills.cjs .
+node .cursor/vendor/skillsync/tools/verify-skills.cjs .
+```
+
+Linked skills appear in the consumer's `.cursor/skills/<name>/`.

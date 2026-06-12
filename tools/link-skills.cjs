@@ -19,6 +19,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { resolveSkillDir } = require('./resolve-skill-dir.cjs');
 
 const consumerRoot = path.resolve(process.argv[2] ?? process.cwd());
 const configPath = path.join(consumerRoot, 'skillsync.config.json');
@@ -131,11 +132,21 @@ function main() {
 	const cursorSkillsRoot = path.join(consumerRoot, '.cursor', 'skills');
 	fs.mkdirSync(cursorSkillsRoot, { recursive: true });
 
+	const skillsRoot = path.join(vendorRoot, 'skills');
+
 	for (const name of linkedSkills) {
-		const fromDir = path.join(vendorRoot, 'skills', name);
+		const fromDir = resolveSkillDir(skillsRoot, name);
+		if (!fromDir) {
+			console.error(
+				`Missing skill "${name}" under ${path.relative(consumerRoot, skillsRoot)} (flat or engineering/productivity/personal/misc).`,
+			);
+			process.exit(1);
+		}
 		const toDir = path.join(cursorSkillsRoot, name);
 		linkOrCopySkill(fromDir, toDir, linkMode);
-		console.log(`${linkMode === 'copy' ? 'copied' : 'linked'}: ${name}`);
+		console.log(
+			`${linkMode === 'copy' ? 'copied' : 'linked'}: ${name} ← ${path.relative(skillsRoot, fromDir)}`,
+		);
 	}
 
 	console.log('');
