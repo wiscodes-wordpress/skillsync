@@ -17,7 +17,7 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 ## Consumer configuration
 
 1. Copy `skillsync.config.example.json` from this repo into the **consumer repository root** as `skillsync.config.json`.
-2. Set `linkedSkills` to folder names from `<vendorRoot>/skills/<name>/` (omit entries you do not need — e.g. drop `jira-close-story` if you do not use Jira/MCP, `submit-github-pr` if you only use local PR flows, or the `wordpress-*` / `wp-*` pack if the repo is not WordPress).
+2. Set `linkedSkills` to skill **names** (e.g. `"tdd"`, `"wp-block-development"`). Names resolve from `engineering/`, `productivity/`, `personal/`, or `misc/` — omit entries you do not need.
 3. Optionally set `linkedRules` to basenames of `.mdc` files from `<vendorRoot>/rules/` (see **Project rules** below).
 4. Optionally set `linkedCommands` to basenames of `.md` files from `<vendorRoot>/commands/` (see **Slash commands** below — **`ss-*`** shared commands).
 5. Optionally set `linkMode` to `copy` if symlinks are not viable on your OS.

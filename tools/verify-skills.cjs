@@ -11,6 +11,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { resolveSkillDir } = require('./resolve-skill-dir.cjs');
 
 const consumerRoot = path.resolve(process.argv[2] ?? process.cwd());
 const configPath = path.join(consumerRoot, 'skillsync.config.json');
@@ -28,11 +29,17 @@ function readConfig() {
 		process.exit(1);
 	}
 
-	return { linkedSkills: parsed.linkedSkills };
+	const vendorRoot = path.join(
+		consumerRoot,
+		parsed.vendorRoot ?? '.cursor/vendor/skillsync',
+	);
+
+	return { linkedSkills: parsed.linkedSkills, vendorRoot };
 }
 
 function main() {
-	const { linkedSkills } = readConfig();
+	const { linkedSkills, vendorRoot } = readConfig();
+	const skillsRoot = path.join(vendorRoot, 'skills');
 
 	if (linkedSkills.length === 0) {
 		console.log(
@@ -44,6 +51,15 @@ function main() {
 	let failed = false;
 
 	for (const name of linkedSkills) {
+		const vendorSkillDir = resolveSkillDir(skillsRoot, name);
+		if (!vendorSkillDir) {
+			console.error(
+				`MISSING VENDOR SKILL: ${name} (not under ${path.relative(consumerRoot, skillsRoot)})`,
+			);
+			failed = true;
+			continue;
+		}
+
 		const skillDir = path.join(consumerRoot, '.cursor', 'skills', name);
 
 		if (!fs.existsSync(skillDir)) {

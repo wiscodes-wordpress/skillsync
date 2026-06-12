@@ -2,6 +2,7 @@
 	"vendorRoot": ".cursor/vendor/skillsync",
 	"linkMode": "symlink",
 	"linkedSkills": [
+		"ponytail",
 		"jira-close-story",
 		"submit-github-pr",
 		"to-issues",

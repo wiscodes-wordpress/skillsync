@@ -6,7 +6,7 @@ Turn an approved plan into **tracer-bullet** issues on the project tracker: vert
 
 **Typical placement:** after **`/ss-plan`** (harness slices in **`.harness/state.md`**) and before **`/ss-implement`**. See [`ss-workflow.md`](./ss-workflow.md) phase **Slice to issues**.
 
-**How this runs:** This `.md` instructs the agent. In **Agent** mode, open and follow **[`to-issues`](../skills/to-issues/SKILL.md)** end-to-end. **Before** the first MCP call for Jira (or equivalent), read each tool’s schema under the workspace **`mcps/`** folder for the enabled server. In **Ask / read-only** mode or without MCP, output paste-ready issue titles and bodies per the skill.
+**How this runs:** This `.md` instructs the agent. In **Agent** mode, open and follow **[`to-issues`](../skills/engineering/to-issues/SKILL.md)** end-to-end. **Before** the first MCP call for Jira (or equivalent), read each tool’s schema under the workspace **`mcps/`** folder for the enabled server. In **Ask / read-only** mode or without MCP, output paste-ready issue titles and bodies per the skill.
 
 ## Inputs (ask if missing)
 
@@ -16,7 +16,7 @@ Turn an approved plan into **tracer-bullet** issues on the project tracker: vert
 
 ## Agent steps (summary)
 
-1. Gather context per **[`to-issues`](../skills/to-issues/SKILL.md)** (parent issue, harness plan, or spec).
+1. Gather context per **[`to-issues`](../skills/engineering/to-issues/SKILL.md)** (parent issue, harness plan, or spec).
 2. Draft vertical slices; **quiz the user** until they approve granularity, dependencies, and HITL/AFK labels.
 3. Publish issues per consumer docs (MCP or `gh` or manual paste). **Do not** close or modify the parent issue.
 4. Print slice → issue key/URL summary; suggest **`/ss-implement`** for the first unblocked AFK slice when appropriate.
@@ -24,7 +24,7 @@ Turn an approved plan into **tracer-bullet** issues on the project tracker: vert
 ## References
 
 - Consumer issue-tracker / agent docs (project key, subtask vs story, triage labels).
-- **[`to-issues`](../skills/to-issues/SKILL.md)** — full procedure and issue body template.
+- **[`to-issues`](../skills/engineering/to-issues/SKILL.md)** — full procedure and issue body template.
 - [`ss-plan.md`](./ss-plan.md) — produces harness slices; often the input to this command.
 - [`ss-workflow.md`](./ss-workflow.md) — canonical phase order.
 

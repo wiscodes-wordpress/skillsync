@@ -4,7 +4,7 @@
 
 Complements **`/ss-submit-pr`** (open PR) and consumer **QA / merge** commands. **Does not** merge GitHub PRs.
 
-**How this runs:** This `.md` **instructs the agent**. In **Agent** mode with **Atlassian MCP** enabled, open and follow **[`jira-close-story`](../skills/jira-close-story/SKILL.md)** end-to-end. **Before** the first MCP call, read each tool’s schema (descriptor JSON under the workspace **`mcps/`** folder for the enabled server, e.g. **`user-mcp-atlassian`**). **Harness files** are cleared after Jira succeeds: **empty-file** writes for **`state.md`** / **`qa-current.md`**, **delete** **`pr-body.md`** when present — not via MCP. In **Ask / read-only** mode or without MCP, output the skill’s **manual checklist**.
+**How this runs:** This `.md` **instructs the agent**. In **Agent** mode with **Atlassian MCP** enabled, open and follow **[`jira-close-story`](../skills/engineering/jira-close-story/SKILL.md)** end-to-end. **Before** the first MCP call, read each tool’s schema (descriptor JSON under the workspace **`mcps/`** folder for the enabled server, e.g. **`user-mcp-atlassian`**). **Harness files** are cleared after Jira succeeds: **empty-file** writes for **`state.md`** / **`qa-current.md`**, **delete** **`pr-body.md`** when present — not via MCP. In **Ask / read-only** mode or without MCP, output the skill’s **manual checklist**.
 
 ## Inputs (ask if missing)
 
@@ -13,13 +13,13 @@ Complements **`/ss-submit-pr`** (open PR) and consumer **QA / merge** commands. 
 
 ## Agent steps (summary)
 
-1. Execute **[`jira-close-story`](../skills/jira-close-story/SKILL.md)** for the given key (MCP or manual list).
+1. Execute **[`jira-close-story`](../skills/engineering/jira-close-story/SKILL.md)** for the given key (MCP or manual list).
 2. After **successful** Jira close: at repo root, ensure **`.harness/`** exists, then write **empty** **`.harness/state.md`** and **`.harness/qa-current.md`**, and **delete** **`.harness/pr-body.md`** if it exists.
 
 ## References
 
 - Consumer issue-tracker / agent docs (assignee defaults, version naming, subtask order).
-- **[`jira-close-story`](../skills/jira-close-story/SKILL.md)** — full procedure.
+- **[`jira-close-story`](../skills/engineering/jira-close-story/SKILL.md)** — full procedure.
 - [`ss-workflow.md`](./ss-workflow.md) — phase order vs PR / QA.
 
 Consumer wrappers may add tracker-specific defaults (e.g. **`qp-close-jira-story`**) and still point here.

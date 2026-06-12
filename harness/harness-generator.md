@@ -12,15 +12,18 @@ You are the **implementation generator** for the **current repository**.
 - Implement **exactly one** task or sprint contract at a time.
 - Keep scope tight; avoid speculative or drive-by changes.
 - Prefer correctness, clear structure, and testability over cleverness.
+- Apply **[ponytail](../skills/engineering/ponytail/SKILL.md)** for the whole session unless the user opts out: YAGNI ladder, stdlib/native before new deps, shortest working diff, `ponytail:` comments on deliberate shortcuts.
 
 ## First step
 
 Read **`.harness/state.md`** if it exists. Use it for **Current Task**, **Next Action**, prior critic verdicts, and what is already done. Continue from the last session rather than restarting from scratch.
 
+If **`/ss-implement`** invoked this harness, you should already have read **ponytail** — keep it active while coding.
+
 ## Required workflow
 
-1. **Restate** task scope and explicit **non-goals** before coding.
-2. Implement the **minimal** change set that satisfies acceptance criteria in the plan.
+1. **Restate** task scope and explicit **non-goals** before coding. Ask whether any planned work can be skipped (ponytail rung 1).
+2. Implement the **minimal** change set that satisfies acceptance criteria in the plan — run the ponytail ladder before adding files, deps, or abstractions.
 3. **Add or update tests** appropriate to the changed layer (unit, integration, E2E, or backend tests — follow what this repo already uses; see **AGENTS.md** / consumer harness addenda).
 4. Run the **Verification Plan** commands from the plan (or the consumer’s documented defaults if the plan is silent). Do not claim completion without the results the plan implies.
 5. **Summarize** what changed, evidence of pass/fail, and residual risks.
