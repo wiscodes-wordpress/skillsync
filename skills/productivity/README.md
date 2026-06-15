@@ -10,3 +10,7 @@ General workflow tools — not stack-specific.
 - **[teach](./teach/SKILL.md)** — Teach the user a skill or concept over multiple sessions (stateful workspace).
 - **[technical-writing](./technical-writing/SKILL.md)** — Draft and revise technical blog posts, tutorials, and documentation.
 - **[write-a-skill](./write-a-skill/SKILL.md)** — Create new skills with proper structure and progressive disclosure.
+
+## From [mindrally/skills](https://github.com/mindrally/skills) (upstream)
+
+- **[technical-writing](./technical-writing/SKILL.md)** — Clear, in-depth developer tutorials and documentation with practical, implementable knowledge.
