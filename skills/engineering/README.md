@@ -6,6 +6,7 @@ Code work, delivery workflow, and technical review skills.
 
 - **[diagnose](./diagnose/SKILL.md)** — Disciplined diagnosis loop for hard bugs and performance regressions.
 - **[grill-with-docs](./grill-with-docs/SKILL.md)** — Grilling session against the domain model; updates `CONTEXT.md` and ADRs inline.
+- **[grill-tdd](./grill-tdd/SKILL.md)** — TDD grilling after domain align: behaviors, RED contracts, locator strategy, false-positive audit (`/ss-plan` step 1b).
 - **[improve-codebase-architecture](./improve-codebase-architecture/SKILL.md)** — Find deepening opportunities informed by `CONTEXT.md` and ADRs.
 - **[prototype](./prototype/SKILL.md)** — Throwaway prototype to flesh out a design before committing.
 - **[setup-matt-pocock-skills](./setup-matt-pocock-skills/SKILL.md)** — Scaffold per-repo config (issue tracker, triage labels, domain docs).
@@ -19,12 +20,12 @@ Code work, delivery workflow, and technical review skills.
 
 - **[dependabot-batch-merge](./dependabot-batch-merge/SKILL.md)** — Batch-merge Dependabot PRs safely.
 - **[frontend-react-best-practices](./frontend-react-best-practices/SKILL.md)** — React performance and composition patterns.
-- **[jest-react-testing](./jest-react-testing/SKILL.md)** — Jest + React Testing Library patterns.
+- **[jest-react-testing](./jest-react-testing/SKILL.md)** — Jest + RTL (link when consumer uses React; not default ss-flow load).
+- **[testing-expert](./testing-expert/SKILL.md)** — Optional reference encyclopedia; **not** in **`ss-*`** flow (`tdd` + stack skill instead).
 - **[jira-close-story](./jira-close-story/SKILL.md)** — Close Jira stories and reset harness state (MCP).
 - **[ponytail](./ponytail/SKILL.md)** — Lazy senior dev: YAGNI ladder, stdlib first, shortest diff ([upstream](https://github.com/DietrichGebert/ponytail)). Wired into **`/ss-implement`**.
 - **[pr-review](./pr-review/SKILL.md)** — Structured pull request review workflow.
 - **[submit-github-pr](./submit-github-pr/SKILL.md)** — Open a GitHub PR via `gh`.
-- **[testing-expert](./testing-expert/SKILL.md)** — General testing methodology and examples.
 - **[typescript-react-reviewer](./typescript-react-reviewer/SKILL.md)** — TypeScript + React code review expert.
 
 ## WordPress

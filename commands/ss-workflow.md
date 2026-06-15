@@ -1,40 +1,38 @@
 # ss-workflow
 
-**Shared delivery workflow** (skillsync). Use this as the canonical phase list for Matt-style planner → implement → critic loops. Consumer repos keep **thin wrappers** (for example `qb-*` in Quick Builder) that add tracker-specific steps and still point here for the generic model.
+**Canonical delivery loop** — see [`ss-flow.md`](../harness/ss-flow.md) for harness map and context rules.
 
-## Orientation
+Consumer repos use **thin wrappers** (`qb-*`, etc.) for tracker-specific steps; they should still point here for phase order.
 
-1. Read the consumer’s **`AGENTS.md`** and **`CONTEXT.md`** (or equivalent) at the repository root for issue tracker, harness paths, and domain docs.
-2. Follow the **phase order** below. Do not skip ahead unless the user explicitly overrides (for example: do not implement on `main` when a story branch is expected).
+## Phase order
 
-## Canonical phase order
+| # | Phase | Command |
+|---|--------|---------|
+| 1 | Branch | consumer wrapper |
+| 2 | Grill domain | step 1a of [`ss-plan`](./ss-plan.md) |
+| 3 | Grill TDD | step 1b of [`ss-plan`](./ss-plan.md) |
+| 4 | Plan | steps 2–3 of [`ss-plan`](./ss-plan.md) |
+| 5 | Slice to issues | [`ss-to-issues`](./ss-to-issues.md) (optional) |
+| 6 | Implement | [`ss-implement`](./ss-implement.md) |
+| 7 | Review | [`ss-review`](./ss-review.md) |
+| 8 | PR → merge → Jira Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
 
-| # | Phase | Purpose | Shared `ss-*` command (when linked) |
-|---|--------|---------|-------------------------------------|
-| 1 | **Branch** | **Story / issue branch** from default: clean tree, `git fetch`, checkout default, `pull --ff-only`, `git checkout -b` with a name tied to the tracker key + slug (consumer script or docs). | *(consumer wrapper — e.g. `yarn branch:story PROJECT-123 short-slug`; `DRY_RUN=1` preview)* |
-| 2 | **Grill / align** | 1:1 story alignment before technical planning. | **Step 1 of [`/ss-plan`](./ss-plan.md)** — [`grill-me`](../skills/productivity/grill-me/SKILL.md) (or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) / consumer wrapper per repo docs) |
-| 3 | **Harness planner** | Spec → slices → verification → **`.harness/state.md`** + **`## Next Action`**. | **Steps 2–3 of [`/ss-plan`](./ss-plan.md)** → [`ss-plan.md`](./ss-plan.md) |
-| 4 | **Slice to issues** | Tracker-ready stories/subtasks (optional if solo). | **`/ss-to-issues`** → [`ss-to-issues.md`](./ss-to-issues.md) + [`to-issues`](../skills/engineering/to-issues/SKILL.md); consumer wrapper for project defaults |
-| 5 | **Implement** | One slice; generator harness; ponytail minimal-code discipline; run planner checks. | **`/ss-implement`** → [`ss-implement.md`](./ss-implement.md) + [`ponytail`](../skills/engineering/ponytail/SKILL.md) |
-| 6 | **Critic** | Quality gate; state + verdict. | **`/ss-review`** → [`ss-review.md`](./ss-review.md) |
-| 7 | **PR open → merge → tracker** | Open PR (**`/ss-submit-pr`**); merge; **Jira Done** + harness reset (**`/ss-close-story`** + [`jira-close-story`](../skills/engineering/jira-close-story/SKILL.md) when using Jira/MCP). Rest per consumer docs. | **`/ss-submit-pr`**, **`/ss-close-story`** → [`ss-submit-pr.md`](./ss-submit-pr.md), [`ss-close-story.md`](./ss-close-story.md); merge / non-Jira tracker *(consumer wrapper)* |
-| 8 | **QA handoff** | Next QA item / snapshot per consumer scripts. | *(consumer wrapper)* |
+## Harness skeleton (skillsync)
 
-## Phase 1 — Branch (detail)
+| File | Role |
+|------|------|
+| [`ss-flow.md`](../harness/ss-flow.md) | Phase map · context budget |
+| [`harness-planner-tdd.md`](../harness/harness-planner-tdd.md) | Default planner |
+| [`harness-planner.md`](../harness/harness-planner.md) | Legacy feature-first |
+| [`harness-generator.md`](../harness/harness-generator.md) | Implement |
+| [`harness-critic.md`](../harness/harness-critic.md) | Review |
+| [`critic-tdd-testing.md`](../harness/critic-tdd-testing.md) | TDD audit (auto-loaded) |
+| [`accessible-locator-priority.md`](../harness/accessible-locator-priority.md) | UI query priority |
 
-When the repo ties Git to Jira (or another tracker), complete any **shaping** the consumer documents, then **check out or create the story branch** before **`/ss-plan`**. From a **clean** working tree at the repo root, follow the consumer’s branch recipe (often the same sequence as the table: fetch → default branch → fast-forward pull → new branch). Many repos ship a helper such as **`yarn branch:story PROJECT-123 short-slug`**; use **`DRY_RUN=1`** (or equivalent) for a **no-git-write preview**. Base-branch env overrides, **`--rename` / `--push`**, and naming ↔ traceability rules belong in the consumer’s issue-tracker / agent docs. See also the prerequisite on [`ss-plan.md`](./ss-plan.md).
+Local addenda: **`.cursor/harness/`** per consumer.
 
-## Harness files (shared skeleton)
+## `ss-*` prefix
 
-- **Planner:** [`harness/harness-planner.md`](../harness/harness-planner.md)
-- **Generator:** [`harness/harness-generator.md`](../harness/harness-generator.md)
-- **Critic:** [`harness/harness-critic.md`](../harness/harness-critic.md)
+**s**kill**s**ync-hosted, product-neutral commands. Link via `link-commands.cjs` (`docs/consumer-setup.md`).
 
-Consumers may add **local** files under `.cursor/harness/` (for example `critic-backend.md`) and chain them from wrappers or addenda.
-
-## Naming: `ss-*`
-
-- **`ss`** = **skillsync**-hosted, **product-neutral** slash commands.
-- Link these files into the consumer **`.cursor/commands/`** with `link-commands.cjs` (see `docs/consumer-setup.md`) so Cursor discovers `/ss-workflow`, `/ss-plan`, `/ss-to-issues`, `/ss-implement`, `/ss-review`, `/ss-submit-pr`, `/ss-close-story`.
-
-This command will be available in chat with `/ss-workflow` when this file is linked into the consumer **`.cursor/commands/`** directory.
+Available as `/ss-workflow` when linked into **`.cursor/commands/`**.

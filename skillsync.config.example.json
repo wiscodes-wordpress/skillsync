@@ -2,9 +2,11 @@
 	"vendorRoot": ".cursor/vendor/skillsync",
 	"linkMode": "symlink",
 	"linkedSkills": [
+		"grill-tdd",
 		"ponytail",
-		"jira-close-story",
+		"tdd",
 		"submit-github-pr",
+		"jira-close-story",
 		"to-issues",
 		"wordpress-advanced-architecture",
 		"wordpress-content",
@@ -27,10 +29,10 @@
 	"linkedCommands": [
 		"ss-workflow.md",
 		"ss-plan.md",
+		"ss-to-issues.md",
 		"ss-implement.md",
 		"ss-review.md",
 		"ss-submit-pr.md",
-		"ss-close-story.md",
-		"ss-to-issues.md"
+		"ss-close-story.md"
 	]
 }

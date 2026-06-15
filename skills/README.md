@@ -14,6 +14,8 @@ Follows [Matt Pocock's skills repo](https://github.com/mattpocock/skills) catego
 
 Consumers link by **skill name only** in `skillsync.config.json` (e.g. `"tdd"`, `"wp-block-development"`). `link-skills.cjs` resolves `engineering/<name>`, `productivity/<name>`, etc. automatically.
 
+**`ss-*` delivery loop:** see [`harness/ss-flow.md`](../harness/ss-flow.md) and [`docs/consumer-setup.md`](../docs/consumer-setup.md) for minimal `linkedSkills` vs optional stack skills.
+
 ```bash
 node .cursor/vendor/skillsync/tools/link-skills.cjs .
 node .cursor/vendor/skillsync/tools/verify-skills.cjs .

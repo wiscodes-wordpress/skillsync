@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Test-driven development with red-green-refactor loop. Use when user wants to build features or fix bugs using TDD, mentions "red-green-refactor", wants integration tests, or asks for test-first development.
+description: Test-driven development RED→GREEN→REFACTOR. Use at /ss-implement when state has RED→GREEN Plan, or ad-hoc TDD. Planning lives in /ss-plan (grill-tdd), not this skill.
 ---
 
 # Test-Driven Development
@@ -42,24 +42,9 @@ RIGHT (vertical):
 
 ## Workflow
 
-### 1. Planning
+**Planning** happens in **`/ss-plan`** ([`grill-tdd`](../grill-tdd/SKILL.md) + state.md). At implement, read **`.harness/state.md`** — do not re-plan behaviors in chat.
 
-When exploring the codebase, use the project's domain glossary so that test names and interface vocabulary match the project's language, and respect ADRs in the area you're touching.
-
-Before writing any code:
-
-- [ ] Confirm with user what interface changes are needed
-- [ ] Confirm with user which behaviors to test (prioritize)
-- [ ] Identify opportunities for [deep modules](deep-modules.md) (small interface, deep implementation)
-- [ ] Design interfaces for [testability](interface-design.md)
-- [ ] List the behaviors to test (not implementation steps)
-- [ ] Get user approval on the plan
-
-Ask: "What should the public interface look like? Which behaviors are most important to test?"
-
-**You can't test everything.** Confirm with the user exactly which behaviors matter most. Focus testing effort on critical paths and complex logic, not every possible edge case.
-
-### 2. Tracer Bullet
+### 1. Tracer bullet
 
 Write ONE test that confirms ONE thing about the system:
 
@@ -70,7 +55,7 @@ GREEN: Write minimal code to pass → test passes
 
 This is your tracer bullet - proves the path works end-to-end.
 
-### 3. Incremental Loop
+### 2. Incremental Loop
 
 For each remaining behavior:
 
@@ -86,7 +71,7 @@ Rules:
 - Don't anticipate future tests
 - Keep tests focused on observable behavior
 
-### 4. Refactor
+### 3. Refactor
 
 After all tests pass, look for [refactor candidates](refactoring.md):
 

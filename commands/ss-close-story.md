@@ -1,27 +1,18 @@
 # ss-close-story
 
-**Phase: tracker close after merge** (or when the human wants the board updated) — transition the **Jira issue** (and children when needed) to **Done**, apply **assignee** / **fix version** only when the human or **consumer docs** say so, then **clear local harness handoff** by writing **empty** **`.harness/state.md`** and **`.harness/qa-current.md`**, and **delete** **`.harness/pr-body.md`** if it exists, after Jira updates succeed.
+**Phase: tracker close + harness reset** — follow [`ss-flow.md`](../harness/ss-flow.md) (after PR merge or when updating the board).
 
-Complements **`/ss-submit-pr`** (open PR) and consumer **QA / merge** commands. **Does not** merge GitHub PRs.
+Transitions the **Jira issue** (and children when needed) to **Done** per consumer docs. **Does not merge** GitHub PRs.
 
-**How this runs:** This `.md` **instructs the agent**. In **Agent** mode with **Atlassian MCP** enabled, open and follow **[`jira-close-story`](../skills/engineering/jira-close-story/SKILL.md)** end-to-end. **Before** the first MCP call, read each tool’s schema (descriptor JSON under the workspace **`mcps/`** folder for the enabled server, e.g. **`user-mcp-atlassian`**). **Harness files** are cleared after Jira succeeds: **empty-file** writes for **`state.md`** / **`qa-current.md`**, **delete** **`pr-body.md`** when present — not via MCP. In **Ask / read-only** mode or without MCP, output the skill’s **manual checklist**.
+In **Agent** mode with **Atlassian MCP**, follow [`jira-close-story`](../skills/engineering/jira-close-story/SKILL.md). Read MCP tool schemas before calling. In **Ask** mode or without MCP, output the skill’s manual checklist.
 
-## Inputs (ask if missing)
+**After successful Jira close** — at repo root:
 
-1. **Issue key** — e.g. `PROJECT-175` (story), `PROJECT-717` (task), `PROJECT-727` (sub-task). From the human, branch/PR, or **`.harness/state.md`** if it still holds context.
-2. **Optional:** exact Jira **fix version `name`** to override the skill’s unreleased-version pick.
+- write **empty** **`.harness/state.md`** and **`.harness/qa-current.md`**
+- **delete** **`.harness/pr-body.md`** if present
 
-## Agent steps (summary)
+**Inputs:** issue key (e.g. `PROJECT-175`); optional fix version override. From human, branch/PR, or **`.harness/state.md`** if context remains.
 
-1. Execute **[`jira-close-story`](../skills/engineering/jira-close-story/SKILL.md)** for the given key (MCP or manual list).
-2. After **successful** Jira close: at repo root, ensure **`.harness/`** exists, then write **empty** **`.harness/state.md`** and **`.harness/qa-current.md`**, and **delete** **`.harness/pr-body.md`** if it exists.
+Consumer wrappers (e.g. `qp-close-jira-story`, `qb-close-jira`) may add defaults and still point here.
 
-## References
-
-- Consumer issue-tracker / agent docs (assignee defaults, version naming, subtask order).
-- **[`jira-close-story`](../skills/engineering/jira-close-story/SKILL.md)** — full procedure.
-- [`ss-workflow.md`](./ss-workflow.md) — phase order vs PR / QA.
-
-Consumer wrappers may add tracker-specific defaults (e.g. **`qp-close-jira-story`**) and still point here.
-
-This command will be available in chat with `/ss-close-story` when this file is linked into the consumer **`.cursor/commands/`** directory (see `docs/consumer-setup.md`).
+Available as `/ss-close-story` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

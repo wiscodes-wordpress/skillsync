@@ -13,6 +13,8 @@ Your job is to **prevent false positives**: combine functional evaluation, risk 
 
 Read **`.harness/state.md`** if it exists. Use it for current task, what the generator claims, acceptance criteria, and any prior verdicts.
 
+If **`.harness/state.md`** includes **Behavior & Test Contracts** or a **RED→GREEN Plan**, load **[critic-tdd-testing.md](./critic-tdd-testing.md)** from `.cursor/harness/`, `.cursor/vendor/skillsync/harness/`, or beside this file. Apply its rubric, audits, and output sections. **Do not re-read `grill-tdd`** — contracts live in state.
+
 ## Second step — detect change surface
 
 Run `git diff --name-only` (against the appropriate base branch if the consumer documents one) before loading optional critic modules.
@@ -27,7 +29,7 @@ Consumers may place additional rubrics under **`.cursor/harness/`**. **Only load
 | Application frontend (`src/`, `app/`, `packages/*/src/`, etc.), or TS/JS outside dedicated E2E-only trees | `critic-frontend.md` |
 | Blocks, themes, or design-system artifacts (`block.json`, `theme.json`, `patterns/`, `templates/`, etc.) | `critic-blocks.md` |
 | Unit/integration test configs or test files (`*.spec.*`, `*.test.*`, `__tests__/`, Jest/Vitest config roots, etc.) | `critic-unit-testing.md` |
-| End-to-end or browser automation trees (`e2e/`, Playwright/Cypress/WebdriverIO config or specs) | `critic-e2e-testing.md` |
+| End-to-end or browser automation trees (`e2e/`, Playwright/Cypress/WebdriverIO config or specs) | `critic-e2e-testing.md`; also [accessible-locator-priority.md](./accessible-locator-priority.md) for UI query priority |
 
 **E2E-only diffs:** If every changed path is under the repo’s E2E/automation tree (as defined by the matching row above), load **only** the E2E critic module when present — avoid double-loading frontend critics for spec files alone. If the diff mixes E2E with application source, load **all** matching rows that have existing files.
 
@@ -52,6 +54,8 @@ Use these skills when scoring **Convention**, **Code quality**, and **Test cover
 - **Functionality** — does it work as specified?
 - **Product depth** — does it satisfy the sprint contract / task description?
 - **Test coverage** — do tests match the changed risk surface?
+- **Test contract fidelity** (TDD plans only) — planned behaviors map to tests that catch regression; see critic-tdd-testing
+- **Test integrity** (TDD plans only) — green from prod fixes, not weakened/deleted tests
 - **Code quality / maintainability**
 
 **UI-affecting (when applicable)**

@@ -1,11 +1,7 @@
 # ss-review
 
-**Phase: harness critic** (skillsync shared — quality gate).
+**Phase: critic** — follow [`ss-flow.md`](../harness/ss-flow.md).
 
-1. Read and follow [`harness-critic`](../harness/harness-critic.md) end-to-end.
-2. Prefer evidence from the same commands the generator used; call out gaps honestly.
-3. Update **`.harness/state.md`** per that harness file’s contracts (verdict, evidence, next action) when the critic expects it.
+Read and follow [`harness-critic.md`](../harness/harness-critic.md) end-to-end (loads [`critic-tdd-testing.md`](../harness/critic-tdd-testing.md) when state has TDD contracts).
 
-Consumer repos with product addenda chain this command with a local harness addendum or a thin wrapper (for example `qb-review`).
-
-This command will be available in chat with `/ss-review` when this file is linked into the consumer **`.cursor/commands/`** directory (see `docs/consumer-setup.md`).
+Available as `/ss-review` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

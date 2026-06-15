@@ -11,7 +11,7 @@ Shared **Cursor Agent Skills**, **project rules**, **`ss-*` slash commands**, **
 | `skills/personal/` | Author-specific skills (placeholder; not linked by default). |
 | `rules/*.mdc` | Shared Cursor project rules (materialize into `.cursor/rules/`). |
 | `commands/ss-*.md` | Shared **skillsync** slash commands (materialize into `.cursor/commands/`). |
-| `harness/*.md` | Shared harness skeletons (planner, generator, critic). |
+| `harness/*.md` | Shared harness skeletons — **`harness/ss-flow.md`** is the delivery-loop map. |
 | `tools/resolve-skill-dir.cjs` | Resolve skill name → folder (flat or category). |
 | `tools/link-skills.cjs` | Symlink or copy selected skills → `.cursor/skills/`. |
 | `tools/verify-skills.cjs` | Verify linked skills. |

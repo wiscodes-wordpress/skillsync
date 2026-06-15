@@ -19,8 +19,35 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 1. Copy `skillsync.config.example.json` from this repo into the **consumer repository root** as `skillsync.config.json`.
 2. Set `linkedSkills` to skill **names** (e.g. `"tdd"`, `"wp-block-development"`). Names resolve from `engineering/`, `productivity/`, `personal/`, or `misc/` — omit entries you do not need.
 3. Optionally set `linkedRules` to basenames of `.mdc` files from `<vendorRoot>/rules/` (see **Project rules** below).
-4. Optionally set `linkedCommands` to basenames of `.md` files from `<vendorRoot>/commands/` (see **Slash commands** below — **`ss-*`** shared commands).
+4. Optionally set `linkedCommands` to basenames of `.md` files from `<vendorRoot>/commands/` (see **Slash commands** below).
 5. Optionally set `linkMode` to `copy` if symlinks are not viable on your OS.
+
+### Minimal `linkedSkills` for the **`ss-*` delivery loop**
+
+| Skill | Used by |
+|-------|---------|
+| `grill-tdd` | `/ss-plan` (step 1b) |
+| `tdd` | `/ss-implement` when state has RED→GREEN Plan |
+| `ponytail` | `/ss-implement` |
+| `submit-github-pr` | `/ss-submit-pr` |
+| `jira-close-story` | `/ss-close-story` |
+| `to-issues` | `/ss-to-issues` (optional) |
+
+Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for `grill-me` in plan step 1a — productivity skill, link if desired). Add stack skills only when needed (e.g. `jest-react-testing`, `wordpress-testing-qa`) — not required for the generic loop. Do **not** link **`testing-expert`** for the loop; it is an optional encyclopedia.
+
+### Full `linkedCommands` (typical)
+
+```json
+"linkedCommands": [
+  "ss-workflow.md",
+  "ss-plan.md",
+  "ss-to-issues.md",
+  "ss-implement.md",
+  "ss-review.md",
+  "ss-submit-pr.md",
+  "ss-close-story.md"
+]
+```
 
 ## Link and verify
 
@@ -60,10 +87,41 @@ Cursor loads **project rules** from **`.cursor/rules/`** only — not from paths
 
 ## Slash commands and `ss-*`
 
-Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared **skillsync** commands use the **`ss-*`** prefix (**s**kill**s**ync) and live under **`commands/`** here. List basenames in **`linkedCommands`** and run **`link-commands.cjs`** / **`verify-commands.cjs`** so consumers get `/ss-workflow`, `/ss-plan`, `/ss-to-issues`, `/ss-implement`, `/ss-review`, `/ss-submit-pr`, `/ss-close-story`, etc.
+Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared commands use the **`ss-*`** prefix and live under **`commands/`** here. List basenames in **`linkedCommands`** and run **`link-commands.cjs`** / **`verify-commands.cjs`**.
 
-Product repos usually keep **thin wrappers** (e.g. `qb-*`) that add tracker-specific steps and point at these shared files or harness addenda.
+| Command | Phase |
+|---------|--------|
+| `/ss-workflow` | Orientation — phase index |
+| `/ss-plan` | Grill + TDD plan → `.harness/state.md` |
+| `/ss-to-issues` | Publish slices to tracker (optional) |
+| `/ss-implement` | One RED→GREEN cycle (or feature slice) |
+| `/ss-review` | Critic / quality gate |
+| `/ss-submit-pr` | Open GitHub PR (does not merge) |
+| `/ss-close-story` | Jira Done + clear harness files |
 
-## Harness
+Product repos usually keep **thin wrappers** (e.g. `qb-*`, `qp-close-jira-story`) that add tracker-specific steps and point at these shared files.
 
-Shared planner / generator / critic skeletons live under **`harness/`**. Phase orientation: **`commands/ss-workflow.md`**.
+## Harness and delivery loop
+
+**Start here:** [`harness/ss-flow.md`](harness/ss-flow.md) — canonical phase map, which harness file each command loads, and **context budget** rules (avoid loading huge skills on every step).
+
+| Harness file | Role |
+|--------------|------|
+| `harness/ss-flow.md` | Phase map · context budget |
+| `harness/harness-planner-tdd.md` | Default planner (`/ss-plan`) |
+| `harness/harness-planner.md` | Legacy feature-first (local wrappers only) |
+| `harness/harness-generator.md` | `/ss-implement` |
+| `harness/harness-critic.md` | `/ss-review` |
+| `harness/critic-tdd-testing.md` | Auto-loaded when state has TDD contracts |
+| `harness/accessible-locator-priority.md` | UI/E2E query priority (when applicable) |
+
+Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/generator addenda live under **`.cursor/harness/`** on the consumer repo.
+
+### Typical phase order
+
+```text
+branch (consumer) → /ss-plan → /ss-to-issues? → /ss-implement (× cycles) → /ss-review
+  → /ss-submit-pr → merge (consumer) → /ss-close-story
+```
+
+Document **branch scripts**, **verification commands**, and **stack skills** in the consumer root **`AGENTS.md`**.

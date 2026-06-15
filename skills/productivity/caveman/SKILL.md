@@ -44,7 +44,7 @@ When user is in **planner phase**, use **normal clarity** (full sentences, scann
 **Counts as planning (caveman off here):**
 
 - Slash command **`/ss-plan`** or consumer planner wrapper (e.g. `qb-plan`), **or**
-- Following **`harness-planner.md`** (and any chained planner addendum) to produce: spec recap, sprint slices, verification plan, **`.harness/state.md`** sections that harness requires for planning.
+- Following **`harness-planner-tdd.md`** or legacy **`harness-planner.md`** (and any chained planner addendum) to produce spec, slices/cycles, verification plan, **`.harness/state.md`** planning sections.
 
 **Resume caveman** after that planner pass is done (e.g. `state.md` written per harness, or user leaves planner-only work). Implement / review / casual Q&A → terse again.
 

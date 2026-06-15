@@ -1,17 +1,13 @@
 # ss-submit-pr
 
-**Phase: submit work for review** — open a **GitHub pull request** from the **current branch** (title + body); **not** merge. Complements consumer **QA / merge / tracker** steps (see [`ss-workflow`](./ss-workflow.md)).
+**Phase: open PR** — follow [`ss-flow.md`](../harness/ss-flow.md) (after critic PASS or human sign-off).
 
-**How this runs:** This `.md` **instructs the agent**. In **Agent** mode, follow **[`submit-github-pr`](../skills/engineering/submit-github-pr/SKILL.md)** end-to-end from the **repository root** (`gh`, `git`). In **Ask / read-only** mode, print that skill’s checklist and exact commands for the human.
+Opens a **GitHub pull request** from the **current branch**. **Does not merge.**
 
-## Inputs
+In **Agent** mode, follow [`submit-github-pr`](../skills/engineering/submit-github-pr/SKILL.md) from the repo root. In **Ask** mode, print that skill’s checklist.
 
-Same as the skill — ask if missing: **base branch**, **PR title**, **PR body** (or derive from diff / commits / **`.harness/state.md`**).
+**Inputs:** base branch, title, body — ask if missing; may derive from diff, commits, or **`.harness/state.md`** (TDD evidence / verification plan).
 
-## References
+Consumer wrappers (e.g. `qp-submit-pr`) may add tracker defaults and still point here.
 
-- **[`submit-github-pr`](../skills/engineering/submit-github-pr/SKILL.md)** — prerequisites, steps, `gh pr create` pattern.
-- [`ss-workflow.md`](./ss-workflow.md) — phase order.
-- Consumer wrappers (e.g. **`qp-submit-pr`**) may add tracker-specific defaults and still point here.
-
-This command will be available in chat with `/ss-submit-pr` when this file is linked into the consumer **`.cursor/commands/`** directory (see `docs/consumer-setup.md`).
+Available as `/ss-submit-pr` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).
