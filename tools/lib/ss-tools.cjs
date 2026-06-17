@@ -88,6 +88,8 @@ function readState(consumerRoot) {
  * @property {string} [vendorRoot]
  * @property {string} [prBaseBranch]
  * @property {string} [issueKeyPattern]
+ * @property {string} [issueKeyPrefix]
+ * @property {string} [branchIssuePattern]
  * @property {string} [issueTracker]
  * @property {string} [jiraProjectKey]
  * @property {string} [githubIssueLabels]
@@ -226,29 +228,68 @@ function runCommand(cwd, cmd, opts = {}) {
 }
 
 /**
+ * @param {string | undefined} raw
+ * @returns {string}
+ */
+function formatBranchSlug(raw) {
+	const slug = (raw ?? '')
+		.replace(/[-_]+/g, ' ')
+		.replace(/\//g, ' ')
+		.trim();
+	if (!slug) {
+		return '';
+	}
+	return slug.charAt(0).toUpperCase() + slug.slice(1);
+}
+
+/**
  * @param {string} branch
- * @param {string | undefined} pattern
+ * @param {string | SkillsyncConfig | undefined} patternOrConfig
  * @returns {string | null}
  */
-function titleFromBranch(branch, pattern) {
+function titleFromBranch(branch, patternOrConfig) {
+	/** @type {string | undefined} */
+	let pattern;
+	/** @type {string | undefined} */
+	let prefix;
+	/** @type {string | undefined} */
+	let branchPattern;
+
+	if (
+		typeof patternOrConfig === 'object' &&
+		patternOrConfig !== null &&
+		!Array.isArray(patternOrConfig)
+	) {
+		pattern = patternOrConfig.issueKeyPattern;
+		prefix = patternOrConfig.issueKeyPrefix;
+		branchPattern = patternOrConfig.branchIssuePattern;
+	} else {
+		pattern = patternOrConfig;
+	}
+
+	if (prefix) {
+		const re = new RegExp(
+			branchPattern ?? `^${prefix.toLowerCase()}-(\\d+)[-/_.]?(.*)$`,
+			'i',
+		);
+		const m = branch.match(re);
+		if (m) {
+			const key = `${prefix.toUpperCase()}-${m[1]}`;
+			const titleSlug = formatBranchSlug(m[2]);
+			return titleSlug ? `${key}: ${titleSlug}` : key;
+		}
+	}
+
 	const defaultRe =
-		pattern ??
-		'^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$';
+		pattern ?? '^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$';
 	const re = new RegExp(defaultRe, 'i');
 	const m = branch.match(re);
 	if (!m) {
 		return null;
 	}
 	const key = m[1].toUpperCase();
-	const slug = (m[2] ?? '')
-		.replace(/[-_]+/g, ' ')
-		.replace(/\//g, ' ')
-		.trim();
-	if (!slug) {
-		return key;
-	}
-	const titleSlug = slug.charAt(0).toUpperCase() + slug.slice(1);
-	return `${key}: ${titleSlug}`;
+	const titleSlug = formatBranchSlug(m[2]);
+	return titleSlug ? `${key}: ${titleSlug}` : key;
 }
 
 /**

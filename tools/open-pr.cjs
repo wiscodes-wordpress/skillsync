@@ -80,9 +80,7 @@ function main() {
 
 	let title = typeof flags.title === 'string' ? flags.title : '';
 	if (!title) {
-		title =
-			titleFromBranch(branch, config?.issueKeyPattern) ??
-			'';
+		title = titleFromBranch(branch, config ?? undefined) ?? '';
 	}
 	assertOrExit(Boolean(title), `Could not derive PR title from branch "${branch}". Pass --title.`);
 

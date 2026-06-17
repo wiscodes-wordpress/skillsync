@@ -3,7 +3,10 @@
  * Smoke-test ss-* deterministic tools and fixtures.
  *
  * Usage:
- *   node path/to/skillsync/tools/verify-tools.cjs [/path/to/skillsync-repo]
+ *   node path/to/skillsync/tools/verify-tools.cjs
+ *
+ * Always resolves tools relative to the skillsync checkout containing this script
+ * (safe to run from a consumer via `.cursor/vendor/skillsync/tools/verify-tools.cjs`).
  */
 
 const fs = require('node:fs');
@@ -11,8 +14,8 @@ const os = require('node:os');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
-const repoRoot = path.resolve(process.argv[2] ?? path.join(__dirname, '..'));
-const toolsDir = path.join(repoRoot, 'tools');
+const skillsyncRoot = path.join(__dirname, '..');
+const toolsDir = path.join(skillsyncRoot, 'tools');
 const fixturesDir = path.join(toolsDir, 'fixtures');
 
 const REQUIRED_TOOLS = [

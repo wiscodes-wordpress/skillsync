@@ -151,6 +151,7 @@ Optional **`skillsync.config.json`** keys for tools:
 	"prBaseBranch": "main",
 	"issueKeyPattern": "^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$",
 	"issueTracker": "github",
+	"githubIssueLabels": "ready-for-agent",
 	"githubIssueLabels": "ready"
 }
 ```
