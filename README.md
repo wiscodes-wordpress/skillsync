@@ -19,6 +19,16 @@ Shared **Cursor Agent Skills**, **project rules**, **`ss-*` slash commands**, **
 | `tools/verify-rules.cjs` | Verify linked rules. |
 | `tools/link-commands.cjs` | Symlink or copy selected commands → `.cursor/commands/`. |
 | `tools/verify-commands.cjs` | Verify linked commands. |
+| `tools/harness-reset.cjs` | Clear `.harness/` handoff files after story close. |
+| `tools/validate-state.cjs` | Validate `.harness/state.md` section contract. |
+| `tools/init-state.cjs` | Write skeleton harness state for a new story. |
+| `tools/render-pr-body.cjs` / `open-pr.cjs` | Build PR body and open via `gh`. |
+| `tools/tdd-audit.cjs` | TDD hard gates before critic rubric. |
+| `tools/run-verification.cjs` | Run Verification Plan commands from state. |
+| `tools/re-break.cjs` | Re-break evidence helper for TDD cycles. |
+| `tools/publish-slices-from-state.cjs` | Dry-run or publish plan slices to tracker. |
+| `tools/jira-close.cjs` | Jira REST close + harness reset (optional). |
+| `tools/verify-tools.cjs` | Smoke-test ss-* tools and fixtures. |
 | `skillsync.config.example.json` | Example consumer config. |
 | `docs/consumer-setup.md` | Submodule + `package.json` + `ss-*` naming. |
 

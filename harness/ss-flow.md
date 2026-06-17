@@ -35,6 +35,21 @@ Evidence table: **`## TDD Evidence`** in state.md. Review gates: `critic-tdd-tes
 
 Under **`.cursor/harness/`** when present: `critic-backend.md`, `critic-frontend.md`, `critic-e2e-testing.md`, generator/critic addenda.
 
+## Optional deterministic tools
+
+Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-setup.md)). Agents use these for mechanical steps; skills/harness files stay authoritative for judgment.
+
+| Phase | Tool |
+|-------|------|
+| Plan (post-write) | `validate-state.cjs --mode plan` |
+| New story | `init-state.cjs --task "KEY title"` |
+| Implement / review | `run-verification.cjs`, `tdd-audit.cjs`, `re-break.cjs` |
+| Submit PR | `render-pr-body.cjs`, `open-pr.cjs` |
+| To issues (post-approve) | `publish-slices-from-state.cjs` |
+| Close story | `harness-reset.cjs`, optional `jira-close.cjs` |
+
+Planner for this tooling backlog: [`harness-planner-ss-scripts.md`](./harness-planner-ss-scripts.md).
+
 ## Further reading (not loaded by default)
 
 - [`testing-expert`](../skills/engineering/testing-expert/SKILL.md) — optional deep reference

@@ -34,5 +34,8 @@
 		"ss-review.md",
 		"ss-submit-pr.md",
 		"ss-close-story.md"
-	]
+	],
+	"prBaseBranch": "main",
+	"issueKeyPattern": "^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$",
+	"issueTracker": "github"
 }

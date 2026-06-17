@@ -24,7 +24,7 @@ See **`docs/consumer-setup.md`**. Typical flow:
 ## Contributing to skillsync
 
 1. Keep additions **reusable** across consumers; push product flavor into consumer wrappers or harness addenda.
-2. After changing skills or commands, run **`node tools/verify-skills.cjs .`** and **`node tools/verify-commands.cjs .`** from this repo root (`.` = skillsync root).
+2. After changing skills, commands, or **`tools/`** ss-* helpers, run **`node tools/verify-skills.cjs .`**, **`node tools/verify-commands.cjs .`**, and **`node tools/verify-tools.cjs .`** from this repo root (`.` = skillsync root).
 3. Prefer **symlink** `linkMode` in consumers unless the platform cannot create directory symlinks.
 
 ## Naming

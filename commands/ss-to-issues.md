@@ -4,7 +4,7 @@
 
 After **`/ss-plan`**, publish approved RED→GREEN cycles (or slices) as tracker issues before **`/ss-implement`**.
 
-In **Agent** mode, follow [`to-issues`](../skills/engineering/to-issues/SKILL.md). Read MCP tool schemas before Jira/GitHub calls. In **Ask** mode, output paste-ready issue bodies.
+In **Agent** mode, follow [`to-issues`](../skills/engineering/to-issues/SKILL.md). Read MCP tool schemas before Jira/GitHub calls. After human approves the slice list, prefer **`publish-slices-from-state.cjs`** (dry-run first, then `--publish --approved --parent KEY`). In **Ask** mode, output paste-ready issue bodies.
 
 **Inputs:** parent issue key, **`.harness/state.md`**, or spec in chat; consumer issue-tracker docs for assignee/types/labels.
 

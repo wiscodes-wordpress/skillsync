@@ -125,3 +125,50 @@ branch (consumer) → /ss-plan → /ss-to-issues? → /ss-implement (× cycles) 
 ```
 
 Document **branch scripts**, **verification commands**, and **stack skills** in the consumer root **`AGENTS.md`**.
+
+## Scripted `ss-*` helpers
+
+Mechanical steps from the delivery loop live in **`tools/`** (run from the vendored skillsync path). Agents still handle judgment; scripts handle fixed exit codes.
+
+| Tool | Phase | Purpose |
+|------|-------|---------|
+| `harness-reset.cjs` | `/ss-close-story` | Empty `state.md` / `qa-current.md`; delete `pr-body.md` |
+| `validate-state.cjs` | pre-implement / pre-review / CI | Assert `.harness/state.md` section contract (`--mode plan\|implement\|review`) |
+| `init-state.cjs` | branch / new story | Skeleton `state.md` (`--task`, `--force`) |
+| `render-pr-body.cjs` | `/ss-submit-pr` | Merge draft + harness sections → PR body file |
+| `open-pr.cjs` | `/ss-submit-pr` | Push, duplicate check, `gh pr create` (`--no-push`, `--dry-run`) |
+| `tdd-audit.cjs` | `/ss-review` | Hard TDD gates (tampering, RED evidence, locators) |
+| `run-verification.cjs` | `/ss-implement`, `/ss-review` | Run Verification Plan commands from state |
+| `re-break.cjs` | TDD evidence | Stash prod paths → test FAIL → restore → PASS |
+| `publish-slices-from-state.cjs` | `/ss-to-issues` | Dry-run or publish slices (`--publish --approved`) |
+| `jira-close.cjs` | `/ss-close-story` | Jira REST close + harness reset (env auth; MCP remains alternative) |
+| `verify-tools.cjs` | skillsync CI | Smoke-test tools + fixtures |
+
+Optional **`skillsync.config.json`** keys for tools:
+
+```json
+{
+	"prBaseBranch": "main",
+	"issueKeyPattern": "^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$",
+	"issueTracker": "github",
+	"githubIssueLabels": "ready"
+}
+```
+
+Example **`package.json`** scripts (consumer root):
+
+```json
+{
+	"scripts": {
+		"ss:harness-reset": "node ./.cursor/vendor/skillsync/tools/harness-reset.cjs .",
+		"ss:validate-state": "node ./.cursor/vendor/skillsync/tools/validate-state.cjs . --mode implement",
+		"ss:open-pr": "node ./.cursor/vendor/skillsync/tools/open-pr.cjs ."
+	}
+}
+```
+
+From **skillsync repo root** after changing tools:
+
+```bash
+node tools/verify-tools.cjs .
+```
