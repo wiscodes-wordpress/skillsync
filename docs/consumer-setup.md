@@ -40,6 +40,7 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
 ```json
 "linkedCommands": [
   "ss-workflow.md",
+  "ss-major-feature-roadmap.md",
   "ss-plan.md",
   "ss-to-issues.md",
   "ss-implement.md",
@@ -92,6 +93,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | Command | Phase |
 |---------|--------|
 | `/ss-workflow` | Orientation — phase index |
+| `/ss-major-feature-roadmap` | Multi-epic initiative → story map, spec, Jira epics + v1 stories |
 | `/ss-plan` | Grill + TDD plan → `.harness/state.md` |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
 | `/ss-implement` | One RED→GREEN cycle (or feature slice) |

@@ -7,6 +7,7 @@
 		"tdd",
 		"submit-github-pr",
 		"jira-close-story",
+		"major-feature-roadmap",
 		"to-issues",
 		"wordpress-advanced-architecture",
 		"wordpress-content",
@@ -28,6 +29,7 @@
 	],
 	"linkedCommands": [
 		"ss-workflow.md",
+		"ss-major-feature-roadmap.md",
 		"ss-plan.md",
 		"ss-to-issues.md",
 		"ss-implement.md",

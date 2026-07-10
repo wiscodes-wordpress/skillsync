@@ -23,6 +23,7 @@ Code work, delivery workflow, and technical review skills.
 - **[jest-react-testing](./jest-react-testing/SKILL.md)** — Jest + RTL (link when consumer uses React; not default ss-flow load).
 - **[testing-expert](./testing-expert/SKILL.md)** — Optional reference encyclopedia; **not** in **`ss-*`** flow (`tdd` + stack skill instead).
 - **[jira-close-story](./jira-close-story/SKILL.md)** — Close Jira stories and reset harness state (MCP).
+- **[major-feature-roadmap](./major-feature-roadmap/SKILL.md)** — Multi-epic initiative planning with story map, initiative spec, and Jira epic/story publish via MCP.
 - **[ponytail](./ponytail/SKILL.md)** — Lazy senior dev: YAGNI ladder, stdlib first, shortest diff ([upstream](https://github.com/DietrichGebert/ponytail)). Wired into **`/ss-implement`**.
 - **[pr-review](./pr-review/SKILL.md)** — Structured pull request review workflow.
 - **[submit-github-pr](./submit-github-pr/SKILL.md)** — Open a GitHub PR via `gh`.
