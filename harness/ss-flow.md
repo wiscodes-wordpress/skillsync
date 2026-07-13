@@ -27,7 +27,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 
 ## TDD loop (implement)
 
-One **`/ss-implement`** session ≈ one RED→GREEN cycle. Details: `harness-generator.md` + `tdd/SKILL.md`.
+One **`/ss-implement`** session walks **all Remaining** RED→GREEN cycles (or sprint slices) **in order** — each cycle still vertical (RED→GREEN→re-break before the next). Details: `harness-generator.md` + `tdd/SKILL.md`. Override with `only Cycle N` / `through Cycle N` when needed.
 
 Evidence table: **`## TDD Evidence`** in state.md. Review gates: `critic-tdd-testing.md`.
 

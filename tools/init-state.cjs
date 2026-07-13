@@ -36,21 +36,26 @@ planning
 
 ## Behavior & Test Contracts
 
-| Behavior ID | Layer | Observable outcome | RED expectation |
-|-------------|-------|-------------------|-----------------|
-| | | | |
+#### B1
+- **name:**
+- **expectation:** step 1 > step 2 > assertion
+- **red:**
+- **layer:** unit
+- **path:**
+- **guard:**
 
 ## RED→GREEN Plan
 
-### Cycle 1
+### Cycle 1 — B1
 
 | Field | Content |
 |-------|---------|
-| **Behavior ID** | |
-| **Behavior** | |
+| **Behavior ID** | B1 |
+| **name** | |
+| **expectation** | |
 | **RED** | |
 | **GREEN** | |
-| **Layer** | unit |
+| **layer** | unit |
 | **Risk** | low |
 
 ## Acceptance Criteria
@@ -74,7 +79,7 @@ planning
 ## Next Action
 
 **Actor:** human  
-**Do:** Run \`/ss-plan\` to complete Behavior & Test Contracts and RED→GREEN Plan.
+**Do:** Run \`/ss-plan\` to complete Behavior & Test Contracts and RED→GREEN Plan (then \`/ss-implement\` walks all Remaining cycles).
 
 ## TDD Evidence
 

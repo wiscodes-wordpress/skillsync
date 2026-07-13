@@ -96,7 +96,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-major-feature-roadmap` | Multi-epic initiative → story map, spec, Jira epics + v1 stories |
 | `/ss-plan` | Grill + TDD plan → `.harness/state.md` |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
-| `/ss-implement` | One RED→GREEN cycle (or feature slice) |
+| `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential |
 | `/ss-review` | Critic / quality gate |
 | `/ss-submit-pr` | Open GitHub PR (does not merge) |
 | `/ss-close-story` | Jira Done + clear harness files |
@@ -122,9 +122,10 @@ Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/gen
 ### Typical phase order
 
 ```text
-branch (consumer) → /ss-plan → /ss-to-issues? → /ss-implement (× cycles) → /ss-review
+branch (consumer) → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
   → /ss-submit-pr → merge (consumer) → /ss-close-story
 ```
+
 
 Document **branch scripts**, **verification commands**, and **stack skills** in the consumer root **`AGENTS.md`**.
 
@@ -139,7 +140,7 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `init-state.cjs` | branch / new story | Skeleton `state.md` (`--task`, `--force`) |
 | `render-pr-body.cjs` | `/ss-submit-pr` | Merge draft + harness sections → PR body file |
 | `open-pr.cjs` | `/ss-submit-pr` | Push, duplicate check, `gh pr create` (`--no-push`, `--dry-run`) |
-| `tdd-audit.cjs` | `/ss-review` | Hard TDD gates (tampering, RED evidence, locators) |
+| `tdd-audit.cjs` | `/ss-review` | Hard TDD gates (contract cards, tampering, RED evidence, locators) |
 | `run-verification.cjs` | `/ss-implement`, `/ss-review` | Run Verification Plan commands from state |
 | `re-break.cjs` | TDD evidence | Stash prod paths → test FAIL → restore → PASS |
 | `publish-slices-from-state.cjs` | `/ss-to-issues` | Dry-run or publish slices (`--publish --approved`) |

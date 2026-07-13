@@ -41,4 +41,4 @@ Short prompt or agreed goal from domain grill (step 1a only).
 
 ## Persistence
 
-Write to **`.harness/state.md`** at repo root with all sections above.
+Write to **`.harness/state.md`** at repo root with all sections above. List **Remaining** as every planned slice so **`/ss-implement`** walks them all in one session (vertical per slice).

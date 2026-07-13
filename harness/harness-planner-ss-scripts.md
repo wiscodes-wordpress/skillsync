@@ -125,6 +125,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 **Behavior (maps to [critic-tdd-testing.md](./critic-tdd-testing.md)):**
 
 - `git diff` against `--base` (default from config or `main`).
+- **Contract cards (Step 1):** parse `## Behavior & Test Contracts` (`#### B1` + **name:** / **expectation:** / **path:** / …). Fail incomplete filled-in cards; for **Completed** cycles require contract **name** in the test diff (warn on missing last-hop tokens / mismatched **path**). Honor `deferred` / `contract-change` near a Behavior ID.
 - **Tampering:** fail on removed `it(`/`test(`, net fewer `expect(`, `.skip`/`xit`, test-only GREEN (zero prod paths in diff).
 - **RED evidence:** parse `## TDD Evidence` — completed rows must have RED cmd + fail snippet.
 - **Locators:** warn or fail on new `data-testid` / `getByTestId` / xpath in test diff (severity flags).

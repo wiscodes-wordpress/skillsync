@@ -13,7 +13,7 @@ Consumer repos use **thin wrappers** (`qb-*`, etc.) for tracker-specific steps; 
 | 3 | Grill TDD | step 1b of [`ss-plan`](./ss-plan.md) |
 | 4 | Plan | steps 2–3 of [`ss-plan`](./ss-plan.md) |
 | 5 | Slice to issues | [`ss-to-issues`](./ss-to-issues.md) (optional) |
-| 6 | Implement | [`ss-implement`](./ss-implement.md) |
+| 6 | Implement | [`ss-implement`](./ss-implement.md) — all Remaining cycles/slices |
 | 7 | Review | [`ss-review`](./ss-review.md) |
 | 8 | PR → merge → Jira Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
 

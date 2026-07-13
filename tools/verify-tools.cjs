@@ -164,6 +164,58 @@ function main() {
 		console.log('OK: publish-slices dry-run');
 	}
 
+	const tddAudit = require(path.join(toolsDir, 'tdd-audit.cjs'));
+	const planState = fs.readFileSync(
+		path.join(fixturesDir, 'plan-valid-state.md'),
+		'utf8',
+	);
+	const cards = tddAudit.parseContractCards(planState);
+	if (cards.length !== 1 || cards[0].id !== 'B1') {
+		console.error('tdd-audit: expected to parse B1 contract card from plan fixture');
+		failed = true;
+	} else if (
+		!cards[0].name.includes('Save') ||
+		!cards[0].expectation.includes('>') ||
+		tddAudit.expectationLastHop(cards[0].expectation) !== 'see confirmation toast'
+	) {
+		console.error('tdd-audit: contract card name/expectation parse mismatch');
+		failed = true;
+	} else {
+		const shape = tddAudit.auditContractShape(cards);
+		if (shape.errors.length > 0) {
+			console.error('tdd-audit: plan fixture shape errors:', shape.errors.join('; '));
+			failed = true;
+		} else {
+			console.log('OK: tdd-audit contract card parse');
+		}
+	}
+
+	const completedState = `${planState.replace(
+		'**Completed:** (none)',
+		'**Completed:** Cycle 1',
+	).replace('**Remaining:** Cycle 1', '**Remaining:** (none)')}`;
+	const miss = tddAudit.auditContractsVsDiff(
+		completedState,
+		'+it("unrelated", () => {})\n',
+		['save.test.ts'],
+	);
+	if (!miss.errors.some((e) => e.includes('**name** not found'))) {
+		console.error('tdd-audit: expected name-missing error for completed cycle');
+		failed = true;
+	} else {
+		const hit = tddAudit.auditContractsVsDiff(
+			completedState,
+			'+it("Feature: Save, when draft valid, shows confirmation", () => {\n+  expect(toast).toContain("confirmation")\n+})\n',
+			['save.test.ts'],
+		);
+		if (hit.errors.length > 0) {
+			console.error('tdd-audit: unexpected errors when name present:', hit.errors.join('; '));
+			failed = true;
+		} else {
+			console.log('OK: tdd-audit completed-cycle name gate');
+		}
+	}
+
 	fs.rmSync(temp, { recursive: true, force: true });
 	fs.rmSync(planConsumer, { recursive: true, force: true });
 	fs.rmSync(implementConsumer, { recursive: true, force: true });

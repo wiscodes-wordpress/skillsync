@@ -23,7 +23,7 @@ Shared **Cursor Agent Skills**, **project rules**, **`ss-*` slash commands**, **
 | `tools/validate-state.cjs` | Validate `.harness/state.md` section contract. |
 | `tools/init-state.cjs` | Write skeleton harness state for a new story. |
 | `tools/render-pr-body.cjs` / `open-pr.cjs` | Build PR body and open via `gh`. |
-| `tools/tdd-audit.cjs` | TDD hard gates before critic rubric. |
+| `tools/tdd-audit.cjs` | TDD hard gates (contract cards, tampering, RED evidence) before critic. |
 | `tools/run-verification.cjs` | Run Verification Plan commands from state. |
 | `tools/re-break.cjs` | Re-break evidence helper for TDD cycles. |
 | `tools/publish-slices-from-state.cjs` | Dry-run or publish plan slices to tracker. |

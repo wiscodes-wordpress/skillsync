@@ -29,15 +29,16 @@ Add these categories to the core critic rubric:
 
 ## Step 1 — Contract vs diff
 
-Build a table from **Behavior & Test Contracts** in state.md:
+Build a table from **Behavior & Test Contracts** in state.md (cards with **name** / **expectation** / **layer** / **path**):
 
-| Behavior ID | Planned layer | Test file in diff? | Assertion matches RED column? |
-|-------------|---------------|-------------------|-------------------------------|
+| Behavior ID | Planned layer | **name** match in diff? | Last hop of **expectation** asserted? |
+|-------------|---------------|-------------------------|---------------------------------------|
 | B1 | unit | | |
 | S1 | E2E spine | | |
 
-**FAIL** if a planned behavior has no matching test in the diff (unless explicitly deferred in Remaining with human approval).
+**FAIL** if a planned behavior has no matching test in the diff (unless explicitly deferred in Remaining with human approval). Match on Behavior ID + **name**; treat the final ` > ` hop of **expectation** as the required assertion.
 
+**Mechanical assist:** `tools/tdd-audit.cjs` parses contract cards and fails completed cycles whose **name** is absent from the test diff; last-hop / **path** mismatches are warnings (`--strict-warn` to fail).
 ## Step 2 — Test tampering diff audit
 
 Inspect test file changes:

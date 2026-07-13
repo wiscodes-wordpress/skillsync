@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 /**
- * TDD hard gates — maps to harness/critic-tdd-testing.md Step 2–3.
+ * TDD hard gates — maps to harness/critic-tdd-testing.md Step 1–3.
  *
  * Usage:
  *   node path/to/skillsync/tools/tdd-audit.cjs [/path/to/consumer-repo] [--base main] [--strict-warn]
+ *
+ * Contract cards under ## Behavior & Test Contracts (#### B1 + **name:** / **expectation:**)
+ * are parsed; completed cycles must show matching **name** (and preferably **path**) in the
+ * test diff. Incomplete card shape fails when a card looks filled-in.
  */
 
 const {
@@ -17,8 +21,7 @@ const {
 	parseMarkdownSections,
 } = require('./lib/ss-tools.cjs');
 
-const TEST_GLOB =
-	"*.test.* *.spec.* __tests__/* e2e/* tests/*";
+const TEST_GLOB = '*.test.* *.spec.* __tests__/* e2e/* tests/*';
 
 const PROD_SKIP = [
 	/\.test\./,
@@ -31,6 +34,18 @@ const PROD_SKIP = [
 	/package-lock\.json$/,
 	/yarn\.lock$/,
 ];
+
+/**
+ * @typedef {object} ContractCard
+ * @property {string} id
+ * @property {string} name
+ * @property {string} expectation
+ * @property {string} red
+ * @property {string} layer
+ * @property {string} path
+ * @property {string} locator
+ * @property {string} guard
+ */
 
 /**
  * @param {string} file
@@ -56,6 +71,349 @@ function isProdPath(file) {
 		return false;
 	}
 	return !PROD_SKIP.some((re) => re.test(file));
+}
+
+/**
+ * @param {string} value
+ * @returns {string}
+ */
+function stripTicks(value) {
+	return value.replace(/^`+|`+$/g, '').trim();
+}
+
+/**
+ * @param {string} expectation
+ * @returns {string}
+ */
+function expectationLastHop(expectation) {
+	const parts = expectation
+		.split(/\s*>\s*/)
+		.map((s) => s.trim())
+		.filter(Boolean);
+	return parts.length > 0 ? parts[parts.length - 1] : '';
+}
+
+/**
+ * Parse Behavior & Test Contract cards (`#### B1` + category bullets).
+ * Falls back to legacy wide tables when no cards exist.
+ *
+ * @param {string | null} state
+ * @returns {ContractCard[]}
+ */
+function parseContractCards(state) {
+	if (!state || !hasSection(state, 'Behavior & Test Contracts')) {
+		return [];
+	}
+
+	const body = parseMarkdownSections(state).get('Behavior & Test Contracts') ?? '';
+	/** @type {ContractCard[]} */
+	const cards = [];
+
+	const cardChunks = body.split(/^#{3,4}\s+/m).slice(1);
+	for (const chunk of cardChunks) {
+		const lines = chunk.split('\n');
+		const heading = (lines[0] ?? '').trim();
+		if (/^Behaviors\b/i.test(heading) || /^Test contracts\b/i.test(heading)) {
+			continue;
+		}
+		if (/^E2E spines\b/i.test(heading) || /^Non-goals\b/i.test(heading)) {
+			continue;
+		}
+
+		const idMatch = heading.match(/\b([BS]\d+)\b/i);
+		if (!idMatch) {
+			continue;
+		}
+		const id = idMatch[1].toUpperCase();
+
+		/** @type {Record<string, string>} */
+		const fields = {};
+		for (const line of lines.slice(1)) {
+			// Accept **name:** value (colon inside bold) or **name**: value
+			const m = line.match(
+				/^\s*[-*]\s*\*\*([A-Za-z][A-Za-z0-9_-]*):?\*\*\s*:?\s*(.*)$/,
+			);
+			if (m) {
+				fields[m[1].toLowerCase()] = m[2].trim();
+			}
+		}
+
+		cards.push({
+			id,
+			name: fields.name ?? '',
+			expectation: fields.expectation ?? '',
+			red: fields.red ?? '',
+			layer: fields.layer ?? '',
+			path: stripTicks(fields.path ?? ''),
+			locator: fields.locator ?? '',
+			guard: fields.guard ?? '',
+		});
+	}
+
+	if (cards.length > 0) {
+		return cards;
+	}
+
+	// Legacy table: | ID | Behavior | RED expectation | … | Test file |
+	for (const line of body.split('\n')) {
+		if (!line.startsWith('|') || line.includes('---')) {
+			continue;
+		}
+		const cols = line
+			.split('|')
+			.map((c) => c.trim())
+			.filter(Boolean);
+		if (cols.length < 2) {
+			continue;
+		}
+		const id = cols[0];
+		if (!/^[BS]\d+$/i.test(id) || /^id$/i.test(id) || /behavior id/i.test(id)) {
+			continue;
+		}
+		cards.push({
+			id: id.toUpperCase(),
+			name: cols[1] ?? '',
+			expectation: cols[2] ?? cols[1] ?? '',
+			red: cols[2] ?? '',
+			layer: cols.find((c) => /unit|integration|e2e/i.test(c)) ?? '',
+			path: stripTicks(cols[cols.length - 1] ?? ''),
+			locator: '',
+			guard: '',
+		});
+	}
+
+	return cards;
+}
+
+/**
+ * @param {ContractCard} card
+ * @returns {boolean}
+ */
+function cardLooksFilled(card) {
+	return Boolean(
+		card.name ||
+			card.expectation ||
+			card.red ||
+			card.path ||
+			card.guard ||
+			card.locator,
+	);
+}
+
+/**
+ * @param {string | null} state
+ * @returns {string[]} Cycle numbers as strings ("1", "2")
+ */
+function parseCompletedCycleNumbers(state) {
+	if (!state) {
+		return [];
+	}
+	const m = state.match(/\*\*Completed:\*\*\s*([^\n]+)/i);
+	if (!m) {
+		return [];
+	}
+	const value = m[1].trim();
+	if (!value || /\(none\)/i.test(value)) {
+		return [];
+	}
+	return [...value.matchAll(/Cycle\s+(\d+)/gi)].map((x) => x[1]);
+}
+
+/**
+ * Map cycle number → Behavior ID from RED→GREEN Plan headings / tables.
+ *
+ * @param {string | null} state
+ * @returns {Map<string, string>}
+ */
+function parseCycleBehaviorMap(state) {
+	/** @type {Map<string, string>} */
+	const map = new Map();
+	if (!state || !hasSection(state, 'RED→GREEN Plan')) {
+		return map;
+	}
+
+	const body = parseMarkdownSections(state).get('RED→GREEN Plan') ?? '';
+	const blocks = body.split(/^###\s+/m).slice(1);
+	for (const block of blocks) {
+		const lines = block.split('\n');
+		const heading = (lines[0] ?? '').trim();
+		const cycleMatch = heading.match(/^Cycle\s+(\d+)/i);
+		if (!cycleMatch) {
+			continue;
+		}
+		const cycle = cycleMatch[1];
+		let behaviorId = '';
+		const fromHeading = heading.match(/\b([BS]\d+)\b/i);
+		if (fromHeading) {
+			behaviorId = fromHeading[1].toUpperCase();
+		}
+		for (const line of lines.slice(1)) {
+			const tableId = line.match(
+				/\|\s*\*\*Behavior ID\*\*\s*\|\s*([BS]\d+)\s*\|/i,
+			);
+			if (tableId) {
+				behaviorId = tableId[1].toUpperCase();
+				break;
+			}
+		}
+		if (behaviorId) {
+			map.set(cycle, behaviorId);
+		}
+	}
+
+	return map;
+}
+
+/**
+ * Deferred behaviors listed under Remaining (explicit defer / contract-change).
+ *
+ * @param {string | null} state
+ * @returns {Set<string>}
+ */
+function parseDeferredBehaviorIds(state) {
+	/** @type {Set<string>} */
+	const deferred = new Set();
+	if (!state) {
+		return deferred;
+	}
+	const section =
+		(parseMarkdownSections(state).get('Completed / Remaining') ?? '') +
+		'\n' +
+		state;
+	for (const m of section.matchAll(
+		/\b([BS]\d+)\b[^\n]{0,60}\b(defer(?:red)?|contract-change)\b/gi,
+	)) {
+		deferred.add(m[1].toUpperCase());
+	}
+	for (const m of section.matchAll(
+		/\b(defer(?:red)?|contract-change)\b[^\n]{0,60}\b([BS]\d+)\b/gi,
+	)) {
+		deferred.add(m[2].toUpperCase());
+	}
+	return deferred;
+}
+
+/**
+ * @param {ContractCard[]} cards
+ * @returns {{ errors: string[]; warnings: string[] }}
+ */
+function auditContractShape(cards) {
+	/** @type {string[]} */
+	const errors = [];
+	/** @type {string[]} */
+	const warnings = [];
+
+	for (const card of cards) {
+		if (!cardLooksFilled(card)) {
+			continue;
+		}
+		if (!card.name) {
+			errors.push(`${card.id}: contract card missing **name:**`);
+		}
+		if (!card.expectation) {
+			errors.push(`${card.id}: contract card missing **expectation:**`);
+		} else if (!card.expectation.includes('>')) {
+			warnings.push(
+				`${card.id}: **expectation:** should be a step chain (step 1 > step 2 > assertion)`,
+			);
+		}
+		if (!card.layer) {
+			warnings.push(`${card.id}: contract card missing **layer:**`);
+		}
+		if (!card.path) {
+			warnings.push(`${card.id}: contract card missing **path:**`);
+		}
+	}
+
+	return { errors, warnings };
+}
+
+/**
+ * Step 1 — completed cycles must land **name** (and preferably **path**) in the test diff.
+ *
+ * @param {string | null} state
+ * @param {string} testDiff
+ * @param {string[]} changedTestPaths
+ * @returns {{ errors: string[]; warnings: string[] }}
+ */
+function auditContractsVsDiff(state, testDiff, changedTestPaths) {
+	/** @type {string[]} */
+	const errors = [];
+	/** @type {string[]} */
+	const warnings = [];
+
+	const cards = parseContractCards(state);
+	const shape = auditContractShape(cards);
+	errors.push(...shape.errors);
+	warnings.push(...shape.warnings);
+
+	const completed = parseCompletedCycleNumbers(state);
+	if (completed.length === 0) {
+		return { errors, warnings };
+	}
+
+	const cycleMap = parseCycleBehaviorMap(state);
+	const deferred = parseDeferredBehaviorIds(state);
+	const byId = new Map(cards.map((c) => [c.id, c]));
+	const diffLower = testDiff.toLowerCase();
+	const pathsNormalized = changedTestPaths.map((p) => p.replace(/\\/g, '/'));
+
+	for (const cycle of completed) {
+		const behaviorId = cycleMap.get(cycle);
+		if (!behaviorId) {
+			warnings.push(
+				`Cycle ${cycle}: completed but no Behavior ID found in RED→GREEN Plan`,
+			);
+			continue;
+		}
+		if (deferred.has(behaviorId)) {
+			continue;
+		}
+		const card = byId.get(behaviorId);
+		if (!card) {
+			errors.push(
+				`Cycle ${cycle} (${behaviorId}): completed but missing Behavior & Test Contract card`,
+			);
+			continue;
+		}
+		if (!card.name) {
+			continue;
+		}
+		if (!diffLower.includes(card.name.toLowerCase())) {
+			errors.push(
+				`Cycle ${cycle} (${behaviorId}): **name** not found in test diff: "${card.name}"`,
+			);
+		}
+
+		const lastHop = expectationLastHop(card.expectation);
+		if (lastHop && lastHop.length >= 4) {
+			const tokens = lastHop
+				.toLowerCase()
+				.split(/[^a-z0-9]+/)
+				.filter((t) => t.length >= 4);
+			const hit = tokens.some((t) => diffLower.includes(t));
+			if (tokens.length > 0 && !hit) {
+				warnings.push(
+					`Cycle ${cycle} (${behaviorId}): last **expectation** hop not obviously asserted in diff (“${lastHop}”)`,
+				);
+			}
+		}
+
+		if (card.path) {
+			const target = card.path.replace(/\\/g, '/');
+			const baseName = target.split('/').pop() ?? target;
+			const pathHit = pathsNormalized.some(
+				(p) => p === target || p.endsWith('/' + target) || p.endsWith(baseName),
+			);
+			if (!pathHit && changedTestPaths.length > 0) {
+				warnings.push(
+					`Cycle ${cycle} (${behaviorId}): proposed **path** ${card.path} not in changed test files`,
+				);
+			}
+		}
+	}
+
+	return { errors, warnings };
 }
 
 /**
@@ -113,9 +471,14 @@ function auditRedEvidence(state) {
 
 	const sections = parseMarkdownSections(state);
 	const table = sections.get('TDD Evidence') ?? '';
-	const rows = table.split('\n').filter((line) => line.startsWith('|') && !line.includes('---'));
+	const rows = table
+		.split('\n')
+		.filter((line) => line.startsWith('|') && !line.includes('---'));
 	for (const row of rows.slice(1)) {
-		const cols = row.split('|').map((c) => c.trim()).filter(Boolean);
+		const cols = row
+			.split('|')
+			.map((c) => c.trim())
+			.filter(Boolean);
 		if (cols.length < 4) {
 			continue;
 		}
@@ -146,12 +509,7 @@ function auditRedEvidence(state) {
 function auditLocators(diff) {
 	/** @type {string[]} */
 	const warnings = [];
-	const patterns = [
-		/data-testid/,
-		/getByTestId/,
-		/querySelector\s*\(/,
-		/xpath/i,
-	];
+	const patterns = [/data-testid/, /getByTestId/, /querySelector\s*\(/, /xpath/i];
 	for (const line of diff.split('\n')) {
 		if (!line.startsWith('+') || line.startsWith('+++')) {
 			continue;
@@ -237,18 +595,28 @@ function main() {
 
 	const prodChanged = changedPaths.filter(isProdPath);
 	const testChanged = changedPaths.filter(isTestPath);
+	const state = readState(consumerRoot);
+
 	if (testChanged.length > 0 && prodChanged.length === 0) {
-		const state = readState(consumerRoot);
 		const contractChange =
 			state?.includes('# contract-change') ||
 			state?.includes('contract-change') ||
-			(state && parseMarkdownSections(state).get('Remaining')?.includes('contract'));
+			(state &&
+				parseMarkdownSections(state)
+					.get('Remaining')
+					?.includes('contract'));
 		if (!contractChange) {
-			errors.push('Test-only GREEN: diff has test files but zero production paths');
+			errors.push(
+				'Test-only GREEN: diff has test files but zero production paths',
+			);
 		}
 	}
 
-	errors.push(...auditRedEvidence(readState(consumerRoot)));
+	const contractAudit = auditContractsVsDiff(state, fullDiff, testChanged);
+	errors.push(...contractAudit.errors);
+	warnings.push(...contractAudit.warnings);
+
+	errors.push(...auditRedEvidence(state));
 	warnings.push(...auditLocators(fullDiff));
 
 	const modules = routeCriticModules(changedPaths);
@@ -280,4 +648,17 @@ function main() {
 	console.log('tdd-audit: OK');
 }
 
-main();
+if (require.main === module) {
+	main();
+}
+
+module.exports = {
+	parseContractCards,
+	expectationLastHop,
+	parseCompletedCycleNumbers,
+	parseCycleBehaviorMap,
+	auditContractShape,
+	auditContractsVsDiff,
+	analyzeTestDiff,
+	auditRedEvidence,
+};

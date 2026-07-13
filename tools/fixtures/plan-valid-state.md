@@ -6,21 +6,26 @@ Example feature for verify-tools.
 
 ## Behavior & Test Contracts
 
-| Behavior ID | Layer | Observable outcome | RED expectation |
-|-------------|-------|-------------------|-----------------|
-| B1 | unit | User sees save confirmation | Missing handler → test fails |
+#### B1
+- **name:** Feature: Save, when draft valid, shows confirmation
+- **expectation:** open editor > edit title > click Save > see confirmation toast
+- **red:** fails — Save handler not wired
+- **layer:** unit
+- **path:** `save.test.ts`
+- **guard:** would fail if Save no-ops or toast never appears
 
 ## RED→GREEN Plan
 
-### Cycle 1
+### Cycle 1 — B1
 
 | Field | Content |
 |-------|---------|
 | **Behavior ID** | B1 |
-| **Behavior** | Save shows confirmation |
-| **RED** | test fails without handler |
+| **name** | Feature: Save, when draft valid, shows confirmation |
+| **expectation** | open editor > edit title > click Save > see confirmation toast |
+| **RED** | `save.test.ts` / name above — fails without handler |
 | **GREEN** | wire save handler |
-| **Layer** | unit |
+| **layer** | unit |
 | **Risk** | low |
 
 ## Acceptance Criteria
@@ -40,7 +45,12 @@ Example feature for verify-tools.
 ## Next Action
 
 **Actor:** harness-generator  
-**Do:** Implement Cycle 1 RED→GREEN.
+**Do:** Implement all Remaining RED→GREEN cycles.
+
+## Completed / Remaining
+
+**Completed:** (none)  
+**Remaining:** Cycle 1
 
 ## TDD Evidence
 
