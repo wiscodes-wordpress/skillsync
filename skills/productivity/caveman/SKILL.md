@@ -5,7 +5,7 @@ description: >
   filler, articles, and pleasantries while keeping full technical accuracy.
   Use when user says "caveman mode", "talk like caveman", "use caveman",
   "less tokens", "be brief", or invokes /caveman. Planning exception: full
-  prose for /ss-plan and harness-planner outputs; caveman elsewhere.
+  prose for /ss-plan, /ss-ui-ux-plan, and harness-planner outputs; caveman elsewhere.
 ---
 
 Respond terse like smart caveman. All technical substance stay. Only fluff die.
@@ -43,10 +43,11 @@ When user is in **planner phase**, use **normal clarity** (full sentences, scann
 
 **Counts as planning (caveman off here):**
 
-- Slash command **`/ss-plan`** or consumer planner wrapper (e.g. `qb-plan`), **or**
-- Following **`harness-planner-tdd.md`** or legacy **`harness-planner.md`** (and any chained planner addendum) to produce spec, slices/cycles, verification plan, **`.harness/state.md`** planning sections.
+- Slash command **`/ss-plan`**, **`/ss-ui-ux-plan`**, or consumer planner wrapper (e.g. `qb-plan`), **or**
+- Following **`harness-planner-tdd.md`** or legacy **`harness-planner.md`** (and any chained planner addendum) to produce spec, slices/cycles, verification plan, **`.harness/state.md`** planning sections, **or**
+- Following **`ui-ux-planner`** to produce a **UX Contract**.
 
-**Resume caveman** after that planner pass is done (e.g. `state.md` written per harness, or user leaves planner-only work). Implement / review / casual Q&A → terse again.
+**Resume caveman** after that planner pass is done (e.g. `state.md` / UX contract written, or user leaves planner-only work). Implement / review / casual Q&A → terse again.
 
 ## Auto-Clarity Exception
 

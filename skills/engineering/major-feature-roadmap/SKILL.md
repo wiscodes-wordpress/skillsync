@@ -234,7 +234,7 @@ Print:
 **Next steps for the user:**
 
 - **v1 delivery detail** → [`to-prd`](./to-prd/SKILL.md) or deep epic spec for one capability
-- **Implementation** → [`ss-plan`](../../../commands/ss-plan.md) when a story enters delivery
+- **Implementation** → [`ss-ui-ux-plan`](../../../commands/ss-ui-ux-plan.md) when the story is UI-heavy, then [`ss-plan`](../../../commands/ss-plan.md) for delivery planning
 - **Future slice** → re-run story expansion for that slice only (ambiguity gate for that slice), then `to-issues` if needed
 
 ## Planning foundations

@@ -28,6 +28,7 @@ Code work, delivery workflow, and technical review skills.
 - **[pr-review](./pr-review/SKILL.md)** — Structured pull request review workflow.
 - **[submit-github-pr](./submit-github-pr/SKILL.md)** — Open a GitHub PR via `gh`.
 - **[typescript-react-reviewer](./typescript-react-reviewer/SKILL.md)** — TypeScript + React code review expert.
+- **[ui-ux-planner](./ui-ux-planner/SKILL.md)** — Flows + surfaces → UX Contract before `/ss-plan` (`/ss-ui-ux-plan`).
 
 ## WordPress
 

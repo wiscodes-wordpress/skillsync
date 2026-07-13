@@ -17,7 +17,7 @@ Read MCP tool schemas before Jira calls. Use full prose for specs (caveman plann
 
 **First prompt:** describe the major feature — what, who, optional v1 must-haves.
 
-**Handoff:** v1 story → [`to-prd`](../skills/engineering/to-prd/SKILL.md) or [`ss-plan`](./ss-plan.md) when entering implementation. Future slices → re-run roadmap expansion for that slice.
+**Handoff:** UI-heavy v1 story → [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) then [`ss-plan`](./ss-plan.md). Otherwise [`to-prd`](../skills/engineering/to-prd/SKILL.md) or [`ss-plan`](./ss-plan.md). Future slices → re-run roadmap expansion for that slice.
 
 Consumer wrappers (e.g. `qp-major-feature-roadmap`) may add stack constraint checklists and default Jira project; still point here.
 

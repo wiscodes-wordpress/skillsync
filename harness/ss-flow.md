@@ -9,6 +9,8 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 | Phase | Command | Harness (read one) | Skills (only when applicable) |
 |-------|---------|-------------------|-------------------------------|
 | Branch | consumer wrapper | — | — |
+| Initiative (optional) | `/ss-major-feature-roadmap` | — | [`major-feature-roadmap`](../skills/engineering/major-feature-roadmap/SKILL.md) |
+| UI/UX plan (optional) | `/ss-ui-ux-plan` | — | [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md) — before `/ss-plan` when UI-heavy |
 | Plan | `/ss-plan` | [`harness-planner-tdd.md`](./harness-planner-tdd.md) | 1a: [`grill-me`](../skills/productivity/grill-me/SKILL.md) or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) · 1b: [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) |
 | Slice to issues | `/ss-to-issues` | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
 | Implement | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
@@ -17,6 +19,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 
 **Legacy:** feature-first planning only → [`harness-planner.md`](./harness-planner.md) (skip grill-tdd).
 
+**UI-heavy story order:** `/ss-ui-ux-plan` → `/ss-plan` (UX Contract seeds Behavior & Test Contracts). Skip UI/UX plan for non-UI work.
 ## Context budget rules
 
 1. **One harness file per command** — do not chain duplicate harnesses.

@@ -26,6 +26,7 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 
 | Skill | Used by |
 |-------|---------|
+| `ui-ux-planner` | `/ss-ui-ux-plan` (optional; UI-heavy before `/ss-plan`) |
 | `grill-tdd` | `/ss-plan` (step 1b) |
 | `tdd` | `/ss-implement` when state has RED→GREEN Plan |
 | `ponytail` | `/ss-implement` |
@@ -41,6 +42,7 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
 "linkedCommands": [
   "ss-workflow.md",
   "ss-major-feature-roadmap.md",
+  "ss-ui-ux-plan.md",
   "ss-plan.md",
   "ss-to-issues.md",
   "ss-implement.md",
@@ -93,13 +95,14 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | Command | Phase |
 |---------|--------|
 | `/ss-workflow` | Orientation — phase index |
-| `/ss-major-feature-roadmap` | Multi-epic initiative → story map, spec, Jira epics + v1 stories |
+| `/ss-major-feature-roadmap` | Multi-epic initiative → story map, spec, tracker publish (consumer) |
+| `/ss-ui-ux-plan` | UI/UX Contract (flows + surfaces) — before `/ss-plan` when UI-heavy |
 | `/ss-plan` | Grill + TDD plan → `.harness/state.md` |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
 | `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential |
 | `/ss-review` | Critic / quality gate |
 | `/ss-submit-pr` | Open GitHub PR (does not merge) |
-| `/ss-close-story` | Jira Done + clear harness files |
+| `/ss-close-story` | Tracker Done + clear harness files |
 
 Product repos usually keep **thin wrappers** (e.g. `qb-*`, `qp-close-jira-story`) that add tracker-specific steps and point at these shared files.
 
@@ -122,7 +125,7 @@ Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/gen
 ### Typical phase order
 
 ```text
-branch (consumer) → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
+branch (consumer) → /ss-ui-ux-plan? → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
   → /ss-submit-pr → merge (consumer) → /ss-close-story
 ```
 

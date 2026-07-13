@@ -9,14 +9,16 @@ Consumer repos use **thin wrappers** (`qb-*`, etc.) for tracker-specific steps; 
 | # | Phase | Command |
 |---|--------|---------|
 | 1 | Branch | consumer wrapper |
-| 2 | Grill domain | step 1a of [`ss-plan`](./ss-plan.md) |
-| 3 | Grill TDD | step 1b of [`ss-plan`](./ss-plan.md) |
-| 4 | Plan | steps 2–3 of [`ss-plan`](./ss-plan.md) |
-| 5 | Slice to issues | [`ss-to-issues`](./ss-to-issues.md) (optional) |
-| 6 | Implement | [`ss-implement`](./ss-implement.md) — all Remaining cycles/slices |
-| 7 | Review | [`ss-review`](./ss-review.md) |
-| 8 | PR → merge → Jira Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
+| 2 | UI/UX plan (UI-heavy) | [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) — optional; **before** ss-plan |
+| 3 | Grill domain | step 1a of [`ss-plan`](./ss-plan.md) |
+| 4 | Grill TDD | step 1b of [`ss-plan`](./ss-plan.md) |
+| 5 | Plan | steps 2–3 of [`ss-plan`](./ss-plan.md) |
+| 6 | Slice to issues | [`ss-to-issues`](./ss-to-issues.md) (optional) |
+| 7 | Implement | [`ss-implement`](./ss-implement.md) — all Remaining cycles/slices |
+| 8 | Review | [`ss-review`](./ss-review.md) |
+| 9 | PR → merge → Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
 
+Initiative-scale work may run [`ss-major-feature-roadmap`](./ss-major-feature-roadmap.md) before step 2.
 ## Harness skeleton (skillsync)
 
 | File | Role |
