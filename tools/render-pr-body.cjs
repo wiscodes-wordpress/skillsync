@@ -41,6 +41,7 @@ function renderBody(state, draft, consumerRoot) {
 			'Current Task',
 			'Acceptance Criteria',
 			'TDD Evidence',
+			'Security Evidence',
 			'Verification Plan',
 			'Completed / Remaining',
 		];

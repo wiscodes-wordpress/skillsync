@@ -36,6 +36,7 @@
 		"ss-to-issues.md",
 		"ss-implement.md",
 		"ss-review.md",
+		"ss-security-audit.md",
 		"ss-submit-pr.md",
 		"ss-close-story.md"
 	],

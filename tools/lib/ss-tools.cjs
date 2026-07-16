@@ -324,16 +324,58 @@ function assertOrExit(condition, message) {
 	}
 }
 
+/**
+ * Upsert a level-2 markdown section in content. Creates the file body if empty.
+ *
+ * @param {string} content
+ * @param {string} sectionName
+ * @param {string} sectionBody
+ * @returns {string}
+ */
+function upsertMarkdownSection(content, sectionName, sectionBody) {
+	const heading = `## ${sectionName}`;
+	const body = sectionBody.trim();
+	const block = `${heading}\n\n${body}\n`;
+	const re = new RegExp(
+		`^## ${sectionName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$[\\s\\S]*?(?=^## |\\Z)`,
+		'm',
+	);
+
+	if (!content || !content.trim()) {
+		return `# Harness state\n\n${block}`;
+	}
+
+	if (re.test(content)) {
+		return content.replace(re, `${block}\n`);
+	}
+
+	return `${content.trimEnd()}\n\n${block}`;
+}
+
+/**
+ * Write harness state.md, creating `.harness/` if needed.
+ *
+ * @param {string} consumerRoot
+ * @param {string} content
+ */
+function writeState(consumerRoot, content) {
+	const dir = harnessDir(consumerRoot);
+	fs.mkdirSync(dir, { recursive: true });
+	fs.writeFileSync(statePath(consumerRoot), content.endsWith('\n') ? content : `${content}\n`, 'utf8');
+}
+
 module.exports = {
 	parseArgs,
 	resolveConsumerRoot,
 	harnessDir,
 	statePath,
 	readState,
+	writeState,
 	readOptionalConfig,
 	parseMarkdownSections,
 	countHeading,
 	hasSection,
+	upsertMarkdownSection,
 	extractShellCommands,
 	runCommand,
 	titleFromBranch,

@@ -3,7 +3,7 @@
  * Open a GitHub pull request from the current branch (deterministic helper).
  *
  * Usage:
- *   node path/to/skillsync/tools/open-pr.cjs [/path/to/consumer-repo] [--base main] [--title "..."] [--no-push] [--dry-run] [--force-new]
+ *   node path/to/skillsync/tools/open-pr.cjs [/path/to/consumer-repo] [--base main] [--title "..."] [--no-push] [--dry-run] [--force-new] [--skip-security]
  */
 
 const fs = require('node:fs');
@@ -39,6 +39,7 @@ function main() {
 	const dryRun = Boolean(flags['dry-run']);
 	const noPush = Boolean(flags['no-push']);
 	const forceNew = Boolean(flags['force-new']);
+	const skipSecurity = Boolean(flags['skip-security']);
 	const base =
 		(typeof flags.base === 'string' && flags.base) ||
 		config?.prBaseBranch ||
@@ -46,6 +47,30 @@ function main() {
 
 	const toolsDir = path.join(__dirname);
 	const renderScript = path.join(toolsDir, 'render-pr-body.cjs');
+	const securityScript = path.join(toolsDir, 'security-audit.cjs');
+
+	if (!skipSecurity) {
+		if (dryRun) {
+			console.log(`would check security: ${securityScript} --check-state`);
+		} else {
+			try {
+				execFileSync(process.execPath, [securityScript, consumerRoot, '--check-state'], {
+					cwd: consumerRoot,
+					encoding: 'utf8',
+					stdio: ['pipe', 'pipe', 'pipe'],
+				});
+			} catch (err) {
+				const e = /** @type {NodeJS.ErrnoException & { stderr?: string; stdout?: string }} */ (
+					err
+				);
+				console.error(
+					'Security Evidence is not PASS. Run /ss-security-audit first, or pass --skip-security to override.',
+				);
+				console.error(e.stderr || e.stdout || e.message);
+				process.exit(1);
+			}
+		}
+	}
 
 	const branch = gitCurrentBranch(consumerRoot);
 	assertOrExit(branch && branch !== 'HEAD', 'Could not determine current git branch.');

@@ -25,6 +25,7 @@ const REQUIRED_TOOLS = [
 	'render-pr-body.cjs',
 	'open-pr.cjs',
 	'tdd-audit.cjs',
+	'security-audit.cjs',
 	'run-verification.cjs',
 	're-break.cjs',
 	'publish-slices-from-state.cjs',
@@ -216,12 +217,59 @@ function main() {
 		}
 	}
 
+	const securityAudit = require(path.join(toolsDir, 'security-audit.cjs'));
+	const secConsumer = makeTempConsumer();
+	fs.mkdirSync(path.join(secConsumer, '.harness'), { recursive: true });
+	fs.mkdirSync(path.join(secConsumer, 'includes'), { recursive: true });
+	fs.writeFileSync(
+		path.join(secConsumer, 'includes', 'bad.php'),
+		"<?php\neval($_GET['x']);\n",
+		'utf8',
+	);
+	runTool(path.join(toolsDir, 'security-audit.cjs'), [secConsumer, '--write-state'], {
+		expectFail: true,
+	});
+	const badState = fs.readFileSync(path.join(secConsumer, '.harness', 'state.md'), 'utf8');
+	if (!badState.includes('## Security Evidence') || !badState.includes('**Phase A:** FAIL')) {
+		console.error('security-audit: expected Phase A FAIL evidence for eval+superglobal fixture');
+		failed = true;
+	} else {
+		console.log('OK: security-audit Phase A FAIL + write-state');
+	}
+
+	const cleanConsumer = makeTempConsumer();
+	fs.mkdirSync(path.join(cleanConsumer, '.harness'), { recursive: true });
+	fs.mkdirSync(path.join(cleanConsumer, 'includes'), { recursive: true });
+	fs.writeFileSync(
+		path.join(cleanConsumer, 'includes', 'ok.php'),
+		"<?php\n// safe plugin stub\n",
+		'utf8',
+	);
+	runTool(path.join(toolsDir, 'security-audit.cjs'), [cleanConsumer, '--write-state']);
+	runTool(path.join(toolsDir, 'security-audit.cjs'), [
+		cleanConsumer,
+		'--set-phase-b',
+		'PASS',
+	]);
+	runTool(path.join(toolsDir, 'security-audit.cjs'), [cleanConsumer, '--check-state']);
+	const parsed = securityAudit.parseSecurityEvidence(
+		fs.readFileSync(path.join(cleanConsumer, '.harness', 'state.md'), 'utf8'),
+	);
+	if (!parsed || parsed.status !== 'PASS' || parsed.phaseB !== 'PASS') {
+		console.error('security-audit: expected overall PASS after --set-phase-b PASS');
+		failed = true;
+	} else {
+		console.log('OK: security-audit Phase B + check-state');
+	}
+
 	fs.rmSync(temp, { recursive: true, force: true });
 	fs.rmSync(planConsumer, { recursive: true, force: true });
 	fs.rmSync(implementConsumer, { recursive: true, force: true });
 	fs.rmSync(initConsumer, { recursive: true, force: true });
 	fs.rmSync(renderConsumer, { recursive: true, force: true });
 	fs.rmSync(publishConsumer, { recursive: true, force: true });
+	fs.rmSync(secConsumer, { recursive: true, force: true });
+	fs.rmSync(cleanConsumer, { recursive: true, force: true });
 
 	if (failed) {
 		console.error('');

@@ -15,6 +15,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 | Slice to issues | `/ss-to-issues` | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
 | Implement | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
 | Review | `/ss-review` | [`harness-critic.md`](./harness-critic.md) | auto: [`critic-tdd-testing.md`](./critic-tdd-testing.md) when state has TDD contracts |
+| Security | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
 | PR / close | `/ss-submit-pr`, `/ss-close-story` | — | linked PR/Jira skills per consumer |
 
 **Legacy:** feature-first planning only → [`harness-planner.md`](./harness-planner.md) (skip grill-tdd).
@@ -47,7 +48,8 @@ Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-
 | Plan (post-write) | `validate-state.cjs --mode plan` |
 | New story | `init-state.cjs --task "KEY title"` |
 | Implement / review | `run-verification.cjs`, `tdd-audit.cjs`, `re-break.cjs` |
-| Submit PR | `render-pr-body.cjs`, `open-pr.cjs` |
+| Security | `security-audit.cjs` (`--write-state`, `--set-phase-b`, `--check-state`) |
+| Submit PR | `render-pr-body.cjs`, `open-pr.cjs` (requires Security Evidence PASS) |
 | To issues (post-approve) | `publish-slices-from-state.cjs` |
 | Close story | `harness-reset.cjs`, optional `jira-close.cjs` |
 

@@ -16,7 +16,8 @@ Consumer repos use **thin wrappers** (`qb-*`, etc.) for tracker-specific steps; 
 | 6 | Slice to issues | [`ss-to-issues`](./ss-to-issues.md) (optional) |
 | 7 | Implement | [`ss-implement`](./ss-implement.md) — all Remaining cycles/slices |
 | 8 | Review | [`ss-review`](./ss-review.md) |
-| 9 | PR → merge → Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
+| 9 | Security | [`ss-security-audit`](./ss-security-audit.md) — after review PASS, before PR |
+| 10 | PR → merge → Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
 
 Initiative-scale work may run [`ss-major-feature-roadmap`](./ss-major-feature-roadmap.md) before step 2.
 ## Harness skeleton (skillsync)
@@ -29,6 +30,7 @@ Initiative-scale work may run [`ss-major-feature-roadmap`](./ss-major-feature-ro
 | [`harness-generator.md`](../harness/harness-generator.md) | Implement |
 | [`harness-critic.md`](../harness/harness-critic.md) | Review |
 | [`critic-tdd-testing.md`](../harness/critic-tdd-testing.md) | TDD audit (auto-loaded) |
+| [`harness-security-audit.md`](../harness/harness-security-audit.md) | Security gate (scripts + agent) |
 | [`accessible-locator-priority.md`](../harness/accessible-locator-priority.md) | UI query priority |
 
 Local addenda: **`.cursor/harness/`** per consumer.

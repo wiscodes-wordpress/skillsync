@@ -47,6 +47,7 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
   "ss-to-issues.md",
   "ss-implement.md",
   "ss-review.md",
+  "ss-security-audit.md",
   "ss-submit-pr.md",
   "ss-close-story.md"
 ]
@@ -101,7 +102,8 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-to-issues` | Publish slices to tracker (optional) |
 | `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential |
 | `/ss-review` | Critic / quality gate |
-| `/ss-submit-pr` | Open GitHub PR (does not merge) |
+| `/ss-security-audit` | Security gate (scripts + agent) — after review, before PR |
+| `/ss-submit-pr` | Open GitHub PR (does not merge; requires Security Evidence PASS) |
 | `/ss-close-story` | Tracker Done + clear harness files |
 
 Product repos usually keep **thin wrappers** (e.g. `qb-*`, `qp-close-jira-story`) that add tracker-specific steps and point at these shared files.
@@ -118,6 +120,7 @@ Product repos usually keep **thin wrappers** (e.g. `qb-*`, `qp-close-jira-story`
 | `harness/harness-generator.md` | `/ss-implement` |
 | `harness/harness-critic.md` | `/ss-review` |
 | `harness/critic-tdd-testing.md` | Auto-loaded when state has TDD contracts |
+| `harness/harness-security-audit.md` | `/ss-security-audit` |
 | `harness/accessible-locator-priority.md` | UI/E2E query priority (when applicable) |
 
 Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/generator addenda live under **`.cursor/harness/`** on the consumer repo.
@@ -126,7 +129,7 @@ Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/gen
 
 ```text
 branch (consumer) → /ss-ui-ux-plan? → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
-  → /ss-submit-pr → merge (consumer) → /ss-close-story
+  → /ss-security-audit → /ss-submit-pr → merge (consumer) → /ss-close-story
 ```
 
 
@@ -144,6 +147,7 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `render-pr-body.cjs` | `/ss-submit-pr` | Merge draft + harness sections → PR body file |
 | `open-pr.cjs` | `/ss-submit-pr` | Push, duplicate check, `gh pr create` (`--no-push`, `--dry-run`) |
 | `tdd-audit.cjs` | `/ss-review` | Hard TDD gates (contract cards, tampering, RED evidence, locators) |
+| `security-audit.cjs` | `/ss-security-audit`, `/ss-submit-pr` | Phase A inventory/patterns; `--set-phase-b`; `--check-state` before PR |
 | `run-verification.cjs` | `/ss-implement`, `/ss-review` | Run Verification Plan commands from state |
 | `re-break.cjs` | TDD evidence | Stash prod paths → test FAIL → restore → PASS |
 | `publish-slices-from-state.cjs` | `/ss-to-issues` | Dry-run or publish slices (`--publish --approved`) |
