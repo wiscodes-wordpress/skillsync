@@ -18,6 +18,7 @@ Code work, delivery workflow, and technical review skills.
 
 ## Skillsync shared
 
+- **[arch-plan](./arch-plan/SKILL.md)** — Architecture plan SoT as living HTML (`/ss-arch-plan`); epic keys join Jira; one-way status refresh on run.
 - **[dependabot-batch-merge](./dependabot-batch-merge/SKILL.md)** — Batch-merge Dependabot PRs safely.
 - **[frontend-react-best-practices](./frontend-react-best-practices/SKILL.md)** — React performance and composition patterns.
 - **[jest-react-testing](./jest-react-testing/SKILL.md)** — Jest + RTL (link when consumer uses React; not default ss-flow load).

@@ -2,6 +2,7 @@
 	"vendorRoot": ".cursor/vendor/skillsync",
 	"linkMode": "symlink",
 	"linkedSkills": [
+		"arch-plan",
 		"grill-tdd",
 		"ponytail",
 		"tdd",
@@ -10,6 +11,7 @@
 		"major-feature-roadmap",
 		"ui-ux-planner",
 		"to-issues",
+		"improve-codebase-architecture",
 		"wordpress-advanced-architecture",
 		"wordpress-content",
 		"wordpress-penetration-testing",
@@ -31,6 +33,7 @@
 	"linkedCommands": [
 		"ss-workflow.md",
 		"ss-major-feature-roadmap.md",
+		"ss-arch-plan.md",
 		"ss-ui-ux-plan.md",
 		"ss-plan.md",
 		"ss-to-issues.md",

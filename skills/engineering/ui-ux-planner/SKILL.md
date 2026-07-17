@@ -28,7 +28,7 @@ Produces a **UX Contract** markdown artifact. **`/ss-plan`** consumes it for Beh
 ## Order in the delivery loop
 
 ```text
-(optional roadmap) → /ss-ui-ux-plan → /ss-plan → /ss-to-issues? → /ss-implement → …
+(optional roadmap) → /ss-arch-plan? → /ss-ui-ux-plan → /ss-plan → /ss-to-issues? → /ss-implement → …
 ```
 
 1. **`/ss-ui-ux-plan`** (this skill) — UX Contract agreed.

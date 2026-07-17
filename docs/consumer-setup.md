@@ -26,6 +26,8 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 
 | Skill | Used by |
 |-------|---------|
+| `arch-plan` | `/ss-arch-plan` (optional; architecture plan SoT + epic-keyed stages) |
+| `improve-codebase-architecture` | Optional with `/ss-arch-plan` when deepening existing friction |
 | `ui-ux-planner` | `/ss-ui-ux-plan` (optional; UI-heavy before `/ss-plan`) |
 | `grill-tdd` | `/ss-plan` (step 1b) |
 | `tdd` | `/ss-implement` when state has RED→GREEN Plan |
@@ -42,6 +44,7 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
 "linkedCommands": [
   "ss-workflow.md",
   "ss-major-feature-roadmap.md",
+  "ss-arch-plan.md",
   "ss-ui-ux-plan.md",
   "ss-plan.md",
   "ss-to-issues.md",
@@ -97,6 +100,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 |---------|--------|
 | `/ss-workflow` | Orientation — phase index |
 | `/ss-major-feature-roadmap` | Multi-epic initiative → story map, spec, tracker publish (consumer) |
+| `/ss-arch-plan` | Architecture plan SoT (living HTML); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
 | `/ss-ui-ux-plan` | UI/UX Contract (flows + surfaces) — before `/ss-plan` when UI-heavy |
 | `/ss-plan` | Grill + TDD plan → `.harness/state.md` |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
@@ -128,7 +132,7 @@ Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/gen
 ### Typical phase order
 
 ```text
-branch (consumer) → /ss-ui-ux-plan? → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
+branch (consumer) → /ss-arch-plan? → /ss-ui-ux-plan? → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
   → /ss-security-audit → /ss-submit-pr → merge (consumer) → /ss-close-story
 ```
 

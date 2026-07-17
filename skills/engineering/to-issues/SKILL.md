@@ -17,7 +17,8 @@ Break a plan into **independently-grabbable** issues on the project **issue trac
 ## Relationship to planning
 
 - After **`/ss-plan`**, slices may already exist in **`.harness/state.md`**. Prefer that file (or an agreed spec/PRD in chat) as the source of slices — do not invent a second competing breakdown unless the user asks to re-slice.
-- This skill **publishes** approved slices to the tracker. It does **not** replace [`harness-planner`](../../../harness/harness-planner.md) for spec writing.
+- After **`/ss-arch-plan`**, prefer **`.harness/architecture-plan.html`** stages; publish as epics and write keys into the HTML so later `/ss-arch-plan` runs can refresh status.
+- This skill **publishes** approved slices to the tracker. It does **not** replace [`harness-planner`](../../../harness/harness-planner.md) for spec writing or [`arch-plan`](../arch-plan/SKILL.md) for architecture direction.
 
 ## Process
 
@@ -26,8 +27,9 @@ Break a plan into **independently-grabbable** issues on the project **issue trac
 Work from whatever is already in the conversation. Acceptable sources (in priority order when multiple exist):
 
 1. **Parent issue** — if the user passes an issue key, URL, or path, fetch it from the tracker (MCP or `gh` per consumer docs). Read the full body and comments.
-2. **Harness plan** — **`.harness/state.md`** (especially **Sprint Plan** / numbered slices and acceptance criteria).
-3. **Other artifacts** — PRD, spec, plan doc, or prior chat agreement (reference by path; do not duplicate long content into every child issue).
+2. **Architecture plan** — **`.harness/architecture-plan.html`** migration stages (prefer **one epic per stage** when publishing from `/ss-arch-plan`). Write returned keys back into the HTML.
+3. **Harness plan** — **`.harness/state.md`** (especially **Sprint Plan** / numbered slices and acceptance criteria).
+4. **Other artifacts** — PRD, spec, plan doc, or prior chat agreement (reference by path; do not duplicate long content into every child issue).
 
 ### 2. Explore the codebase (optional)
 
