@@ -6,7 +6,7 @@ Prepare **legit demo seed** and capture **E2E demo clips/screenshots**; index pa
 
 In **Agent** mode, follow [`release-distribution`](../skills/productivity/release-distribution/SKILL.md):
 
-1. Read or create `.harness/release-brief.md` (features to demo).
+1. Ensure brief exists — `init-release-brief.cjs` if missing; fill features; `validate-release-brief.cjs --mode ready` (or `--mode structure` mid-fill).
 2. Run legit seed per [SEED.md](../skills/productivity/release-distribution/SEED.md) — consumer entrypoint; separate from test fixtures.
 3. Run tagged demo E2E per [DEMO-E2E.md](../skills/productivity/release-distribution/DEMO-E2E.md) (`@release` / `@demo`; video + screenshots).
 4. Write **Proof assets** + suggested stitch order onto the brief.

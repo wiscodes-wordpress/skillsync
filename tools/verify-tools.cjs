@@ -30,6 +30,9 @@ const REQUIRED_TOOLS = [
 	're-break.cjs',
 	'publish-slices-from-state.cjs',
 	'jira-close.cjs',
+	'init-release-brief.cjs',
+	'validate-release-brief.cjs',
+	'validate-release-pack.cjs',
 	'lib/ss-tools.cjs',
 ];
 
@@ -262,6 +265,76 @@ function main() {
 		console.log('OK: security-audit Phase B + check-state');
 	}
 
+	const releaseConsumer = makeTempConsumer();
+	runTool(path.join(toolsDir, 'init-release-brief.cjs'), [
+		releaseConsumer,
+		'--version',
+		'1.2.3',
+	]);
+	runTool(path.join(toolsDir, 'init-release-brief.cjs'), [releaseConsumer], {
+		expectFail: true,
+	});
+	runTool(path.join(toolsDir, 'validate-release-brief.cjs'), [
+		releaseConsumer,
+		'--mode',
+		'structure',
+	]);
+	runTool(
+		path.join(toolsDir, 'validate-release-brief.cjs'),
+		[releaseConsumer, '--mode', 'ready'],
+		{ expectFail: true },
+	);
+	const briefPath = path.join(releaseConsumer, '.harness', 'release-brief.md');
+	fs.writeFileSync(
+		briefPath,
+		`# Release Brief
+
+- **Version:** 1.2.3
+- **Date:** 2026-07-18
+- **Audience:** Plugin authors
+
+## Features (3–5 bullets)
+
+- Bulk edit ACF fields on selected posts
+- Preserve existing values when a field is left blank
+- Show validation errors inline in the bulk panel
+
+## Proof assets
+
+- (pending)
+
+## Primary CTA
+
+- **Label:** Read the release notes
+- **URL:** https://example.com/releases/1.2.3
+
+## Out of scope / do-not-claim
+
+- Does not migrate legacy field groups automatically
+
+## Tone
+
+- **TONE.md path:** (optional)
+`,
+		'utf8',
+	);
+	runTool(path.join(toolsDir, 'validate-release-brief.cjs'), [
+		releaseConsumer,
+		'--mode',
+		'ready',
+	]);
+	const packDir = path.join(releaseConsumer, '.harness', 'release', '1.2.3');
+	fs.mkdirSync(packDir, { recursive: true });
+	for (const name of ['README.md', 'email.md', 'social.md', 'youtube.md', 'blog.md']) {
+		fs.writeFileSync(path.join(packDir, name), `# ${name}\n\nDraft content.\n`, 'utf8');
+	}
+	runTool(path.join(toolsDir, 'validate-release-pack.cjs'), [
+		releaseConsumer,
+		'--version',
+		'1.2.3',
+	]);
+	console.log('OK: release-brief init/validate + release-pack validate');
+
 	fs.rmSync(temp, { recursive: true, force: true });
 	fs.rmSync(planConsumer, { recursive: true, force: true });
 	fs.rmSync(implementConsumer, { recursive: true, force: true });
@@ -270,6 +343,7 @@ function main() {
 	fs.rmSync(publishConsumer, { recursive: true, force: true });
 	fs.rmSync(secConsumer, { recursive: true, force: true });
 	fs.rmSync(cleanConsumer, { recursive: true, force: true });
+	fs.rmSync(releaseConsumer, { recursive: true, force: true });
 
 	if (failed) {
 		console.error('');

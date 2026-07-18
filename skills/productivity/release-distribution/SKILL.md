@@ -38,6 +38,8 @@ Ensure **Features (3–5 bullets)** exist before seeding/recording. Fill **Proof
 
 Grill lightly only if the brief is empty.
 
+**Deterministic:** prefer `init-release-brief.cjs` when the brief is missing; run `validate-release-brief.cjs --mode ready` before treating the brief as launch-ready (see [`release-marketing`](../release-marketing/SKILL.md) gates).
+
 ## Workflow
 
 ### 1. Read / complete the brief
