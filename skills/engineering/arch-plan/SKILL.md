@@ -38,6 +38,7 @@ Follow-up answers **update that same HTML** before the next question. Do not spa
 | Living plan SoT (HTML) + epic-keyed stages | Multi-epic product scope → [`major-feature-roadmap`](../major-feature-roadmap/SKILL.md) |
 | Open decisions + stages toward a target | Deepening friction only → [`improve-codebase-architecture`](../improve-codebase-architecture/SKILL.md) (reuse inside this flow when exploring existing code) |
 | Structural direction before delivery | UI flows → [`ui-ux-planner`](../ui-ux-planner/SKILL.md) |
+| Module shape / seams | Security posture → [`security-plan`](../security-plan/SKILL.md); per-PR gate → [`/ss-security-audit`](../../../commands/ss-security-audit.md) |
 
 **Non-goals:** no production code, no RED tests, no React/textbook encyclopedia, no bidirectional Jira sync, no second competing plan doc. Do not load `testing-expert` or stack novels by default.
 

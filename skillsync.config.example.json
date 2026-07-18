@@ -3,6 +3,7 @@
 	"linkMode": "symlink",
 	"linkedSkills": [
 		"arch-plan",
+		"security-plan",
 		"grill-tdd",
 		"ponytail",
 		"tdd",
@@ -34,6 +35,7 @@
 		"ss-workflow.md",
 		"ss-major-feature-roadmap.md",
 		"ss-arch-plan.md",
+		"ss-security-plan.md",
 		"ss-ui-ux-plan.md",
 		"ss-plan.md",
 		"ss-to-issues.md",

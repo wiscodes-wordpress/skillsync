@@ -10,17 +10,18 @@ Consumer repos use **thin wrappers** (`qb-*`, etc.) for tracker-specific steps; 
 |---|--------|---------|
 | 1 | Branch | consumer wrapper |
 | 2 | Architecture (structure in flux) | [`ss-arch-plan`](./ss-arch-plan.md) — optional; HTML plan SoT; epic keys; Jira→HTML refresh on run |
-| 3 | UI/UX plan (UI-heavy) | [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) — optional; **before** ss-plan |
-| 4 | Grill domain | step 1a of [`ss-plan`](./ss-plan.md) |
-| 5 | Grill TDD | step 1b of [`ss-plan`](./ss-plan.md) |
-| 6 | Plan | steps 2–3 of [`ss-plan`](./ss-plan.md) |
-| 7 | Slice to issues | [`ss-to-issues`](./ss-to-issues.md) (optional) |
-| 8 | Implement | [`ss-implement`](./ss-implement.md) — all Remaining cycles/slices |
-| 9 | Review | [`ss-review`](./ss-review.md) |
-| 10 | Security | [`ss-security-audit`](./ss-security-audit.md) — after review PASS, before PR |
-| 11 | PR → merge → Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
+| 3 | Security posture (trust model) | [`ss-security-plan`](./ss-security-plan.md) — optional; HTML posture SoT; not the PR gate |
+| 4 | UI/UX plan (UI-heavy) | [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) — optional; **before** ss-plan |
+| 5 | Grill domain | step 1a of [`ss-plan`](./ss-plan.md) |
+| 6 | Grill TDD | step 1b of [`ss-plan`](./ss-plan.md) |
+| 7 | Plan | steps 2–3 of [`ss-plan`](./ss-plan.md) |
+| 8 | Slice to issues | [`ss-to-issues`](./ss-to-issues.md) (optional) |
+| 9 | Implement | [`ss-implement`](./ss-implement.md) — all Remaining cycles/slices |
+| 10 | Review | [`ss-review`](./ss-review.md) |
+| 11 | Security gate | [`ss-security-audit`](./ss-security-audit.md) — after review PASS, before PR |
+| 12 | PR → merge → Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
 
-Initiative-scale work may run [`ss-major-feature-roadmap`](./ss-major-feature-roadmap.md) before step 2. Architecture direction (`/ss-arch-plan`) when plugin/project shape is undecided — before UI/UX and story plan.
+Initiative-scale work may run [`ss-major-feature-roadmap`](./ss-major-feature-roadmap.md) before step 2. Architecture (`/ss-arch-plan`) and security posture (`/ss-security-plan`) when shape or trust model is undecided — before UI/UX and story plan. **Every PR** still runs `/ss-security-audit`.
 ## Harness skeleton (skillsync)
 
 | File | Role |
