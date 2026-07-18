@@ -61,6 +61,7 @@ Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-
 | Submit PR | `render-pr-body.cjs`, `open-pr.cjs` (requires Security Evidence PASS) |
 | To issues (post-approve) | `publish-slices-from-state.cjs` |
 | Close story | `harness-reset.cjs`, optional `jira-close.cjs` |
+| Release / GTM | `init-release-brief.cjs`, `validate-release-brief.cjs`, `validate-release-pack.cjs` |
 
 Planner for this tooling backlog: [`harness-planner-ss-scripts.md`](./harness-planner-ss-scripts.md).
 

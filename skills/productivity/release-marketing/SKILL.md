@@ -69,6 +69,19 @@ Orchestrator: **`/ss-release`** runs brief → distribution (when available) →
 
 **Grill lightly** (2–4 questions) only if the brief is missing or empty. Do **not** re-interview when a brief already exists unless the user asks to refresh.
 
+### Deterministic gates
+
+From the vendored skillsync `tools/` path (consumer root as `.`):
+
+```bash
+node .cursor/vendor/skillsync/tools/init-release-brief.cjs . --version 1.2.3
+node .cursor/vendor/skillsync/tools/validate-release-brief.cjs . --mode structure   # post-init
+node .cursor/vendor/skillsync/tools/validate-release-brief.cjs . --mode ready       # after fill
+node .cursor/vendor/skillsync/tools/validate-release-pack.cjs . --version 1.2.3     # after pack write
+```
+
+Scripts own structure and exit codes; this skill owns judgment (copy, seed quality, anti-slop).
+
 ## Output pack
 
 Prefer:

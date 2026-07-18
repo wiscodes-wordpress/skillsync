@@ -37,6 +37,7 @@ See [ss-flow.md](./ss-flow.md) for phase context. This file is **not** loaded by
 | `/ss-review` | Rubric scores (functionality, security, UX) | Hard gates: tampering diff, RED evidence, locator grep, command runner |
 | `/ss-submit-pr` | Summary prose, risk narrative | push, duplicate PR check, title from branch, body skeleton, `gh pr create` |
 | `/ss-close-story` | Ambiguous workflow / missing Jira fields | Harness reset; Jira child→parent transitions (REST/CLI) |
+| `/ss-release*` | Brief content, copy, anti-slop, seed quality | Init/validate brief structure; validate pack file set |
 
 **Already scripted in skillsync:** `link-*.cjs`, `verify-*.cjs`, `resolve-skill-dir.cjs` — no change required unless extending config.
 

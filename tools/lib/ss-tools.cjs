@@ -73,6 +73,38 @@ function statePath(consumerRoot) {
 
 /**
  * @param {string} consumerRoot
+ * @returns {string}
+ */
+function releaseBriefPath(consumerRoot) {
+	return path.join(harnessDir(consumerRoot), 'release-brief.md');
+}
+
+/**
+ * Resolve release channel pack directory.
+ * Prefer `.harness/release/<version>/`, then `docs/releases/<version>/`.
+ *
+ * @param {string} consumerRoot
+ * @param {string} version
+ * @param {string | undefined} [packDirOverride]
+ * @returns {string}
+ */
+function resolveReleasePackDir(consumerRoot, version, packDirOverride) {
+	if (packDirOverride) {
+		return path.resolve(consumerRoot, packDirOverride);
+	}
+	const harnessPack = path.join(harnessDir(consumerRoot), 'release', version);
+	if (fs.existsSync(harnessPack)) {
+		return harnessPack;
+	}
+	const docsPack = path.join(consumerRoot, 'docs', 'releases', version);
+	if (fs.existsSync(docsPack)) {
+		return docsPack;
+	}
+	return harnessPack;
+}
+
+/**
+ * @param {string} consumerRoot
  * @returns {string | null}
  */
 function readState(consumerRoot) {
@@ -369,6 +401,8 @@ module.exports = {
 	resolveConsumerRoot,
 	harnessDir,
 	statePath,
+	releaseBriefPath,
+	resolveReleasePackDir,
 	readState,
 	writeState,
 	readOptionalConfig,

@@ -168,6 +168,9 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `re-break.cjs` | TDD evidence | Stash prod paths → test FAIL → restore → PASS |
 | `publish-slices-from-state.cjs` | `/ss-to-issues` | Dry-run or publish slices (`--publish --approved`) |
 | `jira-close.cjs` | `/ss-close-story` | Jira REST close + harness reset (env auth; MCP remains alternative) |
+| `init-release-brief.cjs` | `/ss-release*` | Scaffold `.harness/release-brief.md` (`--version`, `--force`) |
+| `validate-release-brief.cjs` | `/ss-release*` | Assert brief sections (`--mode structure\|ready`) |
+| `validate-release-pack.cjs` | `/ss-release*` | Assert channel pack files exist and are non-empty |
 | `verify-tools.cjs` | skillsync CI | Smoke-test tools + fixtures |
 
 Optional **`skillsync.config.json`** keys for tools:
@@ -189,7 +192,10 @@ Example **`package.json`** scripts (consumer root):
 	"scripts": {
 		"ss:harness-reset": "node ./.cursor/vendor/skillsync/tools/harness-reset.cjs .",
 		"ss:validate-state": "node ./.cursor/vendor/skillsync/tools/validate-state.cjs . --mode implement",
-		"ss:open-pr": "node ./.cursor/vendor/skillsync/tools/open-pr.cjs ."
+		"ss:open-pr": "node ./.cursor/vendor/skillsync/tools/open-pr.cjs .",
+		"ss:init-release-brief": "node ./.cursor/vendor/skillsync/tools/init-release-brief.cjs .",
+		"ss:validate-release-brief": "node ./.cursor/vendor/skillsync/tools/validate-release-brief.cjs . --mode ready",
+		"ss:validate-release-pack": "node ./.cursor/vendor/skillsync/tools/validate-release-pack.cjs ."
 	}
 }
 ```
