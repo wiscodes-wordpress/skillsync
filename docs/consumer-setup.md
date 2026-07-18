@@ -54,9 +54,14 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
   "ss-review.md",
   "ss-security-audit.md",
   "ss-submit-pr.md",
-  "ss-close-story.md"
+  "ss-close-story.md",
+  "ss-release.md",
+  "ss-release-distribution.md",
+  "ss-release-marketing.md"
 ]
 ```
+
+For post-ship go-to-market, also link productivity skills **`anti-slop`**, **`release-distribution`**, and **`release-marketing`** (see [`skills/productivity/README.md`](../skills/productivity/README.md)).
 
 ## Link and verify
 
@@ -112,6 +117,9 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-security-audit` | Security gate (scripts + agent) — after review, before PR |
 | `/ss-submit-pr` | Open GitHub PR (does not merge; requires Security Evidence PASS) |
 | `/ss-close-story` | Tracker Done + clear harness files |
+| `/ss-release` | Post-ship GTM — brief → demo proof → channel pack → anti-slop (optional; not a PR gate) |
+| `/ss-release-distribution` | Legit seed + tagged E2E clips/screenshots → proof on brief |
+| `/ss-release-marketing` | Email / social / YouTube / SEO blog pack from brief |
 
 Product repos usually keep **thin wrappers** (e.g. `qb-*`, `qp-close-jira-story`) that add tracker-specific steps and point at these shared files.
 
@@ -137,6 +145,7 @@ Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/gen
 ```text
 branch (consumer) → /ss-arch-plan? → /ss-security-plan? → /ss-ui-ux-plan? → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
   → /ss-security-audit → /ss-submit-pr → merge (consumer) → /ss-close-story
+  → /ss-release? (or /ss-release-distribution / /ss-release-marketing)
 ```
 
 
