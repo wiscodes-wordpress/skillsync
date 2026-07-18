@@ -1,8 +1,18 @@
 # Architecture plan — living HTML
 
-Self-contained HTML briefing for **project/plugin direction**. This file is the **plan source of truth**. Tailwind + Mermaid via CDN. Same craft as [`improve-codebase-architecture/HTML-REPORT.md`](../improve-codebase-architecture/HTML-REPORT.md): diagrams carry weight; prose is sparse; glossary terms from [`LANGUAGE.md`](../improve-codebase-architecture/LANGUAGE.md).
+Self-contained HTML briefing for **project/plugin direction**. This file is the **plan source of truth**. Prefer this over chat dumps or Cursor Canvas — the HTML must open in a browser, survive sessions, and accept Jira→HTML refresh.
 
-**Lifecycle:** rewrite this **same file** after every material follow-up and after every Jira status refresh. Do not timestamp a new file per answer.
+**Presentation reference:** match the Quick Builder style — sticky nav (highlight **Start → finish**), Phase, ordered **finish-line** story path, dual-track Epic A/B when needed, At a glance, Current|Target side by side, compact decisions, stages, optional sizing + epic portfolio. Editorial stone/slate + emerald/sky/violet accents; Mermaid for structure; sparse prose.
+
+**Lifecycle:** rewrite this **same file** after every material follow-up and after every Jira status refresh. Do not timestamp a new file per answer. Rejected explorations may live in a sibling archive HTML (e.g. `architecture-plan-archive-*.html`) linked from the nav — do not clutter the SoT with discarded forks.
+
+## Why HTML (not Canvas / markdown alone)
+
+| Format | Use |
+|--------|-----|
+| **`.harness/architecture-plan.html`** | Plan SoT — decisions, diagrams, stages, keys, refreshed status |
+| Markdown ADRs / `CONTEXT.md` | Narrow permanence for *why* / glossary |
+| Cursor Canvas | Optional chat-side scratch only — **never** replace the HTML SoT |
 
 ## Scaffold
 
@@ -11,26 +21,34 @@ Self-contained HTML briefing for **project/plugin direction**. This file is the 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Architecture plan — {{repo or plugin name}}</title>
+    <title>Architecture plan — {{product or plugin name}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
       mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
     </script>
     <style>
-      .seam { stroke-dasharray: 4 4; }
-      .leak { stroke: #dc2626; }
       .deep { background: linear-gradient(135deg, #0f172a, #1e293b); }
+      html { scroll-behavior: smooth; }
+      section[id] { scroll-margin-top: 5rem; }
     </style>
   </head>
   <body class="bg-stone-50 text-slate-900 font-sans">
-    <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
-      <header>...</header>
-      <section id="current">...</section>
-      <section id="target">...</section>
-      <section id="decisions">...</section>
-      <section id="stages">...</section>
-      <section id="nongoals">...</section>
+    <nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2">
+      <!-- Phase · Start → finish · Epic B? · Locks · Current · Target · … · Stages · Epic portfolio -->
+    </nav>
+    <main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
+      <header>…</header>
+      <section id="phase">…</section>
+      <section id="finish-line">…</section>  <!-- required once stories are keyed -->
+      <section id="locks">…</section>
+      <section><!-- Current | Target grid --></section>
+      <section id="decisions">…</section>
+      <section id="stages">…</section>
+      <section id="sizing">…</section>      <!-- optional -->
+      <section id="nongoals">…</section>
+      <section id="epic-portfolio">…</section> <!-- optional; when tracker has many epics -->
+      <footer>…</footer>
     </main>
   </body>
 </html>
@@ -38,93 +56,139 @@ Self-contained HTML briefing for **project/plugin direction**. This file is the 
 
 Only scripts: Tailwind CDN + Mermaid ESM. Otherwise static.
 
+## Sticky nav
+
+Compact top bar (`text-xs`): product label + in-page anchors. Emphasize **Start → finish** (`#finish-line`) when that section exists (e.g. `font-medium text-sky-900`). Link secondary epic tables (`#epic-b`) when present. Include archive link only if an archive file exists. Keep nav scannable — no paragraphs.
+
 ## Header
 
-- Repo or plugin name, date, **Status:** `draft` | `agreed`
-- **Last refreshed** — ISO or local datetime of last Jira→HTML status pull (or `—` if never)
-- Compact legend: solid box = module, dashed = seam, red = leakage, thick dark = deep module
-- One-line **Primary job** of this architecture
-- Short SoT note: _Architecture plan source of truth — epic keys join Jira; status refreshed on `/ss-arch-plan`_
-- No long intro — straight into Current / Target
+- Eyebrow: `{{repo or plugin}} · {{Jira project key}}`
+- `h1` serif: **Architecture plan**
+- Meta row: **Status** (e.g. `draft` | `decisions locked` · stages mirrored…), **Updated**, **Last Jira refreshed** (note what was refreshed, e.g. finish-line / Epic B table)
+- **Primary job** — one strong sentence (what this architecture delivers)
+- SoT one-liner: epic keys join Jira; status refreshed on `/ss-arch-plan`
+- Legend chips: module · seam · leakage · deep
 
-## Current shape (`#current`)
+## Phase we are at (`#phase`) — required once tracking exists
 
-Diagram-first: how the system is structured **now** (entrypoints, modules, seams, leakage).
+Two clocks so the reader knows where they are:
 
-- Prefer Mermaid flowchart / graph for call and dependency shape
-- Hand-built boxes when you need editorial weight (shallow vs deep)
-- Short bullets only if the diagram cannot carry a fact (≤5)
+1. **Delivery loop (this plan)** — ordered list: roadmap → `/ss-arch-plan` → `/ss-to-issues` → next `/ss-plan` slice. Grey completed steps; bold the current one (sky border card).
+2. **Jira posture** — which epics are the homes for this plan (white card); point to `#finish-line` for the ordered story path.
+3. **Mapping table** — arch lock/stage → Jira home → status (one row per join).
+4. **Read this as** — emerald callout: one paragraph of the current truth + next action.
 
-## Target shape (`#target`)
+Skip a full phase section only on the **first draft** before any tracker join; add it as soon as keys exist.
 
-Same visual language as Current — **before/after** side by side when helpful.
+## Start → finish line (`#finish-line`) — required once stories are keyed
 
-- Name deep modules with `CONTEXT.md` vocabulary
-- Show justified seams (two adapters) vs hypothetical ones
-- Keep ~320px diagram height so Current | Target sits without endless scroll
+The **ordered delivery path** humans follow — not a second SoT, a reading of the plan as a sequence. Refresh story statuses here on `/ss-arch-plan`.
 
-## Open decisions (`#decisions`)
+1. **▶ Start here (now)** — sky border card: current coding story key, status badge, epic home, what it blocks, next command after close.
+2. **Spine table** — columns: `#` · Story · Epic · Role · Jira · Depends on  
+   - Highlight the current row (`bg-sky-50`).  
+   - End with a **🏁 finish row**: arch finish (platform stages + secondary track) and optional product/beta gate epic.
+3. **Epic A | Epic B cards** (when two homes) — two-column summary: platform home vs secondary track (violet border for B).
+4. **Secondary epic story table** (`#epic-b` or `#epic-{{letter}}`) — full ordered stories under the secondary epic (violet). Include Done/historical rows greyed, **skip/pointer** rows for merged issues, **🏁B** finish row.
+5. **Recommended pickup rule** — short numbered list (what to close next, when to interleave tracks) + optional JQL snippets.
 
-Each decision is one `<article>`:
+**Dual-track rule:** Epic A = stage/platform spine (S0–S5). Epic B = secondary capability train (e.g. lean-core / primitives) that interleaves with A. Do not invent parallel stage epics for B — B is its own epic’s stories. More than two tracks is rare; prefer portfolio park over Epic C/D/E sprawl.
 
-| Element | Rule |
-|---------|------|
-| **Title** | Short question (e.g. "Where does pricing logic live?") |
-| **Badge** | `open` (amber) or `resolved` (emerald) |
-| **Options** | 2–4 bullets; mark **Recommended** on the default |
-| **Resolved as** | Only when closed — one line, option chosen |
-| **Why** | ≤1 sentence when resolved |
+Colour: sky = start/current; violet = secondary epic track; emerald = done / finish line; amber = blocked.
 
-Update in place on follow-up. Do not append a chat changelog.
+## At a glance (`#locks`) — required when any decision is locked
 
-Order decisions by impact (seams / public API / storage first).
+Two-column grid:
 
-## Phased stages (`#stages`)
+| Left (emerald border) | Right (sky border) |
+|----------------------|-------------------|
+| **Locked** — bullet list of D0, D1, … one line each | **Handoff** — numbered next steps (align with finish-line “start here”) |
 
-Ordered list from [STAGES.md](STAGES.md). Each stage is one row/card with a stable join to Jira:
+Optional `<details>` **Glossary + FAQ** under the grid — terms that stop re-asking the same question.
+
+## Current | Target — required
+
+**Side-by-side** on `md+` (`grid md:grid-cols-2`), not stacked full-page sections only:
+
+- **Current** (`#current`) — Mermaid of today’s modules/leakage; optional second diagram (pipeline)
+- **Target** (`#target`) — Mermaid of desired shape; emerald border; optional “gold path” flowchart + ≤5 bullets
+
+Keep diagrams ~comfortable height; prose under each column ≤2 short lines.
+
+### Optional critical-path section
+
+If one flow carries the architecture (e.g. author UI → WP `style` → Style Engine), add a dedicated section with Mermaid + `<details>` for file/hook touch points. Omit when Current|Target already says enough.
+
+## Decisions (`#decisions`)
+
+- **Open** — fuller cards (options + Recommended) while undecided; amber badge
+- **Resolved** — compact emerald cards: title · `resolved · {choice}` badge · one short why line
+- IDs: `id="d0"`, `d1`, … for deep links from Phase / Stages
+- When none open: one line — “No open architecture decisions. See handoff.”
+
+Do not append chat history. Update cards in place.
+
+## Stages (`#stages`)
+
+Intro line: stage **home epic**(s) + any lean/secondary epic. Then compact stage cards:
 
 | Field | Rule |
 |-------|------|
-| **ID** | `S0`, `S1`, … |
+| **ID** | `S0`… — `id="stage-S2"` |
 | **Title** | verb + module |
-| **Acceptance** | one observable line |
-| **Epic key** | e.g. `PROJ-123` — empty until published; use `data-epic="PROJ-123"` on the card for refresh parsing |
-| **Jira status** | filled/updated **only** on `/ss-arch-plan` refresh from Jira; show raw status name |
-| **Plan badge** | optional coarse `pending` \| `in-progress` \| `done` derived from Jira for scanning — never invent without a key |
+| **Acceptance** | one line |
+| **`data-epic`** | stage home epic (often **shared** across S0–S5) |
+| **`data-story`** | optional implement story under that epic |
+| **Visible key** | link the story when present, else the epic |
+| **Jira status** | raw status / blocked-by — refreshed on `/ss-arch-plan` only |
 
-Example card shape:
+Prefer **folding stages into existing epics** + stories over creating one new epic per stage. One epic per stage is fine when no home epic exists.
 
 ```html
-<article id="stage-S2" data-epic="PROJ-123" class="rounded-lg border border-slate-200 bg-white p-4">
+<article id="stage-S1" data-epic="PROJ-245" data-story="PROJ-271"
+  class="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm">
   <div class="flex flex-wrap items-center gap-2">
-    <span class="font-mono text-sm">S2</span>
-    <h3 class="font-serif text-lg">Move logic behind the seam</h3>
-    <a class="font-mono text-sm text-emerald-800" href="{{jira browse url}}">PROJ-123</a>
-    <span class="rounded bg-slate-100 px-2 py-0.5 text-xs uppercase tracking-wider">In Progress</span>
+    <span class="font-mono">S1</span>
+    <strong>Define Design domain interface</strong>
+    <a class="rounded bg-slate-100 px-2 py-0.5 text-xs font-mono underline" href="…">PROJ-271</a>
+    <span class="rounded bg-slate-100 px-2 py-0.5 text-xs uppercase">To Do</span>
   </div>
-  <p class="mt-2 text-sm text-slate-600">Acceptance: …</p>
+  <p class="mt-1 text-slate-600">Acceptance: …</p>
 </article>
 ```
 
-When a decision resolves, rewrite stages that depended on it. When publishing epics, write keys into `data-epic` and the visible link — leave status blank until the next refresh.
+Done/home stages may use emerald tint. Never drive Jira transitions from the HTML.
 
-**Do not** use the HTML to drive Jira transitions. Keys are the join; Jira owns workflow; HTML displays the last refreshed picture.
+## Work sizing (`#sizing`) — optional
 
-## Non-goals / ADR conflicts (`#nongoals`)
+Small table: slice · effort band · notes. Confidence caveat. Tighten in `/ss-plan` — do not pretend precision.
 
-- Non-goals as short bullets
-- ADR conflict: amber callout — _"contradicts ADR-0007 — reopen because…"_ only when friction warrants it
-- Optional list of ADR paths that authorize this plan
+## Non-goals (`#nongoals`)
+
+Short bullets + optional “Inputs: ADR … · CONTEXT …”.
+
+## Epic portfolio (`#epic-portfolio`) — optional
+
+When the project has many epics, map them against **this** locked plan:
+
+- **Active now** (v1 spine) — emerald
+- **Close / collapse / park** — amber (label + park preferred over delete)
+- **Already deferred** — icebox / archive
+- **Keep later** — no arch conflict
+
+One-way read for humans; refresh statuses on command run. Do not create parallel stage epics that fight the portfolio.
+
+## Footer
+
+Handoff one-liner with next issue keys + path to SoT (+ archive link if any).
 
 ## Style
 
-- Editorial, not dashboard: stone/slate, generous whitespace; serif optional on headings
-- Colour sparingly: emerald (resolved/done), amber (open/ADR), slate (in progress), red (leakage)
-- `text-xs uppercase tracking-wider` for module labels inside diagrams
-- Wins / stage acceptance in glossary terms — not "cleaner" / "easier to maintain"
+- Stone background, slate text, **serif headings**, generous `space-y-14`
+- Emerald = locked/done/target/finish; sky = current phase/start-here/handoff; **violet = secondary epic track (Epic B)**; amber = open/blocked/park; red = leakage only
+- `text-xs uppercase tracking-wider` for section labels inside cards
+- Glossary terms from [`LANGUAGE.md`](../improve-codebase-architecture/LANGUAGE.md) for module/seam/depth language
 
 ## Tone
 
-Plain English. Use **module / interface / seam / adapter / depth / locality / leverage**. Never substitute boundary/service/API-for-interface when you mean those terms.
-
-No hedging. If a sentence could be a bullet, make it a bullet.
+Plain English. Diagrams carry structure; cards carry decisions; **finish-line** carries pickup order. If a sentence could be a bullet, make it a bullet. No hedging.

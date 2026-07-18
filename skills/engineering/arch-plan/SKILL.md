@@ -14,12 +14,14 @@ Set **project or plugin architecture direction** as a visual **living HTML** bri
 
 ## Source of truth
 
-The living HTML (`.harness/architecture-plan.html`) is **the** source of truth for this architecture plan: target shape, diagrams, open/resolved decisions, staged rollout, epic keys, and **status as shown** after refresh.
+The living HTML (`.harness/architecture-plan.html`) is **the** source of truth for this architecture plan: target shape, diagrams, open/resolved decisions, phased rollout, epic/story keys, and **status as shown** after refresh.
+
+**Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — sticky nav, Phase + At a glance, Current|Target side by side, compact decisions, stages with keys. That browser HTML is the deliverable; do **not** substitute a Cursor Canvas or chat-only summary for the SoT.
 
 | Layer | Role |
 |-------|------|
 | **HTML** | Plan SoT — read and decide from here |
-| **Jira epics** | Workflow system; **keys join** stages to tickets; status **feeds into** HTML on command run |
+| **Jira epics / stories** | Workflow; **keys join** stages to tickets; status **feeds into** HTML on command run |
 | **ADRs / `CONTEXT.md`** | Narrow permanence for load-bearing *why* and glossary names |
 
 **One-way only:** Jira → HTML on refresh. Never push workflow status from this skill back to Jira. Create/link epic keys when publishing stages; do not transition issues here.
@@ -61,16 +63,16 @@ Use [`improve-codebase-architecture/LANGUAGE.md`](../improve-codebase-architectu
 
 ### Refresh status (Jira → HTML only)
 
-When stages list epic keys (e.g. `PROJ-123`):
+When stages list epic or story keys (e.g. `PROJ-245`, `data-story="PROJ-271"`):
 
 1. Read consumer **`docs/agents/issue-tracker.md`** (project key, epic type) when present.
-2. With **Atlassian MCP**, read each tool schema before calling. Fetch each keyed epic (`jira_get_issue` or equivalent).
-3. For each stage: update **Jira status** (and epic summary/title if useful) in the HTML. Map coarse plan badges from Jira when helpful: e.g. Done → `done`, In Progress → `ready`/`in-progress`, else `pending` — prefer showing the **raw Jira status name** plus a small badge.
-4. Set header **Last refreshed** to now.
+2. With **Atlassian MCP**, read each tool schema before calling. Fetch each keyed issue (`jira_get_issue` or equivalent) — prefer **story** when `data-story` is set, else epic.
+3. For each stage: update **Jira status** (and title if useful) in the HTML. Show the **raw Jira status name** (plus blocked-by notes when present). Optional coarse badge: Done → emerald, In Progress → slate/sky, blocked → amber.
+4. Set header **Last Jira refreshed** to now (note scope, e.g. finish-line + Epic B). Refresh **Phase** mapping, **`#finish-line`** spine/status badges (including Epic B table rows), and Epic portfolio status lines when those sections exist.
 5. **Do not** transition, comment, or edit Jira fields for status.
 6. If MCP is unavailable: note keys that could not refresh; leave prior badges; continue planning.
 
-Compare at **epic** level by default. Stories may sit under epics for implementation; only key a story on a stage when that phase is intentionally one story.
+Compare at **epic** for portfolio/home; at **story** for stage progress when stories exist.
 
 **Prose in chat:** full sentences and scannable lists (caveman planning carve-out, same as `/ss-plan`). Resume caveman after planning if the session uses it.
 
@@ -112,15 +114,20 @@ When the draft must confront real friction in existing modules, use the explore 
 
 ### 2. Draft or update the living HTML
 
-Sections required (see [HTML-REPORT.md](HTML-REPORT.md)):
+Build the full briefing per [HTML-REPORT.md](HTML-REPORT.md). **Required** sections:
 
-1. **Current shape** — diagram-first
-2. **Target shape** — same visual language
-3. **Open decisions** — unanswered stay visible
-4. **Phased stages** — [STAGES.md](STAGES.md); each row may hold an **Epic key**
-5. **Non-goals / ADR conflicts**
+1. **Header** + sticky nav (emphasize Start → finish when keyed)
+2. **Phase** (once any tracker join exists)
+3. **Start → finish line** (`#finish-line`) once stories are keyed — ordered spine, start-here card, Epic A|B when dual-track, pickup rule
+4. **At a glance** when locks exist
+5. **Current | Target** — side-by-side Mermaid
+6. **Decisions** — open expanded; resolved compact
+7. **Stages** — [STAGES.md](STAGES.md); `data-epic` / `data-story`
+8. **Non-goals**
 
-Sparse prose. Diagrams carry understanding.
+**Optional:** critical-path flow, work sizing, epic portfolio, archive sibling HTML for rejected forks.
+
+Sparse prose. Diagrams and cards carry understanding; finish-line carries **what to pick up next**.
 
 ### 3. Decision loop
 
@@ -128,17 +135,19 @@ Until the user locks or pauses:
 
 1. Point at the highest-impact **open** decision.
 2. Ask one focused question with a recommended option.
-3. On answer: rewrite HTML — resolve decision, update target/stages/diagrams.
+3. On answer: rewrite HTML — resolve decision, update target/stages/diagrams, refresh At a glance / Phase when needed.
 4. Repeat.
 
-Material = changes target shape, a seam, a stage, an epic key, or a named decision.
+Material = changes target shape, a seam, a stage, a key, or a named decision.
 
-### 4. Publish epic keys (optional)
+### 4. Publish tracker keys (optional)
 
 When stages are stable enough to track:
 
-1. Prefer [`to-issues`](../to-issues/SKILL.md) / **`/ss-to-issues`** — one **epic per stage** (or one parent epic + child epics per consumer tracker docs).
-2. Write returned keys into the HTML stage rows (`data-epic` / visible key).
+**Dual-track:** when a second epic owns a capability train (lean-core, primitives), document it as **Epic B** under `#finish-line` / `#epic-b` — do not duplicate it as a second S0–S5 stage list. Stages (`#stages`) stay the platform/deepening checklist on the home epic.
+
+1. Prefer [`to-issues`](../to-issues/SKILL.md) / **`/ss-to-issues`** — **fold into existing epics** when possible (retitle/home epic + stories per stage; secondary epic for the B train). Only create one epic per stage when no home epic fits.
+2. Write keys into HTML (`data-epic`, `data-story`, Phase mapping, **finish-line** rows).
 3. Do not invent status; next `/ss-arch-plan` refresh will fill it.
 
 ### 5. Promote and hand off
@@ -167,9 +176,10 @@ Mirror into state when `.harness/state.md` exists:
 ```markdown
 ## Migration Stages
 
-| ID | Title | Acceptance | Epic | Notes |
-|----|-------|------------|------|-------|
-| S0 | … | … | PROJ-123 | … |
+| ID | Title | Acceptance | Epic | Story | Notes |
+|----|-------|------------|------|-------|-------|
+| S0 | … | … | PROJ-245 | — | home |
+| S1 | … | … | PROJ-245 | PROJ-271 | … |
 ```
 
 **Handoff:** `/ss-to-issues` (if no keys) or `/ss-plan` for the first stage — not `/ss-implement` until a behavior plan exists.

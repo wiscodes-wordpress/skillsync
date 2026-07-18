@@ -17,7 +17,7 @@ Break a plan into **independently-grabbable** issues on the project **issue trac
 ## Relationship to planning
 
 - After **`/ss-plan`**, slices may already exist in **`.harness/state.md`**. Prefer that file (or an agreed spec/PRD in chat) as the source of slices — do not invent a second competing breakdown unless the user asks to re-slice.
-- After **`/ss-arch-plan`**, prefer **`.harness/architecture-plan.html`** stages; publish as epics and write keys into the HTML so later `/ss-arch-plan` runs can refresh status.
+- After **`/ss-arch-plan`**, prefer **`.harness/architecture-plan.html`** stages; **fold into existing epics** when possible (stories per stage); write keys (`data-epic` / `data-story`) back into the HTML so later `/ss-arch-plan` runs can refresh status.
 - This skill **publishes** approved slices to the tracker. It does **not** replace [`harness-planner`](../../../harness/harness-planner.md) for spec writing or [`arch-plan`](../arch-plan/SKILL.md) for architecture direction.
 
 ## Process
