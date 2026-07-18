@@ -37,10 +37,12 @@ Follow-up answers **update that same HTML** before the next question.
 |----------|-------------------|
 | Durable posture, trust boundaries, hardening roadmap | Per-PR PASS/FAIL → [`/ss-security-audit`](../../../commands/ss-security-audit.md) |
 | Targeted Q&A on open security decisions | Full TDD grill → [`/ss-plan`](../../../commands/ss-plan.md) |
-| Living HTML stages + optional tracker keys | Penetration methodology encyclopedia → `wordpress-penetration-testing` (on demand) |
+| Living HTML stages + **CVE/dep scan snapshot** | Penetration methodology / exploit PoCs → `wordpress-penetration-testing` (on demand only) |
 | How we intend to be secure | Structure/seams → [`arch-plan`](../arch-plan/SKILL.md) |
 
-**Non-goals:** no production code, no inventing CVEs, no replacing Phase A machine gates, no bidirectional Jira sync, no merging this into the architecture HTML as a full audit section.
+**Signal preference:** posture HTML uses a **machine CVE / dependency advisory snapshot** (npm/composer audit or `security-audit.cjs --deps`). It does **not** invent a pen-test score, readiness %, or subjective security grade.
+
+**Non-goals:** no production code, no inventing CVEs, no pen-test scores, no replacing Phase A machine gates, no bidirectional Jira sync, no merging this into the architecture HTML as a full audit section.
 
 ## Order in the delivery loop
 
@@ -97,7 +99,9 @@ Scaffold: [HTML-REPORT.md](HTML-REPORT.md). Stages: [STAGES.md](STAGES.md). Chec
 
 ### 2. Draft HTML
 
-Per [HTML-REPORT.md](HTML-REPORT.md): header + nav, Phase (when keyed), At a glance, Current|Target risk shape, decisions, hardening stages, non-goals. Optional finish-line when stories exist.
+Per [HTML-REPORT.md](HTML-REPORT.md): header + nav, Phase (when keyed), At a glance, surfaces, **CVE/dep scan snapshot** (`#cves`), Current|Target risk shape, decisions, hardening stages, non-goals. Optional finish-line when stories exist.
+
+When drafting or refreshing: run or cite the last dep scan if available (`node …/security-audit.cjs . --deps` or npm/composer audit). Record counts and date — never a fake pen-test score.
 
 ### 3. Decision loop
 

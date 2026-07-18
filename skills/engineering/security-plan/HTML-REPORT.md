@@ -35,7 +35,7 @@ Self-contained HTML briefing for **security posture**. This file is the **postur
   </head>
   <body class="bg-stone-50 text-slate-900 font-sans">
     <nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2">
-      <!-- Phase · Locks · Surfaces · Current · Target · Decisions · Stages · Non-goals · Gate -->
+      <!-- Phase · Locks · Surfaces · CVEs · Current · Target · Decisions · Stages · Non-goals · Gate -->
     </nav>
     <main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
       <header>…</header>
@@ -43,6 +43,7 @@ Self-contained HTML briefing for **security posture**. This file is the **postur
       <section id="finish-line">…</section>    <!-- optional; when hardening stories keyed -->
       <section id="locks">…</section>
       <section id="surfaces">…</section>
+      <section id="cves">…</section>            <!-- required: dep/CVE scan snapshot -->
       <section><!-- Current | Target --></section>
       <section id="decisions">…</section>
       <section id="stages">…</section>
@@ -92,6 +93,24 @@ Inventory table or compact cards (from harness themes — product-neutral labels
 
 Mark **in scope** vs **accepted / out of scope**. Do not paste a full pen-test report.
 
+## CVE / dependency scan (`#cves`) — required
+
+Machine **advisory snapshot** for known dependency CVEs — not a pen-test score, readiness %, or subjective “security grade.”
+
+| Field | Source |
+|-------|--------|
+| Last run | Date + command (prefer `security-audit.cjs . --deps`, else `npm audit` / `composer audit`) |
+| Critical / high | Counts from the scanner (or “not run”) |
+| Moderate / low | Optional; keep compact |
+| Action | Fix before ship / accepted risk (link non-goal) / re-run on next `/ss-security-plan` |
+
+Rules:
+
+- Prefer **facts from the last scan** over invented CVE lists. If no scan yet: show **Not run** + one-line next step — do not fabricate IDs.
+- Do **not** invent a pen-test score, OWASP “maturity” %, or 1–5 posture grade.
+- Full exploit write-ups belong in on-demand pen-test skills / external reports — not this HTML.
+- Ship gate still uses `/ss-security-audit` (Phase A may include `--deps`).
+
 ## Current | Target — required
 
 Side-by-side:
@@ -132,4 +151,4 @@ Next hardening pickup + path to SoT + link to `/ss-security-audit`.
 
 ## Style / tone
 
-Match arch-plan: serif headings, emerald/sky/amber, sparse bullets. No invented CVEs. No hedging.
+Match arch-plan: serif headings, emerald/sky/amber, sparse bullets. No invented CVEs. No pen-test scores. No hedging.

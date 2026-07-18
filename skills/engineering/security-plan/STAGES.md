@@ -13,7 +13,8 @@ Ordered hardening checklist for the living HTML `#stages` section. Adapt titles 
 
 ## Rules
 
-- Stages are **hardening slices**, not a pen-test novel or a chat TODO dump.
+- Stages are **hardening slices**, not a pen-test novel, pen-test score, or chat TODO dump.
+- Known dependency CVEs belong in the HTML `#cves` snapshot (and optionally a hardening story) — not as a graded “pen-test readiness” metric.
 - Skip a stage only with an explicit non-goal in the HTML.
 - H1–H4 may each become one or more `/ss-plan` stories.
 - **H5** does not replace running the audit — it ensures the gate is part of the delivery loop.

@@ -14,7 +14,7 @@ In **Agent** mode, follow [`security-plan`](../skills/engineering/security-plan/
 6. On lock: offer ADRs; mirror pointer into `.harness/state.md` when present.
 7. **Handoff:** `/ss-plan` for a hardening slice — **every PR still runs** [`/ss-security-audit`](./ss-security-audit.md) after review.
 
-**Not** a full grill. **Not** Phase A/B of the audit. Inventory themes: [`harness-security-audit.md`](../harness/harness-security-audit.md).
+**Not** a full grill. **Not** Phase A/B of the audit. **Not** a pen-test score — the HTML includes a **CVE/dep scan snapshot** instead. Inventory themes: [`harness-security-audit.md`](../harness/harness-security-audit.md).
 
 **Skip** when posture is already agreed and only a normal story ships (still run the audit gate).
 
