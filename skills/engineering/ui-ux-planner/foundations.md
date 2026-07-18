@@ -49,8 +49,8 @@ Do not start at step 5. Stop at the lowest fidelity that unblocks `/ss-plan`.
 
 ## Mapping to TDD (handoff)
 
-| UX Contract field | `/ss-plan` / grill-tdd |
-|-------------------|------------------------|
+| UX plan field (HTML) | `/ss-plan` / grill-tdd |
+|----------------------|------------------------|
 | Journey `step > step > outcome` | Test **expectation** chain |
 | Journey / surface goal title | Test **name** |
 | Empty / error / success | Extra cycles or guard cases |

@@ -45,7 +45,7 @@ When user is in **planner phase**, use **normal clarity** (full sentences, scann
 
 - Slash command **`/ss-plan`**, **`/ss-ui-ux-plan`**, or consumer planner wrapper (e.g. `qb-plan`), **or**
 - Following **`harness-planner-tdd.md`** or legacy **`harness-planner.md`** (and any chained planner addendum) to produce spec, slices/cycles, verification plan, **`.harness/state.md`** planning sections, **or**
-- Following **`ui-ux-planner`** to produce a **UX Contract**.
+- Following **`ui-ux-planner`** to produce a living **UX plan** HTML (and optional thin export).
 
 **Resume caveman** after that planner pass is done (e.g. `state.md` / UX contract written, or user leaves planner-only work). Implement / review / casual Q&A → terse again.
 
