@@ -12,7 +12,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 | Initiative (optional) | `/ss-major-feature-roadmap` | — | [`major-feature-roadmap`](../skills/engineering/major-feature-roadmap/SKILL.md) |
 | Architecture (optional) | `/ss-arch-plan` | — | [`arch-plan`](../skills/engineering/arch-plan/SKILL.md) — living HTML plan SoT; Jira epic keys join stages; refresh status on run |
 | Security posture (optional) | `/ss-security-plan` | — | [`security-plan`](../skills/engineering/security-plan/SKILL.md) — living HTML posture SoT; hardening stages; does not replace `/ss-security-audit` |
-| UI/UX plan (optional) | `/ss-ui-ux-plan` | — | [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md) — before `/ss-plan` when UI-heavy |
+| UI/UX plan (optional) | `/ss-ui-ux-plan` | — | [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md) — living HTML UX SoT; before `/ss-plan` when UI-heavy |
 | Plan | `/ss-plan` | [`harness-planner-tdd.md`](./harness-planner-tdd.md) | 1a: [`grill-me`](../skills/productivity/grill-me/SKILL.md) or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) · 1b: [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) |
 | Slice to issues | `/ss-to-issues` | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
 | Implement | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
@@ -23,7 +23,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 
 **Legacy:** feature-first planning only → [`harness-planner.md`](./harness-planner.md) (skip grill-tdd).
 
-**UI-heavy story order:** `/ss-ui-ux-plan` → `/ss-plan` (UX Contract seeds Behavior & Test Contracts). Skip UI/UX plan for non-UI work.
+**UI-heavy story order:** `/ss-ui-ux-plan` (living HTML → lock journeys/surfaces) → `/ss-plan` (journeys seed Behavior & Test Contracts). Skip UI/UX plan for non-UI work.
 
 **Structure-in-flux order:** `/ss-arch-plan` (living HTML → lock stages) → optional `/ss-ui-ux-plan` → `/ss-plan` per stage. Skip arch-plan when module shape is already agreed.
 

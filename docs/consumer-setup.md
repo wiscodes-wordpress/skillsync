@@ -29,7 +29,7 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 | `arch-plan` | `/ss-arch-plan` (optional; architecture plan SoT + epic-keyed stages) |
 | `security-plan` | `/ss-security-plan` (optional; security posture SoT; not the PR gate) |
 | `improve-codebase-architecture` | Optional with `/ss-arch-plan` when deepening existing friction |
-| `ui-ux-planner` | `/ss-ui-ux-plan` (optional; UI-heavy before `/ss-plan`) |
+| `ui-ux-planner` | `/ss-ui-ux-plan` (optional; living HTML UX SoT before `/ss-plan`) |
 | `grill-tdd` | `/ss-plan` (step 1b) |
 | `tdd` | `/ss-implement` when state has RED→GREEN Plan |
 | `ponytail` | `/ss-implement` |
@@ -109,7 +109,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-major-feature-roadmap` | Multi-epic initiative → story map, spec, tracker publish (consumer) |
 | `/ss-arch-plan` | Architecture plan SoT (living HTML); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
 | `/ss-security-plan` | Security posture SoT (living HTML); hardening stages — optional; does **not** replace `/ss-security-audit` |
-| `/ss-ui-ux-plan` | UI/UX Contract (flows + surfaces) — before `/ss-plan` when UI-heavy |
+| `/ss-ui-ux-plan` | UX plan SoT (living HTML; flows + surfaces) — before `/ss-plan` when UI-heavy |
 | `/ss-plan` | Grill + TDD plan → `.harness/state.md` |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
 | `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential |

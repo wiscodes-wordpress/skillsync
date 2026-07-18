@@ -1,75 +1,49 @@
-# UX Contract templates
+# UX plan templates
 
-Tracker- and product-neutral. Prefer writing **`docs/ux/ux-<slug>.md`**. Optional body sections below are for pasting into a parent issue when the user asks — no vendor assumed.
+Tracker- and product-neutral. **Source of truth is the living HTML** — see [HTML-REPORT.md](HTML-REPORT.md) and `.harness/ux-plan.html`.
 
-## UX Contract file
+Use this file for **optional thin markdown export** (tracker paste) and parent/story body snippets. Do **not** maintain a full second contract in markdown that can drift from the HTML.
+
+## Thin markdown export (optional)
+
+Only when the user wants a pasteable file or tracker attachment. Keep it short; deep content stays in HTML.
 
 ```markdown
-# UX Contract — <short title>
+# UX plan — <short title>
 
 **Status:** draft | agreed  
 **Slug:** <slug>  
+**SoT (HTML):** `.harness/ux-plan.html`  
 **Related:** <story/epic key or title — optional>
 
 ## Primary job
 
 <one sentence>
 
-## Actors
-
-- …
-
-## Success looks like
-
-- …
-
-## Non-goals
-
-- …
-
-## Constraints
-
-- Platform / density / existing components / a11y bar: …
-
-## Journeys (priority order)
+## Journeys (seeds for /ss-plan)
 
 ### J1 — <name>
 - **expectation:** step 1 > step 2 > outcome
-- **Efficiency notes:** <what was cut or defaulted>
-- **Failure / recovery:** <one path>
 
 ### J2 — …
 - **expectation:** …
-- …
 
-## Surfaces
+## Surfaces (summary)
 
-| ID | Surface | Purpose | Primary action | Empty | Loading | Error | Success |
-|----|---------|---------|----------------|-------|---------|-------|---------|
-| S1 | … | … | … | … | … | … | … |
+| ID | Surface | Primary action |
+|----|---------|----------------|
+| S1 | … | … |
 
-## Design decisions
-
-| ID | Decision | Options | Choice | Why |
-|----|----------|---------|--------|-----|
-| D1 | … | A / B | … | … |
-
-## Accessibility
+## Open questions (blocking /ss-plan)
 
 - …
-- Keyboard: …
-- Labels / roles for primary actions: …
-
-## Open questions
-
-| Question | Blocks | Notes |
-|----------|--------|-------|
-| … | ss-plan \| defer | … |
 
 ## Handoff
 
-**Next:** `/ss-plan` — use journeys as Behavior & Test Contract seeds (`name` + `expectation`).
+**Next:** `/ss-plan` — seed Behavior & Test Contracts from journeys in the HTML SoT.
 ```
+
+Default export path: **`docs/ux/ux-<slug>.md`** (create `docs/ux/` if needed).
 
 ## Capability / parent overview (optional paste)
 
@@ -78,6 +52,7 @@ Use when enriching a larger parent item (capability, epic, initiative section):
 ```markdown
 ## UX scope
 
+- **SoT:** `.harness/ux-plan.html`
 - **Jobs:** …
 - **Journeys:** J1 …; J2 …
 - **Principles for this area:** shortest path; one primary action; …
@@ -96,7 +71,8 @@ Use when enriching a larger parent item (capability, epic, initiative section):
 ```markdown
 ## UX
 
-**Contract:** `docs/ux/ux-<slug>.md` (status: agreed | draft)
+**Plan SoT:** `.harness/ux-plan.html` (status: agreed | draft)  
+**Export (optional):** `docs/ux/ux-<slug>.md`
 
 ### Flow slice
 - **expectation:** step > step > outcome
@@ -110,7 +86,7 @@ Use when enriching a larger parent item (capability, epic, initiative section):
 - Success: …
 
 ### Acceptance (UX)
-- [ ] Happy path completes in ≤ N intentional steps (per contract)
+- [ ] Happy path completes in ≤ N intentional steps (per plan)
 - [ ] Primary action is obvious and named accessibly
 - [ ] Empty / error / success states behave as listed
 ```
