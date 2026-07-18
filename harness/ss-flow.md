@@ -19,6 +19,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 | Review | `/ss-review` | [`harness-critic.md`](./harness-critic.md) | auto: [`critic-tdd-testing.md`](./critic-tdd-testing.md) when state has TDD contracts |
 | Security | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
 | PR / close | `/ss-submit-pr`, `/ss-close-story` | — | linked PR/Jira skills per consumer |
+| Release / GTM (optional) | `/ss-release`, `/ss-release-distribution`, `/ss-release-marketing` | — | [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) · [`release-distribution`](../skills/productivity/release-distribution/SKILL.md) · [`release-marketing`](../skills/productivity/release-marketing/SKILL.md) — post-ship; not a PR gate |
 
 **Legacy:** feature-first planning only → [`harness-planner.md`](./harness-planner.md) (skip grill-tdd).
 
@@ -27,6 +28,8 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 **Structure-in-flux order:** `/ss-arch-plan` (living HTML → lock stages) → optional `/ss-ui-ux-plan` → `/ss-plan` per stage. Skip arch-plan when module shape is already agreed.
 
 **Security posture order:** `/ss-security-plan` (living HTML → hardening stages) when trust model is unclear; **every PR** still runs `/ss-security-audit` after review. Do not fold the audit into the posture HTML.
+
+**Release / go-to-market order:** after merge or tag (or on user request) → `/ss-release` (brief → demo seed/E2E proof → channel pack → anti-slop). Partial: `/ss-release-distribution` or `/ss-release-marketing`. Does **not** block `/ss-submit-pr`.
 ## Context budget rules
 
 1. **One harness file per command** — do not chain duplicate harnesses.
