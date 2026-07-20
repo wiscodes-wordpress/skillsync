@@ -87,16 +87,19 @@ Run once the planner has written state (not at the first grill question). Idempo
 
    `Started KEY — short title`
 
-7. Set `updatedAt` (ISO-8601). Refresh:
+7. Set `updatedAt` (ISO-8601). Refresh index/bundle, then **regenerate today’s standup** so `## Focus` picks up work-track `in progress` todos:
 
 ```bash
 node <skillsyncToolsRoot>/tools/journal-index.cjs --vault "<vault>"
 node <skillsyncToolsRoot>/tools/journal-dashboard-bundle.cjs --vault "<vault>"
+node <skillsyncToolsRoot>/tools/journal-standup.cjs --vault "<vault>"
 ```
+
+(`## Focus` is Lifeway/work only — rebuilt from `planning.json` on every standup run.)
 
 8. Remind the user to **close/reopen** `Journal/_dashboard/dashboard.obsidian.html` in Obsidian when the snapshot changed.
 
-Re-running `/ss-plan` for the same KEY: leave status `in progress`; do **not** duplicate the weekly bullet.
+Re-running `/ss-plan` for the same KEY: leave status `in progress`; do **not** duplicate the weekly bullet. Standup Focus still lists it until `done`.
 
 ### `submit-pr` — after PR URL is printed
 
@@ -130,11 +133,12 @@ node <skillsyncToolsRoot>/tools/journal-index.cjs --vault "<vault>"
    - **Exactly one** → set `status: "done"` (keep `googleTaskId`).
    - **Zero or multiple** → ask the user; do not guess.
 5. If the completed todo has a `goalId`, and that goal has **no remaining** open todos → set goal `status: "done"` (or ask once if ambiguous).
-6. Set `updatedAt` (ISO-8601). Rebundle:
+6. Set `updatedAt` (ISO-8601). Rebundle, then regenerate standup so `## Focus` drops completed work todos:
 
 ```bash
 node <skillsyncToolsRoot>/tools/journal-index.cjs --vault "<vault>"
 node <skillsyncToolsRoot>/tools/journal-dashboard-bundle.cjs --vault "<vault>"
+node <skillsyncToolsRoot>/tools/journal-standup.cjs --vault "<vault>"
 ```
 
 (`journal-index` already rebundles in many setups; running bundle after planning edits is safe.)

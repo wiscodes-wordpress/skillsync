@@ -107,8 +107,10 @@ node tools/journal-standup.cjs
 node tools/journal-standup.cjs --date YYYY-MM-DD
 ```
 
-3. Writes `Journal/Standup/YYYY/YYYY-MM-DD.md` (Yesterday / Today / Blockers / Talking points from Work + Meetings).
-4. Preserve existing `## Notes` when regenerating.
+3. Writes `Journal/Standup/YYYY/YYYY-MM-DD.md`:
+   - **`## Focus`** — from `planning.json`: **work** track + status **`in progress`** (Lifeway only; rebuilt every regen; empty → `(none in progress)`)
+   - Yesterday / Today / Blockers / Talking points — from weekly Daily log (Work + Meetings)
+4. Preserve existing `## Notes` when regenerating. Do **not** preserve Focus — always rebuild from planning.
 5. Do not invent work. Report standup path + weekly link.
 
 ## Weekly template

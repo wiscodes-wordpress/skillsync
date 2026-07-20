@@ -12,6 +12,7 @@
 
 - Create this week’s Journal note if missing (`journal-ensure-week.cjs` — never overwrite)
 - Todo → `in progress` + one weekly Started bullet (idempotent per issue key)
+- Regenerate today’s standup (`journal-standup.cjs`) so `## Focus` lists work-track `in progress` todos
 
 **Optional:** `/ss-to-issues` · **Legacy:** [`harness-planner.md`](../harness/harness-planner.md) without step 1b.
 

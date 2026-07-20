@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Create/update a daily standup note derived from the weekly Journal log.
+ * Create/update a daily standup note derived from the weekly Journal log
+ * and planning.json Focus (work + in progress).
  *
  * Usage:
  *   node tools/journal-standup.cjs
@@ -8,7 +9,8 @@
  *   node tools/journal-standup.cjs --vault "/path/to/DenMercs"
  *
  * Writes: Journal/Standup/YYYY/YYYY-MM-DD.md
- * Source: Journal/YYYY/<Monday>.md daily log table (Work + Meetings)
+ * Source: Journal/YYYY/<Monday>.md daily log (Work + Meetings)
+ *         Journal/_dashboard/planning.json → ## Focus (work, in progress)
  */
 
 const fs = require('node:fs');
@@ -89,10 +91,38 @@ function parseDailyLog(md) {
 }
 
 /**
- * @param {string[]} items
+ * Work-track todos currently in progress (Lifeway standup Focus).
+ * Legacy status `doing` counts as in progress.
+ *
+ * @param {string} vault
+ * @returns {string[]}
  */
-function bullets(items) {
-	if (!items.length) return '- (none yet — fill weekly log or add below)\n';
+function focusTitlesFromPlanning(vault) {
+	const planFile = path.join(vault, 'Journal', '_dashboard', 'planning.json');
+	if (!fs.existsSync(planFile)) return [];
+	let planning;
+	try {
+		planning = JSON.parse(fs.readFileSync(planFile, 'utf8'));
+	} catch {
+		return [];
+	}
+	const todos = Array.isArray(planning.todos) ? planning.todos : [];
+	return todos
+		.filter((t) => {
+			if (!t || t.track !== 'work') return false;
+			const s = t.status;
+			return s === 'in progress' || s === 'doing';
+		})
+		.map((t) => String(t.title || '').trim())
+		.filter(Boolean);
+}
+
+/**
+ * @param {string[]} items
+ * @param {string} [emptyMsg]
+ */
+function bullets(items, emptyMsg = '(none yet — fill weekly log or add below)') {
+	if (!items.length) return `- ${emptyMsg}\n`;
 	return items.map((i) => `- ${i}`).join('\n') + '\n';
 }
 
@@ -109,7 +139,7 @@ function buildStandup(vault, target) {
 
 	if (!fs.existsSync(weeklyPath)) {
 		throw new Error(
-			`Weekly log missing: ${weeklyPath}\nCreate it first (journal-weekly / weekly login).`,
+			`Weekly log missing: ${weeklyPath}\nCreate it first (journal-ensure-week / journal-weekly).`,
 		);
 	}
 
@@ -144,6 +174,7 @@ function buildStandup(vault, target) {
 	const talkingPoints = today.meetings.filter(
 		(m) => !/block|wait|stuck|depend/i.test(m),
 	);
+	const focusItems = focusTitlesFromPlanning(vault);
 
 	const weeklyLink = `[[${year}/${mondayStr}|Week of ${mondayStr}]]`;
 	const outDir = path.join(vault, 'Journal', 'Standup', String(target.getFullYear()));
@@ -157,8 +188,10 @@ source_week: "${mondayStr}"
 ---
 # Standup ${dateStr}
 
-Derived from ${weeklyLink}. Edit the weekly log for lasting notes; this file is for the meeting.
+Derived from ${weeklyLink} + planning Focus (work in progress). Edit the weekly log for lasting notes; this file is for the meeting.
 
+## Focus
+${bullets(focusItems, '(none in progress)')}
 ## Yesterday (${yesterdayLabel})
 ${bullets(yesterdayItems)}
 ## Today (${todayKey})
@@ -173,7 +206,7 @@ ${bullets(talkingPoints)}
 
 	const existed = fs.existsSync(outPath);
 	if (existed) {
-		// Refresh derived sections; preserve ## Notes if present
+		// Refresh derived sections (including Focus); preserve ## Notes if present
 		const prev = fs.readFileSync(outPath, 'utf8');
 		const notesMatch = prev.match(/## Notes\n([\s\S]*)$/);
 		const notes = notesMatch ? notesMatch[1].trimEnd() : '- ';
@@ -189,6 +222,7 @@ ${bullets(talkingPoints)}
 		created: !existed,
 		todayKey,
 		yesterdayLabel,
+		focusCount: focusItems.length,
 	};
 }
 
@@ -204,7 +238,9 @@ function main() {
 		console.log(
 			`${result.created ? 'Created' : 'Updated'} ${result.outPath}`,
 		);
-		console.log(`From weekly ${result.weeklyPath}`);
+		console.log(
+			`From weekly ${result.weeklyPath} · Focus ${result.focusCount} in progress`,
+		);
 	} catch (err) {
 		console.error(err instanceof Error ? err.message : err);
 		process.exit(1);
@@ -215,4 +251,8 @@ if (require.main === module) {
 	main();
 }
 
-module.exports = { buildStandup, DEFAULT_VAULT };
+module.exports = {
+	buildStandup,
+	focusTitlesFromPlanning,
+	DEFAULT_VAULT,
+};
