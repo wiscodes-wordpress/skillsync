@@ -54,29 +54,30 @@ function mondayOf(d) {
  */
 function liveNav() {
 	const today = new Date();
-	const mon = mondayOf(today);
 	return {
 		brand: '/dashboard.html',
 		dashboard: '/dashboard.html',
-		week: `/${mon.getFullYear()}/${isoDate(mon)}.md`,
+		week: '/dashboard.html#week',
 		standup: `/Standup/${today.getFullYear()}/${isoDate(today)}.md`,
 		oncall: '/On%20Call/',
 	};
 }
 
 /**
- * Obsidian snapshot nav when the page lives in `_dashboard/view/`.
+ * Obsidian snapshot nav when the page lives in `_dashboard/view/` (legacy).
+ * Prefer vault `.md` links — view HTML is no longer generated.
  * @param {string} mondayStr
  * @param {string} todayStr
  * @returns {NavMap}
  */
 function obsidianNavFromView(mondayStr, todayStr) {
+	const yStandup = todayStr.slice(0, 4);
 	return {
 		brand: '../dashboard.obsidian.html',
 		dashboard: '../dashboard.obsidian.html',
-		week: `./week-${mondayStr}.html`,
-		standup: `./standup-${todayStr}.html`,
-		oncall: './on-call.html',
+		week: '../dashboard.obsidian.html#week-log',
+		standup: `../../Standup/${yStandup}/${todayStr}.md`,
+		oncall: '../../On%20Call/',
 	};
 }
 
@@ -87,12 +88,13 @@ function obsidianNavFromView(mondayStr, todayStr) {
  * @returns {NavMap}
  */
 function obsidianNavFromDash(mondayStr, todayStr) {
+	const yStandup = todayStr.slice(0, 4);
 	return {
 		brand: './dashboard.obsidian.html',
 		dashboard: './dashboard.obsidian.html',
-		week: `./view/week-${mondayStr}.html`,
-		standup: `./view/standup-${todayStr}.html`,
-		oncall: './view/on-call.html',
+		week: './dashboard.obsidian.html#week-log',
+		standup: `../Standup/${yStandup}/${todayStr}.md`,
+		oncall: '../On%20Call/',
 	};
 }
 

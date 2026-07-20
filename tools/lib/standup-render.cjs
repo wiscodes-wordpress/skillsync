@@ -170,9 +170,9 @@ function renderStandupBoard(opts) {
 	if (week) {
 		const y = week.slice(0, 4);
 		if (linkMode === 'obsidian') {
-			weekHref = `./week-${week}.html`;
+			weekHref = `../../${y}/${week}.md`;
 		} else {
-			weekHref = `/${y}/${week}.md`;
+			weekHref = `/dashboard.html#week/${week}`;
 		}
 	}
 

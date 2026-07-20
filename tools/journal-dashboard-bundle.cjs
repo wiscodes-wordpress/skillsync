@@ -17,20 +17,20 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { mdToHtml, extractTitle } = require('./lib/markdown-render.cjs');
 const {
-	renderNotePage,
-	renderDirPage,
-	obsidianNavFromView,
 	obsidianNavFromDash,
-	onCallViewName,
 	isoDate: chromeIsoDate,
 	mondayOf: chromeMondayOf,
 } = require('./lib/journal-chrome.cjs');
+const { renderStandupBoard } = require('./lib/standup-render.cjs');
 const { DEFAULT_VAULT } = require('./lib/journal-vault.cjs');
 
 const TRACK_LABEL = { work: 'Work', business: 'Business', life: 'Life' };
 const TRACKS = ['work', 'business', 'life'];
-/** How many recent weekly notes to pre-render for Obsidian HTML. */
-const OBSIDIAN_WEEK_VIEWS = 52;
+
+const STANDUP_BOARD_CSS = fs.readFileSync(
+	path.join(__dirname, 'lib', 'standup-board.css'),
+	'utf8',
+);
 
 /**
  * @param {string[]} argv
@@ -69,112 +69,36 @@ function mondayOf(d) {
 }
 
 /**
- * @param {string} start YYYY-MM-DD
+ * Encode a Journal-relative path for hrefs (keep `/`, encode segments).
+ * @param {string} rel
  */
-function weekViewFile(start) {
-	return `week-${start}.html`;
+function hrefRel(rel) {
+	return String(rel)
+		.split('/')
+		.map((p) => encodeURIComponent(p))
+		.join('/');
 }
 
 /**
- * @param {string} day YYYY-MM-DD
- */
-function standupViewFile(day) {
-	return `standup-${day}.html`;
-}
-
-/**
- * Clear and rebuild `_dashboard/view/*.html` so Obsidian keeps nav + styled notes
- * (HTML plugins cannot run the localhost Markdown wrapper).
+ * Remove legacy pre-rendered note HTML under `_dashboard/view/`.
+ * Notes are vault `.md` only (live server / Obsidian open the markdown).
  *
  * @param {string} vault
- * @param {string} css
- * @param {{ weeks?: unknown[] }} indexData
- * @returns {{ viewDir: string, written: number }}
+ * @returns {{ viewDir: string, removed: number }}
  */
-function writeObsidianViews(vault, css, indexData) {
-	const journal = path.join(vault, 'Journal');
+function clearViewHtml(vault) {
 	const viewDir = path.join(vault, 'Journal', '_dashboard', 'view');
-	fs.mkdirSync(viewDir, { recursive: true });
+	if (!fs.existsSync(viewDir)) {
+		return { viewDir, removed: 0 };
+	}
+	let removed = 0;
 	for (const name of fs.readdirSync(viewDir)) {
 		if (name.endsWith('.html')) {
 			fs.unlinkSync(path.join(viewDir, name));
+			removed++;
 		}
 	}
-
-	const today = new Date();
-	const mondayStr = isoDate(mondayOf(today));
-	const todayStr = isoDate(today);
-	const nav = obsidianNavFromView(mondayStr, todayStr);
-	let written = 0;
-
-	/**
-	 * @param {string} absMd
-	 * @param {string} relFromJournal
-	 * @param {string} outName
-	 */
-	function writeNote(absMd, relFromJournal, outName) {
-		if (!fs.existsSync(absMd) || !fs.statSync(absMd).isFile()) return;
-		const md = fs.readFileSync(absMd, 'utf8');
-		const title = extractTitle(md) || path.basename(absMd, '.md');
-		const html = renderNotePage({
-			title,
-			htmlBody: mdToHtml(md),
-			relPath: relFromJournal,
-			nav,
-			cssInline: css,
-			md,
-			rawHref: `../../${relFromJournal.split('/').map(encodeURIComponent).join('/')}`,
-		});
-		fs.writeFileSync(path.join(viewDir, outName), html, 'utf8');
-		written++;
-	}
-
-	const weeks = Array.isArray(indexData.weeks) ? indexData.weeks : [];
-	const seenWeek = new Set();
-	for (const w of weeks.slice(0, OBSIDIAN_WEEK_VIEWS)) {
-		const x = /** @type {{ start?: string, path?: string }} */ (w);
-		if (!x.start || !x.path) continue;
-		seenWeek.add(x.start);
-		writeNote(path.join(journal, x.path), x.path, weekViewFile(x.start));
-	}
-
-	// Always include this week's file even if index is stale
-	if (!seenWeek.has(mondayStr)) {
-		const rel = `${today.getFullYear()}/${mondayStr}.md`;
-		writeNote(path.join(journal, rel), rel, weekViewFile(mondayStr));
-	}
-
-	const standupRel = `Standup/${today.getFullYear()}/${todayStr}.md`;
-	writeNote(path.join(journal, standupRel), standupRel, standupViewFile(todayStr));
-
-	const onCallDir = path.join(journal, 'On Call');
-	/** @type {{ name: string, href: string, kind: 'dir' | 'file' }[]} */
-	const onCallEntries = [];
-	if (fs.existsSync(onCallDir) && fs.statSync(onCallDir).isDirectory()) {
-		const files = fs
-			.readdirSync(onCallDir)
-			.filter((n) => n.toLowerCase().endsWith('.md') && !n.startsWith('.'))
-			.sort((a, b) => b.localeCompare(a));
-		for (const name of files) {
-			const viewName = onCallViewName(name);
-			const rel = `On Call/${name}`;
-			writeNote(path.join(onCallDir, name), rel, viewName);
-			onCallEntries.push({ name, href: `./${viewName}`, kind: 'file' });
-		}
-	}
-
-	const onCallIndex = renderDirPage({
-		title: 'On Call',
-		relPath: 'On Call',
-		entries: onCallEntries,
-		nav,
-		cssInline: css,
-		active: 'oncall',
-	});
-	fs.writeFileSync(path.join(viewDir, 'on-call.html'), onCallIndex, 'utf8');
-	written++;
-
-	return { viewDir, written };
+	return { viewDir, removed };
 }
 
 /**
@@ -194,13 +118,55 @@ function densityDots(n, max) {
  * @param {Record<string, unknown>} planning
  * @param {{ weeks?: unknown[], generatedAt?: string | null }} indexData
  * @param {string} bundledAt
+ * @param {string} vault
  */
-function renderStaticBody(planning, indexData, bundledAt) {
+function renderStaticBody(planning, indexData, bundledAt, vault) {
 	const mon = mondayOf(new Date());
 	const mondayStr = isoDate(mon);
 	const year = mon.getFullYear();
 	const today = new Date();
 	const todayStr = isoDate(today);
+
+	const weekRel = `${year}/${mondayStr}.md`;
+	const weekAbs = path.join(vault, 'Journal', weekRel);
+	let weekReaderHtml = `<p class="empty">No weekly note yet for ${esc(mondayStr)}. Use <code>journal-ensure-week.cjs</code>.</p>`;
+	let weekTitle = `Week of ${mondayStr}`;
+	if (fs.existsSync(weekAbs)) {
+		const weekMd = fs.readFileSync(weekAbs, 'utf8');
+		weekTitle = extractTitle(weekMd) || weekTitle;
+		weekReaderHtml = mdToHtml(weekMd);
+	}
+
+	const standupRel = `Standup/${today.getFullYear()}/${todayStr}.md`;
+	const standupAbs = path.join(vault, 'Journal', standupRel);
+	let standupHtml = `<p class="empty">No standup yet for ${esc(todayStr)}. Run <code>journal-standup.cjs</code>.</p>`;
+	if (fs.existsSync(standupAbs)) {
+		const standupMd = fs.readFileSync(standupAbs, 'utf8');
+		standupHtml = renderStandupBoard({
+			md: standupMd,
+			linkMode: 'obsidian',
+			mondayStr,
+		});
+	}
+
+	const onCallDir = path.join(vault, 'Journal', 'On Call');
+	/** @type {string[]} */
+	const onCallLinks = [];
+	if (fs.existsSync(onCallDir) && fs.statSync(onCallDir).isDirectory()) {
+		const files = fs
+			.readdirSync(onCallDir)
+			.filter((n) => n.toLowerCase().endsWith('.md') && !n.startsWith('.'))
+			.sort((a, b) => b.localeCompare(a));
+		for (const name of files.slice(0, 12)) {
+			const rel = `On Call/${name}`;
+			onCallLinks.push(
+				`<li><a href="../${hrefRel(rel)}">${esc(name)}</a></li>`,
+			);
+		}
+	}
+	const onCallListHtml = onCallLinks.length
+		? `<ul class="dir-list">${onCallLinks.join('')}</ul>`
+		: `<p class="empty">No On Call notes yet.</p>`;
 
 	const goals = Array.isArray(planning.goals) ? planning.goals : [];
 	const todos = Array.isArray(planning.todos) ? planning.todos : [];
@@ -346,18 +312,16 @@ function renderStaticBody(planning, indexData, bundledAt) {
 					const x = /** @type {{ week?: string, start?: string, path?: string, focus?: string[], workFill?: number, businessFill?: number, winsCount?: number, wins?: unknown[], onCallPath?: string | null }} */ (
 						w
 					);
-					const href = x.start
-						? `./view/${weekViewFile(x.start)}`
-						: x.path
-							? `../${x.path}`
-							: '#';
+					const href = x.path
+						? `../${String(x.path).split('/').map(encodeURIComponent).join('/')}`
+						: '#';
 					const focus = (x.focus && x.focus[0]) || '—';
 					const wins =
 						x.winsCount != null ? x.winsCount : (x.wins && x.wins.length) || 0;
 					let onCall = '—';
 					if (x.onCallPath) {
-						const base = path.basename(String(x.onCallPath));
-						onCall = `<a href="./view/${esc(onCallViewName(base))}">on call</a>`;
+						const rel = String(x.onCallPath).replace(/^Journal\//, '');
+						onCall = `<a href="../${hrefRel(rel)}">on call</a>`;
 					}
 					return `<tr>
           <td><a href="${esc(href)}">${esc(x.week || x.start || '')}</a></td>
@@ -392,7 +356,7 @@ function renderStaticBody(planning, indexData, bundledAt) {
       <header class="top">
         <div>
           <h1>Journal</h1>
-          <p class="sub">Goals &amp; todos (overall) · weekly log is separate</p>
+          <p class="sub">Goals &amp; todos (overall) · weekly log from vault .md</p>
         </div>
         <div class="actions">
           <a class="btn primary" href="${esc(dashNav.week)}">Weekly log</a>
@@ -403,9 +367,8 @@ function renderStaticBody(planning, indexData, bundledAt) {
 
       <div class="banner">
         Obsidian snapshot (static — no JS). Bundled <strong>${esc(when)}</strong>.
-        Notes open as styled HTML under <code>_dashboard/view/</code> (re-run bundle after writing weeks).
-        Live interactive UI:
-        <code>http://127.0.0.1:8787/dashboard.html</code>
+        Notes stay as vault <code>.md</code> (no <code>_dashboard/view/*.html</code>).
+        Live reader: <code>http://127.0.0.1:8787/dashboard.html</code>
       </div>
 
       <div class="status-row">
@@ -437,6 +400,32 @@ function renderStaticBody(planning, indexData, bundledAt) {
           <div class="todo-groups">${todosHtml}</div>
         </section>
       </div>
+
+      <section class="section" id="week-log" aria-labelledby="week-log-heading">
+        <h2 id="week-log-heading">${esc(weekTitle)}</h2>
+        <p class="meta" style="margin-top:-0.5rem;margin-bottom:0.75rem;color:var(--muted);font-size:0.8rem">
+          From <code>${esc(weekRel)}</code>
+          · <a href="../${hrefRel(weekRel)}">Open .md</a>
+        </p>
+        <article class="md-doc week-reader">${weekReaderHtml}</article>
+      </section>
+
+      <section class="section" id="standup-log" aria-labelledby="standup-log-heading">
+        <h2 id="standup-log-heading">Today’s standup</h2>
+        <p class="meta" style="margin-top:-0.5rem;margin-bottom:0.75rem;color:var(--muted);font-size:0.8rem">
+          From <code>${esc(standupRel)}</code>
+          · <a href="../${hrefRel(standupRel)}">Open .md</a>
+        </p>
+        ${standupHtml}
+      </section>
+
+      <section class="section" id="oncall-log" aria-labelledby="oncall-log-heading">
+        <h2 id="oncall-log-heading">On Call</h2>
+        <p class="meta" style="margin-top:-0.5rem;margin-bottom:0.75rem;color:var(--muted);font-size:0.8rem">
+          Vault folder <code>On Call/</code>
+        </p>
+        ${onCallListHtml}
+      </section>
 
       <section class="section">
         <h2>Weekly activity (archive)</h2>
@@ -493,8 +482,8 @@ function bundleDashboard(vault) {
 	}
 
 	const bundledAt = new Date().toISOString();
-	const { written } = writeObsidianViews(vault, css, indexData);
-	const bodyInner = renderStaticBody(planning, indexData, bundledAt);
+	const { removed } = clearViewHtml(vault);
+	const bodyInner = renderStaticBody(planning, indexData, bundledAt, vault);
 
 	const html = `<!DOCTYPE html>
 <html lang="en">
@@ -504,6 +493,7 @@ function bundleDashboard(vault) {
     <title>Journal Dashboard (Obsidian)</title>
     <style>
 ${css}
+${STANDUP_BOARD_CSS}
     </style>
   </head>
   <body>
@@ -513,14 +503,14 @@ ${bodyInner}
 `;
 
 	fs.writeFileSync(outPath, html, 'utf8');
-	return { outPath, bundledAt, viewPages: written };
+	return { outPath, bundledAt, removed };
 }
 
 function main() {
 	const { vault } = parseArgs(process.argv.slice(2));
-	const { outPath, bundledAt, viewPages } = bundleDashboard(vault);
+	const { outPath, bundledAt, removed } = bundleDashboard(vault);
 	console.log(`Obsidian dashboard → ${outPath}`);
-	console.log(`Obsidian note views → Journal/_dashboard/view/ (${viewPages} files)`);
+	console.log(`Cleared _dashboard/view/*.html (${removed} removed)`);
 	console.log(`bundledAt ${bundledAt}`);
 }
 

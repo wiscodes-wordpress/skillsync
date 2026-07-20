@@ -76,6 +76,32 @@ function splitRow(line) {
 }
 
 /**
+ * Split a table cell that stores multiple items via `<br>` (weekly Daily log).
+ * @param {string} cell
+ * @returns {string[]}
+ */
+function cellItems(cell) {
+	return String(cell || '')
+		.replace(/<br\s*\/?>/gi, '\n')
+		.split(/\n|;/)
+		.map((s) => s.replace(/^[-*+]\s*/, '').trim())
+		.filter(Boolean);
+}
+
+/**
+ * Render a table cell: multi-item cells become a compact bullet list.
+ * @param {string} cell
+ */
+function cellHtml(cell) {
+	const items = cellItems(cell);
+	if (items.length === 0) return '';
+	if (items.length === 1) return inline(items[0]);
+	return `<ul class="md-cell-list">${items
+		.map((item) => `<li>${inline(item)}</li>`)
+		.join('')}</ul>`;
+}
+
+/**
  * @param {string} md
  * @returns {string}
  */
@@ -165,7 +191,7 @@ function mdToHtml(md) {
 			for (const row of rows) {
 				out.push(
 					'<tr>' +
-						row.map((c) => `<td>${inline(c)}</td>`).join('') +
+						row.map((c) => `<td>${cellHtml(c)}</td>`).join('') +
 						'</tr>',
 				);
 			}
@@ -231,4 +257,12 @@ function extractTitle(md) {
 	return m ? m[1].trim() : null;
 }
 
-module.exports = { mdToHtml, extractTitle, esc, splitFrontmatter, inline };
+module.exports = {
+	mdToHtml,
+	extractTitle,
+	esc,
+	splitFrontmatter,
+	inline,
+	cellItems,
+	cellHtml,
+};

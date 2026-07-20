@@ -143,6 +143,42 @@ function main() {
 				return send(res, 200, { ok: true, vault });
 			}
 
+			if (req.method === 'GET' && url.pathname === '/api/note') {
+				const relRaw = String(url.searchParams.get('path') || '').replace(
+					/^\/+/,
+					'',
+				);
+				const rel = relRaw
+					.replace(/^Journal\//i, '')
+					.split('/')
+					.map((p) => decodeURIComponent(p))
+					.join('/');
+				if (!rel || rel.includes('..') || path.isAbsolute(rel)) {
+					return send(res, 400, { ok: false, error: 'invalid path' });
+				}
+				const abs = path.resolve(path.join(journalRoot, rel));
+				if (
+					abs !== path.resolve(journalRoot) &&
+					!abs.startsWith(path.resolve(journalRoot) + path.sep)
+				) {
+					return send(res, 403, { ok: false, error: 'forbidden' });
+				}
+				if (!fs.existsSync(abs) || !fs.statSync(abs).isFile()) {
+					return send(res, 404, { ok: false, error: 'not found', path: rel });
+				}
+				if (path.extname(abs).toLowerCase() !== '.md') {
+					return send(res, 400, { ok: false, error: 'not a markdown note' });
+				}
+				const md = fs.readFileSync(abs, 'utf8');
+				const title = extractTitle(md) || path.basename(abs, '.md');
+				return send(res, 200, {
+					ok: true,
+					path: rel.split(path.sep).join('/'),
+					title,
+					html: mdToHtml(md),
+				});
+			}
+
 			if (req.method === 'GET' && url.pathname === '/api/meetings') {
 				try {
 					const day = url.searchParams.get('day') || undefined;
