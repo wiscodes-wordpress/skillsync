@@ -64,9 +64,15 @@ On Call stays separate: `On call → [[On Call/YYYY-MM-DD]]`.
 ### A — Create / open this week
 
 1. Resolve **Monday** of the target week (default: current week, local TZ).
-2. Path: `Journal/YYYY/YYYY-MM-DD.md`.
-3. If exists: read and confirm; **do not overwrite**.
-4. If missing: create from template below (or `_Templates/Weekly Log.md`, replace `{{date}}`).
+2. Prefer the CLI (idempotent; never overwrites):
+
+```bash
+node tools/journal-ensure-week.cjs
+node tools/journal-ensure-week.cjs --date YYYY-MM-DD
+```
+
+3. Path: `Journal/YYYY/YYYY-MM-DD.md`.
+4. If the CLI is unavailable: if exists, read and confirm (**do not overwrite**); if missing, create from template below (or `_Templates/Weekly Log.md`, replace `{{date}}`).
 5. Tell the user the full path.
 
 ### B — Fill / update from conversation
@@ -167,7 +173,7 @@ Obsidian does **not** live-load `planning.json`. The snapshot must be rebuilt, t
 ## Related
 
 - **journal-planning** — overall goals/todos + always rebundle after edits
-- **journal-handoff** — optional weekly + todo updates after `/ss-submit-pr` / `/ss-close-story`
+- **journal-handoff** — optional weekly + todo updates after `/ss-plan` / `/ss-submit-pr` / `/ss-close-story`
 - **calendar-sync** — `## Calendar` → Google Calendar via `sync-google-calendar.cjs` + `.env` OAuth (`Journal/YYYY/`, not `Log/`)
 - **summary-update** — monthly summaries from `Journal/YYYY/`
 
@@ -177,12 +183,12 @@ Obsidian does **not** live-load `planning.json`. The snapshot must be rebuilt, t
 "linkedSkills": ["journal-weekly", "journal-planning", "journal-handoff", "calendar-sync"]
 ```
 
-Skillsync tools (from repo root): `journal-index.cjs`, `journal-standup.cjs`, `journal-dashboard-bundle.cjs`, `journal-dashboard-server.cjs`, `sync-google-calendar.cjs`.
+Skillsync tools (from repo root): `journal-ensure-week.cjs`, `journal-index.cjs`, `journal-standup.cjs`, `journal-dashboard-bundle.cjs`, `journal-dashboard-server.cjs`, `sync-google-calendar.cjs`.
 
 ## Rules
 
 - Weekly notes stay **Markdown** — never migrate a week to HTML for the vault.
-- Never overwrite a filled week with a blank template.
+- Never overwrite a filled week with a blank template (use `journal-ensure-week.cjs`).
 - Standup = meeting aid; lasting activity stays in the weekly log.
 - Goals/todos → `planning.json` only.
 - Verb-first bullets. Absolute vault path is canonical when workspace ≠ DenMercs.

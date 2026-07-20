@@ -207,8 +207,12 @@ function renderStaticBody(planning, indexData, bundledAt) {
 	const todos = Array.isArray(planning.todos) ? planning.todos : [];
 	const activeGoals = goals.filter((g) => g.status === 'active');
 	const openTodos = todos.filter((t) => t.status !== 'done');
-	const doing = openTodos.filter((t) => t.status === 'doing');
-	const openOnly = openTodos.filter((t) => t.status !== 'doing');
+	const inProgress = openTodos.filter(
+		(t) => t.status === 'in progress' || t.status === 'doing',
+	);
+	const openOnly = openTodos.filter(
+		(t) => t.status !== 'in progress' && t.status !== 'doing',
+	);
 	const done = todos.filter((t) => t.status === 'done').slice(0, 8);
 	const weeks = Array.isArray(indexData.weeks) ? indexData.weeks : [];
 
@@ -260,7 +264,7 @@ function renderStaticBody(planning, indexData, bundledAt) {
 	}
 
 	const todosHtml =
-		todoGroup('Doing', doing) +
+		todoGroup('In progress', inProgress) +
 			todoGroup('Open', openOnly) +
 			todoGroup('Recently done', done) ||
 		`<p class="empty">No todos yet. Use the <code>journal-planning</code> skill to add them.</p>`;
@@ -343,7 +347,7 @@ function renderStaticBody(planning, indexData, bundledAt) {
         <div class="panel">
           <h2>Todos</h2>
           <div class="value">${openTodos.length} open</div>
-          <div class="meta">${doing.length} doing · ${todos.length} total</div>
+          <div class="meta">${inProgress.length} in progress · ${todos.length} total</div>
           <div class="meta">${planning.updatedAt ? esc(new Date(/** @type {string} */ (planning.updatedAt)).toLocaleString()) : '—'}</div>
         </div>
         <div class="panel">

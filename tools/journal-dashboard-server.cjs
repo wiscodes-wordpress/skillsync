@@ -150,8 +150,15 @@ function main() {
 				if (!todo) {
 					return send(res, 404, { error: `todo not found: ${body.id}` });
 				}
-				if (body.status === 'done' || body.status === 'todo' || body.status === 'doing') {
+				if (
+					body.status === 'done' ||
+					body.status === 'todo' ||
+					body.status === 'in progress'
+				) {
 					todo.status = body.status;
+				} else if (body.status === 'doing') {
+					// Legacy alias → canonical status
+					todo.status = 'in progress';
 				}
 				planning.updatedAt = new Date().toISOString();
 				fs.writeFileSync(planFile, `${JSON.stringify(planning, null, 2)}\n`);

@@ -8,6 +8,11 @@
 2. **1b — TDD grill** — [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) until **Behavior & Test Contracts** are agreed (per-behavior cards: **name**, **expectation** as `step > step > assertion`, **red**, **layer**, **path**). Prefer seeding **expectation** chains from UX journeys. No test files on disk yet.
 3. **Planner** — [`harness-planner-tdd.md`](../harness/harness-planner-tdd.md) → persist **`.harness/state.md`**.
 
+**Optional — journal handoff:** If consumer `skillsync.config.json` has `journal.enabled` (or `JOURNAL_HANDOFF=1` + vault), after `.harness/state.md` is written follow [`journal-handoff`](../skills/personal/journal-handoff/SKILL.md) with `mode: start-story`:
+
+- Create this week’s Journal note if missing (`journal-ensure-week.cjs` — never overwrite)
+- Todo → `in progress` + one weekly Started bullet (idempotent per issue key)
+
 **Optional:** `/ss-to-issues` · **Legacy:** [`harness-planner.md`](../harness/harness-planner.md) without step 1b.
 
 Available as `/ss-plan` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

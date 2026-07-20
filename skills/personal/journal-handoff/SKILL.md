@@ -1,20 +1,24 @@
 ---
 name: journal-handoff
 description: >-
-  Optional post-step after opening a GitHub PR or closing a Jira story: append
-  a weekly Journal bullet and (on close) complete matching todos/goals in
-  planning.json. Gated by skillsync.config.json journal.enabled or
-  JOURNAL_HANDOFF. Use with /ss-submit-pr and /ss-close-story from any
-  consumer (Lifeway, Quickpress, Cursor, or Kiro).
+  Optional post-step after planning, opening a GitHub PR, or closing a Jira
+  story: append a weekly Journal bullet and update matching todos/goals in
+  planning.json (start → in progress; close → done). Gated by
+  skillsync.config.json journal.enabled or JOURNAL_HANDOFF. Use with /ss-plan,
+  /ss-submit-pr, and /ss-close-story from any consumer (Lifeway, Quickpress,
+  Cursor, or Kiro).
 ---
 
 # Journal handoff
 
 Personal journal updates after delivery-loop milestones. Invoked from
-[`ss-submit-pr`](../../../commands/ss-submit-pr.md) and
+[`ss-plan`](../../../commands/ss-plan.md),
+[`ss-submit-pr`](../../../commands/ss-submit-pr.md), and
 [`ss-close-story`](../../../commands/ss-close-story.md) when the consumer opts in.
 
 Weekly activity → **journal-weekly**. Goals/todos → **journal-planning**. This skill only orchestrates the handoff.
+
+**Status lives in `planning.json`** (`todo` → `in progress` → `done`). Weekly Markdown is narrative only (Started / Opened PR / Shipped bullets) — do not encode status in the week table.
 
 ## Gate (skip silently if off)
 
@@ -47,34 +51,79 @@ Fallback vault (same as other journal skills):
 
 Confirm the vault directory exists before writing. If missing, report and skip.
 
+## Ensure weekly note (all modes)
+
+Before any weekly write, create this week’s Markdown note **if missing**:
+
+```bash
+node <skillsyncToolsRoot>/tools/journal-ensure-week.cjs --vault "<vault>"
+```
+
+Idempotent — never overwrites a filled week. Prefer this CLI over hand-writing the template (same template as journal-weekly Mode A).
+
+## Todo status
+
+Canonical values: `todo` \| `in progress` \| `done`.
+
+Legacy `doing` (if present in old data) means **`in progress`** — rewrite to `in progress` when touching that todo.
+
+Open todos = `todo` \| `in progress` (and legacy `doing`).
+
 ## Modes
+
+### `start-story` — after `/ss-plan` persists `.harness/state.md`
+
+Run once the planner has written state (not at the first grill question). Idempotent per issue key / week. This is the usual path that seeds the week when work starts.
+
+1. Resolve **issue key** and short title from `.harness/state.md`, branch name, or the story under plan. If no key and no clear title → ask once; skip if still unclear.
+2. **Ensure weekly note** (see above) — create blank week if none exists for this Monday.
+3. Read `Journal/_dashboard/planning.json`.
+4. Among **open** todos on `defaultTrack`, match by title containing the **issue key** (preferred), else strong title overlap with the story summary.
+5. Matching:
+   - **Exactly one** → set `status: "in progress"` (keep `googleTaskId`). Optionally pin `week` to the current ISO week if unset.
+   - **Zero** → create a todo: verb-first title including the key (e.g. `Ship KEY — short title`), `track: defaultTrack`, `status: "in progress"`, `week` = current ISO week, new `t…` id.
+   - **Multiple** → ask the user; do not guess.
+6. Weekly Daily log (today’s cell for the track column): append **one** bullet only if this week’s note does **not** already contain a Started/Planning line for that KEY:
+
+   `Started KEY — short title`
+
+7. Set `updatedAt` (ISO-8601). Refresh:
+
+```bash
+node <skillsyncToolsRoot>/tools/journal-index.cjs --vault "<vault>"
+node <skillsyncToolsRoot>/tools/journal-dashboard-bundle.cjs --vault "<vault>"
+```
+
+8. Remind the user to **close/reopen** `Journal/_dashboard/dashboard.obsidian.html` in Obsidian when the snapshot changed.
+
+Re-running `/ss-plan` for the same KEY: leave status `in progress`; do **not** duplicate the weekly bullet.
 
 ### `submit-pr` — after PR URL is printed
 
-Do **not** mark todos or goals done.
+Do **not** mark todos or goals done. Prefer leaving status `in progress` if already set.
 
-1. Ensure this week’s note exists (journal-weekly Mode A): `Journal/YYYY/YYYY-MM-DD.md` (Monday).
+1. **Ensure weekly note** (see above).
 2. Merge one verb-first bullet into **today’s** Daily log cell for the track column, e.g.:
 
    `Opened PR for KEY — short title (https://…)`
 
-   Prefer issue key from branch, PR title, or `.harness/state.md`. Include PR URL when known.
+   Prefer issue key from branch, PR title, or `.harness/state.md`. Include PR URL when known. Skip if this week already has an Opened-PR line for that KEY.
 3. Refresh index:
 
 ```bash
 node <skillsyncToolsRoot>/tools/journal-index.cjs --vault "<vault>"
 ```
 
-4. Tell the user the weekly path and that todos were left open until close-story.
+4. Tell the user the weekly path and that todos stay open until close-story.
 
 ### `close-story` — after Jira Done + harness reset
 
-1. Same weekly ensure + append (Daily log **and** a short **Wins & learnings** line when the ship is noteworthy):
+1. **Ensure weekly note** (see above), then append (Daily log **and** a short **Wins & learnings** line when the ship is noteworthy):
 
    `Shipped KEY — short title`
 
 2. Read `Journal/_dashboard/planning.json`.
-3. Among **open** todos (`status` `todo` \| `doing`) on `defaultTrack`, match by:
+3. Among **open** todos (`status` `todo` \| `in progress`, plus legacy `doing`) on `defaultTrack`, match by:
    - Title contains the **issue key** (preferred), else
    - Strong title overlap with the story/PR summary.
 4. Matching:
@@ -119,7 +168,10 @@ Lifeway: `"defaultTrack": "work"`. Quickpress: `"defaultTrack": "business"`.
 ## Rules
 
 - Never run handoff when the gate is off.
-- Never mark todos done on `submit-pr`.
+- Always run `journal-ensure-week.cjs` before weekly writes (create if missing; never overwrite).
+- Never mark todos done on `start-story` or `submit-pr`.
+- On `start-story`, set todo status to `in progress` (never write legacy `doing`).
+- Idempotent weekly bullets per KEY (no spam on re-plan).
 - Merge weekly cells; do not wipe the week template.
 - Goals/todos only in `planning.json`.
 - Verb-first bullets. Absolute vault path when workspace ≠ vault.

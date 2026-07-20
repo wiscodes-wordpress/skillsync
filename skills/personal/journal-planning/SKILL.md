@@ -64,7 +64,7 @@ If `_dashboard/` or `planning.json` is missing, seed empty `goals` / `todos` and
       "goalId": "g1",
       "track": "work|business|life",
       "title": "…",
-      "status": "todo|doing|done",
+      "status": "todo|in progress|done",
       "due": "YYYY-MM-DD",
       "week": "YYYY-Www",
       "googleTaskId": null
@@ -126,6 +126,7 @@ After rebundle: tell user to **close/reopen** `dashboard.obsidian.html` in Obsid
 
 | Command | Purpose |
 |---------|---------|
+| `node tools/journal-ensure-week.cjs` | Create this week’s Markdown note if missing (never overwrite) |
 | `node tools/journal-dashboard-bundle.cjs` | Rebuild static Obsidian HTML from `planning.json` + `index.json` |
 | `node tools/journal-dashboard-server.cjs` | Live private UI on `127.0.0.1`; **Sync Google** runs Tasks + Calendar |
 | `node tools/journal-index.cjs` | Parse weekly `.md` → `index.json` (+ rebundle) |
@@ -136,7 +137,7 @@ After rebundle: tell user to **close/reopen** `dashboard.obsidian.html` in Obsid
 ## Related
 
 - **journal-weekly** — Markdown weeks + standup; run `journal-index` after big weekly fills
-- **journal-handoff** — optional weekly + todo updates after `/ss-submit-pr` / `/ss-close-story`
+- **journal-handoff** — optional weekly + todo updates after `/ss-plan` / `/ss-submit-pr` / `/ss-close-story`
 - **calendar-sync** — Journal `## Calendar` → Google via CLI (not Cursor MCP)
 - **summary-update** — use `Journal/` (renamed from `Log/`)
 

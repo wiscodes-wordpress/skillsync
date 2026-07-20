@@ -65,7 +65,7 @@ For post-ship go-to-market, also link productivity skills **`anti-slop`**, **`re
 
 ### Personal journal handoff (optional)
 
-After `/ss-submit-pr` and `/ss-close-story`, agents can update a personal Obsidian journal (weekly notes + `planning.json` todos/goals) when the consumer opts in. Works from **Cursor** or **Kiro** in any consumer (e.g. Lifeway → `work`, Quickpress → `business`) as long as the same vault path is configured.
+After `/ss-plan`, `/ss-submit-pr`, and `/ss-close-story`, agents can update a personal Obsidian journal (weekly notes + `planning.json` todos/goals) when the consumer opts in. Works from **Cursor** or **Kiro** in any consumer (e.g. Lifeway → `work`, Quickpress → `business`) as long as the same vault path is configured. Todo status: `todo` → `in progress` (on plan) → `done` (on close). Missing weekly notes are created via `journal-ensure-week.cjs` (never overwritten).
 
 1. Link personal skills: `journal-weekly`, `journal-planning`, `journal-handoff`.
 2. Add a `journal` block to `skillsync.config.json` (see example below). Set `defaultTrack` per product.
