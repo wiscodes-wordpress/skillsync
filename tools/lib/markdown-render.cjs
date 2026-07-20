@@ -19,6 +19,13 @@ function esc(s) {
  */
 function inline(text) {
 	let s = esc(text);
+	// Obsidian wikilinks [[path|label]] / [[path]] (captures already escaped)
+	s = s.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, target, label) => {
+		const href = String(target).trim().replace(/\\/g, '/');
+		const pathPart = href.endsWith('.md') ? href : `${href}.md`;
+		const display = (label || target).trim();
+		return `<a href="/${pathPart.replace(/^\//, '')}">${display}</a>`;
+	});
 	// code first
 	s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
 	// links [text](url)
@@ -224,4 +231,4 @@ function extractTitle(md) {
 	return m ? m[1].trim() : null;
 }
 
-module.exports = { mdToHtml, extractTitle, esc, splitFrontmatter };
+module.exports = { mdToHtml, extractTitle, esc, splitFrontmatter, inline };

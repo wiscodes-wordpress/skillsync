@@ -124,6 +124,7 @@ function writeObsidianViews(vault, css, indexData) {
 			relPath: relFromJournal,
 			nav,
 			cssInline: css,
+			md,
 			rawHref: `../../${relFromJournal.split('/').map(encodeURIComponent).join('/')}`,
 		});
 		fs.writeFileSync(path.join(viewDir, outName), html, 'utf8');
@@ -219,6 +220,30 @@ function renderStaticBody(planning, indexData, bundledAt) {
 	const when = new Date(bundledAt).toLocaleString();
 
 	/**
+	 * @param {string | undefined} status
+	 */
+	function statusPill(status) {
+		const raw = String(status || 'todo').toLowerCase();
+		const key =
+			raw === 'doing' || raw === 'in progress'
+				? 'in-progress'
+				: raw === 'done'
+					? 'done'
+					: raw === 'active'
+						? 'active'
+						: 'todo';
+		const label =
+			key === 'in-progress'
+				? 'in progress'
+				: key === 'done'
+					? 'done'
+					: key === 'active'
+						? 'active'
+						: 'todo';
+		return `<span class="status-pill status-${key}">${esc(label)}</span>`;
+	}
+
+	/**
 	 * @param {unknown[]} items
 	 * @param {string} emptyMsg
 	 */
@@ -237,7 +262,14 @@ function renderStaticBody(planning, indexData, bundledAt) {
 					g
 				);
 				const track = TRACK_LABEL[x.track || ''] ? x.track : 'life';
-				return `<li><div class="title"><span class="track-label track-${esc(track)}">${esc(TRACK_LABEL[track] || track)}</span>${esc(x.title || '')}<div class="meta">${esc(x.horizon || '')} · ${esc(x.status || '')}${x.target ? ` · target ${esc(x.target)}` : ''}</div></div></li>`;
+				const metaBits = [
+					x.horizon ? `<span class="meta-plain">${esc(x.horizon)}</span>` : null,
+					statusPill(x.status || 'active'),
+					x.target
+						? `<span class="meta-plain">target ${esc(x.target)}</span>`
+						: null,
+				].filter(Boolean);
+				return `<li><div class="title"><span class="track-label track-${esc(track)}">${esc(TRACK_LABEL[track] || track)}</span>${esc(x.title || '')}<div class="meta meta-row">${metaBits.join('')}</div></div></li>`;
 			})
 			.join('')}</ul>`;
 	}
@@ -255,10 +287,19 @@ function renderStaticBody(planning, indexData, bundledAt) {
 				);
 				const track = TRACK_LABEL[x.track || ''] ? x.track : 'life';
 				const doneCls = x.status === 'done' ? ' class="done"' : '';
-				const meta = [x.status, x.due ? `due ${x.due}` : null, x.week ? `pinned ${x.week}` : null, x.goalId ? `goal ${x.goalId}` : null]
-					.filter(Boolean)
-					.join(' · ');
-				return `<li${doneCls}><div class="title"><span class="track-label track-${esc(track)}">${esc(TRACK_LABEL[track] || track)}</span>${esc(x.title || '')}<div class="meta">${esc(meta)}</div></div></li>`;
+				const metaBits = [
+					statusPill(x.status),
+					x.due
+						? `<span class="meta-plain">due ${esc(x.due)}</span>`
+						: null,
+					x.week
+						? `<span class="meta-plain">pinned ${esc(x.week)}</span>`
+						: null,
+					x.goalId
+						? `<span class="meta-plain">goal ${esc(x.goalId)}</span>`
+						: null,
+				].filter(Boolean);
+				return `<li${doneCls}><div class="title"><span class="track-label track-${esc(track)}">${esc(TRACK_LABEL[track] || track)}</span>${esc(x.title || '')}<div class="meta meta-row">${metaBits.join('')}</div></div></li>`;
 			})
 			.join('')}</ul>`;
 	}

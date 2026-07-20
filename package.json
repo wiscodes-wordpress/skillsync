@@ -9,6 +9,7 @@
     "google:auth": "node tools/google-oauth-setup.cjs --calendar",
     "google:sync": "node tools/sync-google-tasks.cjs && node tools/sync-google-calendar.cjs",
     "google:sync:dry": "node tools/sync-google-tasks.cjs --dry-run && node tools/sync-google-calendar.cjs --dry-run",
+    "meetings": "node tools/list-meetings.cjs",
     "verify:tools": "node tools/verify-tools.cjs ."
   }
 }

@@ -4,7 +4,18 @@
  * (relative URLs + inlined CSS — HTML plugins usually do not load external assets).
  */
 
-const { esc } = require('./markdown-render.cjs');
+const fs = require('node:fs');
+const path = require('node:path');
+const { esc, extractTitle } = require('./markdown-render.cjs');
+const {
+	renderStandupBoard,
+	standupSubtitle,
+} = require('./standup-render.cjs');
+
+const STANDUP_BOARD_CSS = fs.readFileSync(
+	path.join(__dirname, 'standup-board.css'),
+	'utf8',
+);
 
 /**
  * @param {Date} d
@@ -141,6 +152,7 @@ function activeForNotePath(relPath) {
  * @param {string} [opts.extraActions]
  * @param {string} [opts.cssInline] when set, inline CSS (Obsidian); else link /assets/notes.css
  * @param {boolean} [opts.omitFonts]
+ * @param {string} [opts.extraCss] appended as a second <style> (e.g. standup board)
  */
 function renderChromePage(opts) {
 	const {
@@ -154,6 +166,7 @@ function renderChromePage(opts) {
 		extraActions = '',
 		cssInline = '',
 		omitFonts = false,
+		extraCss = '',
 	} = opts;
 
 	const rawBtn = rawHref
@@ -161,8 +174,10 @@ function renderChromePage(opts) {
 		: '';
 
 	const styles = cssInline
-		? `<style>\n${cssInline}\n    </style>`
-		: `<link rel="stylesheet" href="/assets/notes.css" />`;
+		? `<style>\n${cssInline}\n${extraCss ? `${extraCss}\n` : ''}    </style>`
+		: `<link rel="stylesheet" href="/assets/notes.css" />${
+				extraCss ? `\n    <style>\n${extraCss}\n    </style>` : ''
+			}`;
 
 	const fonts =
 		omitFonts || cssInline
@@ -220,6 +235,7 @@ ${fonts}    ${styles}
  * @param {NavMap} [opts.nav]
  * @param {string} [opts.cssInline]
  * @param {string} [opts.dashboardHref]
+ * @param {string} [opts.md] raw markdown — enables standup board layout
  */
 function renderNotePage(opts) {
 	const {
@@ -230,6 +246,7 @@ function renderNotePage(opts) {
 		nav = liveNav(),
 		cssInline = '',
 		dashboardHref,
+		md = '',
 	} = opts;
 	const clean = relPath.replace(/^\//, '');
 	const dash = dashboardHref || nav.dashboard;
@@ -237,15 +254,34 @@ function renderNotePage(opts) {
 	const defaultRaw = cssInline
 		? `../${clean.split('/').map(encodeURIComponent).join('/')}`
 		: `/${clean.split('/').map(encodeURIComponent).join('/')}?raw=1`;
+	const active = activeForNotePath(clean);
+	const isStandup = active === 'standup' && md;
+
+	let bodyHtml;
+	let subtitle;
+	if (isStandup) {
+		const dateMatch = clean.match(/(\d{4}-\d{2}-\d{2})\.md$/i);
+		const dateStr = dateMatch ? dateMatch[1] : '';
+		bodyHtml = renderStandupBoard({
+			md,
+			linkMode: cssInline ? 'obsidian' : 'live',
+		});
+		subtitle = esc(standupSubtitle(md, dateStr));
+	} else {
+		bodyHtml = `<article class="md-doc section">${htmlBody}</article>`;
+		subtitle = esc(clean);
+	}
+
 	return renderChromePage({
-		title,
-		active: activeForNotePath(clean),
+		title: isStandup ? title || extractTitle(md) || 'Standup' : title,
+		active,
 		nav,
-		subtitle: esc(clean),
+		subtitle,
 		crumb,
 		rawHref: rawHref || defaultRaw,
 		cssInline,
-		bodyHtml: `<article class="md-doc section">${htmlBody}</article>`,
+		extraCss: isStandup ? STANDUP_BOARD_CSS : '',
+		bodyHtml,
 	});
 }
 

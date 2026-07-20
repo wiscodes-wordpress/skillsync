@@ -3,6 +3,7 @@
  * Local private bridge for Journal/_dashboard.
  * Serves dashboard HTML/JSON and enables checkbox writes + unified Google sync button
  * (Tasks from planning.json + Calendar from Journal ## Calendar).
+ * Also GET /api/meetings — pull Google Calendar agenda for the day.
  *
  * Usage:
  *   node tools/journal-dashboard-server.cjs
@@ -20,6 +21,7 @@ const {
 	DEFAULT_VAULT,
 } = require('./sync-google-tasks.cjs');
 const { sync: syncCalendar } = require('./sync-google-calendar.cjs');
+const { getAgenda } = require('./lib/meetings-agenda.cjs');
 const { bundleDashboard } = require('./journal-dashboard-bundle.cjs');
 const { mdToHtml, extractTitle } = require('./lib/markdown-render.cjs');
 const { renderNotePage, renderDirPage } = require('./lib/journal-chrome.cjs');
@@ -139,6 +141,21 @@ function main() {
 
 			if (req.method === 'GET' && url.pathname === '/api/health') {
 				return send(res, 200, { ok: true, vault });
+			}
+
+			if (req.method === 'GET' && url.pathname === '/api/meetings') {
+				try {
+					const day = url.searchParams.get('day') || undefined;
+					const daysRaw = url.searchParams.get('days');
+					const days = daysRaw ? Number(daysRaw) : 1;
+					const agenda = await getAgenda(vault, { day, days });
+					return send(res, 200, agenda);
+				} catch (err) {
+					return send(res, 500, {
+						ok: false,
+						error: err instanceof Error ? err.message : String(err),
+					});
+				}
 			}
 
 			if (req.method === 'POST' && url.pathname === '/api/todo-status') {
@@ -264,6 +281,7 @@ function main() {
 					title,
 					htmlBody: mdToHtml(md),
 					relPath: relFromJournal,
+					md,
 				});
 				return send(res, 200, html, 'text/html; charset=utf-8');
 			}

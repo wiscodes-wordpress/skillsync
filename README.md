@@ -57,14 +57,16 @@ Open [http://127.0.0.1:8787/dashboard.html](http://127.0.0.1:8787/dashboard.html
 |--------|----------------|
 | `yarn dashboard` | Live UI + checkbox writes + **Sync Google** |
 | `yarn google:auth` | One-time OAuth (`--calendar`) |
-| `yarn google:sync` | CLI Tasks + Calendar (same as the button) |
+| `yarn google:sync` | CLI Tasks + Calendar push (same as the button) |
 | `yarn google:sync:dry` | Dry-run both syncs |
+| `yarn meetings` | Pull today’s agenda from Google Calendar |
 | `yarn dashboard:bundle` | Rebuild Obsidian `dashboard.obsidian.html` |
 
 | Action | What it does |
 |--------|----------------|
 | Checkboxes / edits | Write `Journal/_dashboard/planning.json` |
-| **Sync Google** | Todos → Google Tasks + `## Calendar` → Google Calendar |
+| **Sync Google** | Todos → Google Tasks + `## Calendar` → Google Calendar (push) |
+| **Meetings** | Pull today’s agenda from Google Calendar |
 | Obsidian | Open `Journal/_dashboard/dashboard.obsidian.html` (rebuilt on server writes; reopen to refresh) |
 
 Details: [`skills/personal/`](skills/personal/README.md) (`journal-planning`, `calendar-sync`).

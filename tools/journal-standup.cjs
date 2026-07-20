@@ -121,7 +121,7 @@ function focusTitlesFromPlanning(vault) {
  * @param {string[]} items
  * @param {string} [emptyMsg]
  */
-function bullets(items, emptyMsg = '(none yet — fill weekly log or add below)') {
+function bullets(items, emptyMsg = '(none)') {
 	if (!items.length) return `- ${emptyMsg}\n`;
 	return items.map((i) => `- ${i}`).join('\n') + '\n';
 }
@@ -163,17 +163,20 @@ function buildStandup(vault, target) {
 		yesterdayData = byDay.Fri || yesterdayData;
 	}
 
+	const isBlocker = (m) => /block|wait|stuck|depend/i.test(m);
+	const isTalkingPoint = (m) => /things to talk/i.test(m);
+
+	// Yesterday/Today: Work + Meetings (except blockers / "things to talk")
 	const yesterdayItems = [
 		...yesterdayData.work,
-		...yesterdayData.meetings.filter((m) => !/things to talk/i.test(m)),
+		...yesterdayData.meetings.filter((m) => !isTalkingPoint(m) && !isBlocker(m)),
 	];
-	const todayItems = [...today.work];
-	const blockers = today.meetings.filter(
-		(m) => /block|wait|stuck|depend/i.test(m),
-	);
-	const talkingPoints = today.meetings.filter(
-		(m) => !/block|wait|stuck|depend/i.test(m),
-	);
+	const todayItems = [
+		...today.work,
+		...today.meetings.filter((m) => !isTalkingPoint(m) && !isBlocker(m)),
+	];
+	const blockers = today.meetings.filter(isBlocker);
+	const talkingPoints = today.meetings.filter(isTalkingPoint);
 	const focusItems = focusTitlesFromPlanning(vault);
 
 	const weeklyLink = `[[${year}/${mondayStr}|Week of ${mondayStr}]]`;
@@ -197,9 +200,9 @@ ${bullets(yesterdayItems)}
 ## Today (${todayKey})
 ${bullets(todayItems)}
 ## Blockers
-${bullets(blockers)}
+${bullets(blockers, '(none)')}
 ## Talking points
-${bullets(talkingPoints)}
+${bullets(talkingPoints, '(none)')}
 ## Notes
 - 
 `;

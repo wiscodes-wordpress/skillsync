@@ -70,6 +70,19 @@ Or use the dashboard **Sync Google** button (`journal-dashboard-server.cjs`) —
 
 Do **not** use Cursor MCP `create-event` for this flow.
 
+## Pull (Meetings agenda)
+
+Dashboard **Meetings** + CLI read today’s schedule from **Google Calendar** (does not write calendars):
+
+```bash
+yarn meetings
+# or: node tools/list-meetings.cjs --day 2026-07-20
+```
+
+Live UI: `GET /api/meetings` on `journal-dashboard-server.cjs`.
+
+Uses the same OAuth token as push. Map calendars in `google-calendars.json` (`personal` / `work` / `business`). Join links come from Google Meet / conference data when present.
+
 ## Calendar Mapping
 
 Optional `google-calendars.json` next to the token:

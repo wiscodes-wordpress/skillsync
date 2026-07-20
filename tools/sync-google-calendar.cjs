@@ -586,5 +586,10 @@ module.exports = {
 	parseEventLine,
 	eventsFromMarkdown,
 	collectJournalEvents,
+	findTokenPath,
+	findCalendarsPath,
+	refreshAccessToken,
+	calendarApi,
 	DEFAULT_VAULT,
+	DEFAULT_TZ,
 };

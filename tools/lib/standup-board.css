@@ -1,0 +1,160 @@
+/* Standup meeting board — shipped with skillsync; appended on standup pages. */
+.wrap:has(.standup-board) {
+  max-width: 1120px;
+}
+
+.standup-board {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.standup-meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.standup-week-link {
+  font-weight: 500;
+}
+
+.standup-focus {
+  background: color-mix(in srgb, var(--work) 12%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--work) 40%, var(--border));
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem 1.1rem;
+}
+
+.standup-focus h2 {
+  margin: 0 0 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--work);
+}
+
+.standup-focus .standup-list li {
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.standup-triad,
+.standup-secondary {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.standup-triad {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.standup-secondary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.standup-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.05rem 1.1rem;
+  min-height: 8.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.standup-card header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.standup-card h2 {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.standup-day {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.standup-today {
+  border-color: color-mix(in srgb, var(--work) 45%, var(--border));
+  box-shadow: inset 3px 0 0 var(--work);
+}
+
+.standup-today h2 {
+  color: var(--work);
+}
+
+.standup-blockers:has(.standup-list) {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+  box-shadow: inset 3px 0 0 var(--danger);
+}
+
+.standup-blockers:has(.standup-list) h2 {
+  color: var(--danger);
+}
+
+.standup-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.standup-list li {
+  margin: 0;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--border);
+  line-height: 1.45;
+  font-size: 0.92rem;
+}
+
+.standup-list li:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.standup-list li::marker {
+  content: none;
+}
+
+.standup-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .standup-triad {
+    grid-template-columns: 1fr;
+  }
+
+  .standup-today {
+    order: -1;
+  }
+
+  .standup-secondary {
+    grid-template-columns: 1fr;
+  }
+
+  .standup-card {
+    min-height: 0;
+  }
+}
