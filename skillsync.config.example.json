@@ -27,7 +27,8 @@
 		"wp-plugin-development",
 		"anti-slop",
 		"release-distribution",
-		"release-marketing"
+		"release-marketing",
+		"journal-weekly"
 	],
 	"linkedRules": [
 		"typescript-ai-rules.mdc",
@@ -49,7 +50,8 @@
 		"ss-close-story.md",
 		"ss-release.md",
 		"ss-release-distribution.md",
-		"ss-release-marketing.md"
+		"ss-release-marketing.md",
+		"journal.md"
 	],
 	"prBaseBranch": "main",
 	"issueKeyPattern": "^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$",

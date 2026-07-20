@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Local private bridge for Journal/_dashboard.
- * Serves dashboard HTML/JSON and enables checkbox writes + Tasks sync button.
+ * Serves dashboard HTML/JSON and enables checkbox writes + unified Google sync button
+ * (Tasks from planning.json + Calendar from Journal ## Calendar).
  *
  * Usage:
  *   node tools/journal-dashboard-server.cjs
@@ -13,9 +14,35 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
-const { sync, planningPath, DEFAULT_VAULT } = require('./sync-google-tasks.cjs');
+const {
+	sync: syncTasks,
+	planningPath,
+	DEFAULT_VAULT,
+} = require('./sync-google-tasks.cjs');
+const { sync: syncCalendar } = require('./sync-google-calendar.cjs');
 const { bundleDashboard } = require('./journal-dashboard-bundle.cjs');
 
+/**
+ * Push todos → Google Tasks and Journal ## Calendar → Google Calendar.
+ * @param {string} vault
+ */
+async function syncAll(vault) {
+	const tasks = await syncTasks(vault, false);
+	const calendar = await syncCalendar(vault, false, null);
+	const tasksOk = !tasks || tasks.ok !== false;
+	const calendarOk = !calendar || calendar.ok !== false;
+	const message = [
+		`Tasks: ${(tasks && tasks.message) || 'done'}`,
+		`Calendar: ${(calendar && calendar.message) || 'done'}`,
+	].join(' · ');
+	return {
+		ok: tasksOk && calendarOk,
+		message,
+		tasks,
+		calendar,
+		planning: tasks && tasks.planning,
+	};
+}
 /**
  * @param {string} vault
  */
@@ -130,13 +157,18 @@ function main() {
 				return send(res, 200, planning);
 			}
 
-			if (req.method === 'POST' && url.pathname === '/api/sync-tasks') {
+			if (
+				req.method === 'POST' &&
+				(url.pathname === '/api/sync-tasks' || url.pathname === '/api/sync')
+			) {
 				try {
-					const result = await sync(vault, false);
+					const result = await syncAll(vault);
 					if (!result.ok) {
 						return send(res, 503, {
 							error: result.message || 'sync failed',
 							message: result.message,
+							tasks: result.tasks,
+							calendar: result.calendar,
 						});
 					}
 					refreshObsidianSnapshot(vault);

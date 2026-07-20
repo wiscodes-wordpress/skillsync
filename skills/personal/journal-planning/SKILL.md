@@ -127,19 +127,22 @@ After rebundle: tell user to **close/reopen** `dashboard.obsidian.html` in Obsid
 | Command | Purpose |
 |---------|---------|
 | `node tools/journal-dashboard-bundle.cjs` | Rebuild static Obsidian HTML from `planning.json` + `index.json` |
-| `node tools/journal-dashboard-server.cjs` | Live private UI on `127.0.0.1`; rebuilds Obsidian snapshot on writes |
+| `node tools/journal-dashboard-server.cjs` | Live private UI on `127.0.0.1`; **Sync Google** runs Tasks + Calendar |
 | `node tools/journal-index.cjs` | Parse weekly `.md` → `index.json` (+ rebundle) |
 | `node tools/sync-google-tasks.cjs` | Push todos → Google Tasks (needs OAuth token) |
+| `node tools/sync-google-calendar.cjs` | Push `## Calendar` → Google Calendar (needs OAuth with `--calendar`) |
+| `node tools/google-oauth-setup.cjs --calendar` | One-time Desktop OAuth (Tasks + Calendar scopes) |
 
 ## Related
 
 - **journal-weekly** — Markdown weeks + standup; run `journal-index` after big weekly fills
-- **calendar-sync** / **summary-update** — use `Journal/` (renamed from `Log/`)
+- **calendar-sync** — Journal `## Calendar` → Google via CLI (not Cursor MCP)
+- **summary-update** — use `Journal/` (renamed from `Log/`)
 
 ## Consumer setup (Cursor / Kiro)
 
 ```json
-"linkedSkills": ["journal-weekly", "journal-planning"]
+"linkedSkills": ["journal-weekly", "journal-planning", "calendar-sync"]
 ```
 
 ## Rules

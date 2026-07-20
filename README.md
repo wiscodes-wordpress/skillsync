@@ -36,6 +36,39 @@ Shared **Cursor Agent Skills**, **project rules**, **`ss-*` slash commands**, **
 
 See [`docs/consumer-setup.md`](docs/consumer-setup.md).
 
+## Journal dashboard (personal)
+
+Live goals/todos UI for the DenMercs vault. Checkbox writes and **Sync Google** need the local server (Obsidian’s HTML snapshot is static).
+
+Prefer **yarn** (same as consumer `skillsync:*` scripts). `npm run` works too — no install required.
+
+```bash
+# from skillsync root
+cp .env.example .env   # once: GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET
+yarn google:auth       # once: Tasks + Calendar token
+
+yarn dashboard
+# optional: yarn dashboard -- --vault "/path/to/DenMercs" --port 8787
+```
+
+Open [http://127.0.0.1:8787/dashboard.html](http://127.0.0.1:8787/dashboard.html).
+
+| Script | What it does |
+|--------|----------------|
+| `yarn dashboard` | Live UI + checkbox writes + **Sync Google** |
+| `yarn google:auth` | One-time OAuth (`--calendar`) |
+| `yarn google:sync` | CLI Tasks + Calendar (same as the button) |
+| `yarn google:sync:dry` | Dry-run both syncs |
+| `yarn dashboard:bundle` | Rebuild Obsidian `dashboard.obsidian.html` |
+
+| Action | What it does |
+|--------|----------------|
+| Checkboxes / edits | Write `Journal/_dashboard/planning.json` |
+| **Sync Google** | Todos → Google Tasks + `## Calendar` → Google Calendar |
+| Obsidian | Open `Journal/_dashboard/dashboard.obsidian.html` (rebuilt on server writes; reopen to refresh) |
+
+Details: [`skills/personal/`](skills/personal/README.md) (`journal-planning`, `calendar-sync`).
+
 ## Cursor references
 
 - [Agent Skills](https://cursor.com/docs/skills)

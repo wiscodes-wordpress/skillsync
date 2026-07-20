@@ -8,9 +8,14 @@
  *   node tools/sync-google-tasks.cjs --dry-run
  *
  * Credentials (first existing wins):
+ *   Load skillsync/.env first (GOOGLE_* + JOURNAL_GOOGLE_TOKEN_PATH)
  *   $JOURNAL_GOOGLE_TOKEN_PATH
  *   <vault>/_scripts/google-tasks-token.json
  *   <skillsync>/tools/.secrets/google-tasks-token.json
+ *
+ * One-time OAuth (Tasks + Calendar):
+ *   cp .env.example .env   # fill GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET
+ *   node tools/google-oauth-setup.cjs --calendar
  *
  * Token JSON shape:
  *   {
@@ -31,11 +36,14 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const https = require('node:https');
-
-const DEFAULT_VAULT =
-	'/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs';
+const { loadEnv } = require('./lib/load-env.cjs');
 
 const skillsyncRoot = path.join(__dirname, '..');
+loadEnv(skillsyncRoot);
+
+const DEFAULT_VAULT =
+	process.env.JOURNAL_VAULT_PATH ||
+	'/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs';
 
 /**
  * @param {string[]} argv

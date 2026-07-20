@@ -1,0 +1,14 @@
+{
+  "name": "skillsync",
+  "private": true,
+  "description": "Shared Cursor skills, rules, ss-* commands, and journal tooling",
+  "scripts": {
+    "dashboard": "node tools/journal-dashboard-server.cjs",
+    "dashboard:bundle": "node tools/journal-dashboard-bundle.cjs",
+    "journal:index": "node tools/journal-index.cjs",
+    "google:auth": "node tools/google-oauth-setup.cjs --calendar",
+    "google:sync": "node tools/sync-google-tasks.cjs && node tools/sync-google-calendar.cjs",
+    "google:sync:dry": "node tools/sync-google-tasks.cjs --dry-run && node tools/sync-google-calendar.cjs --dry-run",
+    "verify:tools": "node tools/verify-tools.cjs ."
+  }
+}
