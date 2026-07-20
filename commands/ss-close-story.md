@@ -18,4 +18,6 @@ node .cursor/vendor/skillsync/tools/harness-reset.cjs .
 
 Consumer wrappers (e.g. `qp-close-jira-story`, `qb-close-jira`) may add defaults and still point here.
 
+**Optional — journal handoff:** If consumer `skillsync.config.json` has `journal.enabled` (or `JOURNAL_HANDOFF=1` + vault), after harness reset follow [`journal-handoff`](../skills/personal/journal-handoff/SKILL.md) with `mode: close-story` (weekly note + complete matching todos/goals).
+
 Available as `/ss-close-story` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

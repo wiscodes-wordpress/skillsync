@@ -167,13 +167,14 @@ Obsidian does **not** live-load `planning.json`. The snapshot must be rebuilt, t
 ## Related
 
 - **journal-planning** — overall goals/todos + always rebundle after edits
+- **journal-handoff** — optional weekly + todo updates after `/ss-submit-pr` / `/ss-close-story`
 - **calendar-sync** — `## Calendar` → Google Calendar via `sync-google-calendar.cjs` + `.env` OAuth (`Journal/YYYY/`, not `Log/`)
 - **summary-update** — monthly summaries from `Journal/YYYY/`
 
 ## Consumer setup (Cursor / Kiro)
 
 ```json
-"linkedSkills": ["journal-weekly", "journal-planning", "calendar-sync"]
+"linkedSkills": ["journal-weekly", "journal-planning", "journal-handoff", "calendar-sync"]
 ```
 
 Skillsync tools (from repo root): `journal-index.cjs`, `journal-standup.cjs`, `journal-dashboard-bundle.cjs`, `journal-dashboard-server.cjs`, `sync-google-calendar.cjs`.

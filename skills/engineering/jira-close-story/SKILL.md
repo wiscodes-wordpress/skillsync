@@ -58,3 +58,7 @@ Print a **manual checklist** for the human:
 ## Consumer wrappers
 
 Repos like **QuickPress** keep **`qp-close-jira-story`** (thin): default assignee, project-specific fix-version heuristic, links to **`docs/agents/issue-tracker.md`**, and still **`/ss-close-story`** + this skill for the shared skeleton.
+
+## Related
+
+**Optional journal handoff:** When the consumer enables `skillsync.config.json` → `journal` (or `JOURNAL_HANDOFF`), after Jira close + harness reset follow **`journal-handoff`** `mode: close-story` — weekly note + matching todos/goals (see `skills/personal/journal-handoff/SKILL.md`).

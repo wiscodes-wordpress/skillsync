@@ -49,3 +49,7 @@ description: >
 ## Consumer wrappers
 
 Product-specific titles (fixed Jira project key), env vars, or `Fixes` scripts stay in thin commands (e.g. **`qp-submit-pr`**) that still invoke this skill’s flow.
+
+## Related
+
+**Optional journal handoff:** When the consumer enables `skillsync.config.json` → `journal` (or `JOURNAL_HANDOFF`), after a successful PR open follow **`journal-handoff`** `mode: submit-pr` — weekly Journal bullet only (see `skills/personal/journal-handoff/SKILL.md`).

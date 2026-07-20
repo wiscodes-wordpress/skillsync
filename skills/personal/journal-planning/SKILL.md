@@ -136,13 +136,14 @@ After rebundle: tell user to **close/reopen** `dashboard.obsidian.html` in Obsid
 ## Related
 
 - **journal-weekly** — Markdown weeks + standup; run `journal-index` after big weekly fills
+- **journal-handoff** — optional weekly + todo updates after `/ss-submit-pr` / `/ss-close-story`
 - **calendar-sync** — Journal `## Calendar` → Google via CLI (not Cursor MCP)
 - **summary-update** — use `Journal/` (renamed from `Log/`)
 
 ## Consumer setup (Cursor / Kiro)
 
 ```json
-"linkedSkills": ["journal-weekly", "journal-planning", "calendar-sync"]
+"linkedSkills": ["journal-weekly", "journal-planning", "journal-handoff", "calendar-sync"]
 ```
 
 ## Rules

@@ -28,7 +28,9 @@
 		"anti-slop",
 		"release-distribution",
 		"release-marketing",
-		"journal-weekly"
+		"journal-weekly",
+		"journal-planning",
+		"journal-handoff"
 	],
 	"linkedRules": [
 		"typescript-ai-rules.mdc",
@@ -55,5 +57,11 @@
 	],
 	"prBaseBranch": "main",
 	"issueKeyPattern": "^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$",
-	"issueTracker": "github"
+	"issueTracker": "github",
+	"journal": {
+		"enabled": true,
+		"vaultPath": "/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs",
+		"defaultTrack": "work",
+		"skillsyncToolsRoot": ".cursor/vendor/skillsync"
+	}
 }

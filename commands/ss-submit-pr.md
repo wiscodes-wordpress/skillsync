@@ -23,4 +23,6 @@ In **Ask** mode, print the skill checklist and exact tool commands.
 
 Consumer wrappers (e.g. `qp-submit-pr`) may add tracker defaults and still point here.
 
+**Optional — journal handoff:** If consumer `skillsync.config.json` has `journal.enabled` (or `JOURNAL_HANDOFF=1` + vault), after the PR URL is printed follow [`journal-handoff`](../skills/personal/journal-handoff/SKILL.md) with `mode: submit-pr` (weekly note only; do not mark todos done).
+
 Available as `/ss-submit-pr` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

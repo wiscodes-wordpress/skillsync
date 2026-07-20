@@ -107,7 +107,7 @@ Timezone: `JOURNAL_TIMEZONE` or default `America/Chicago`. Timed events default 
 ## Consumer setup (Cursor / Kiro)
 
 ```json
-"linkedSkills": ["journal-weekly", "journal-planning", "calendar-sync"]
+"linkedSkills": ["journal-weekly", "journal-planning", "journal-handoff", "calendar-sync"]
 ```
 
 ## Rules

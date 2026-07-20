@@ -63,6 +63,28 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
 
 For post-ship go-to-market, also link productivity skills **`anti-slop`**, **`release-distribution`**, and **`release-marketing`** (see [`skills/productivity/README.md`](../skills/productivity/README.md)).
 
+### Personal journal handoff (optional)
+
+After `/ss-submit-pr` and `/ss-close-story`, agents can update a personal Obsidian journal (weekly notes + `planning.json` todos/goals) when the consumer opts in. Works from **Cursor** or **Kiro** in any consumer (e.g. Lifeway → `work`, Quickpress → `business`) as long as the same vault path is configured.
+
+1. Link personal skills: `journal-weekly`, `journal-planning`, `journal-handoff`.
+2. Add a `journal` block to `skillsync.config.json` (see example below). Set `defaultTrack` per product.
+3. Re-run `link-skills` / `link-commands` (and the Kiro equivalent if commands live under `.kiro/`).
+4. Optionally set `$JOURNAL_VAULT_PATH` / `$JOURNAL_HANDOFF=1` instead of (or in addition to) `vaultPath` / `enabled`.
+
+```json
+"journal": {
+  "enabled": true,
+  "vaultPath": "/path/to/DenMercs",
+  "defaultTrack": "work",
+  "skillsyncToolsRoot": ".cursor/vendor/skillsync"
+}
+```
+
+- Missing or `"enabled": false` → handoff is skipped (no errors for other consumers).
+- Vault is always the Obsidian vault — **not** the consumer repo root.
+- Protocol: [`skills/personal/journal-handoff/SKILL.md`](../skills/personal/journal-handoff/SKILL.md).
+
 ## Link and verify
 
 Run from the **consumer** repository root (paths assume submodule at `.cursor/vendor/skillsync`):
@@ -173,7 +195,7 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `validate-release-pack.cjs` | `/ss-release*` | Assert channel pack files exist and are non-empty |
 | `verify-tools.cjs` | skillsync CI | Smoke-test tools + fixtures |
 
-Optional **`skillsync.config.json`** keys for tools:
+Optional **`skillsync.config.json`** keys for tools / journal handoff:
 
 ```json
 {
@@ -181,7 +203,12 @@ Optional **`skillsync.config.json`** keys for tools:
 	"issueKeyPattern": "^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$",
 	"issueTracker": "github",
 	"githubIssueLabels": "ready-for-agent",
-	"githubIssueLabels": "ready"
+	"journal": {
+		"enabled": true,
+		"vaultPath": "/path/to/DenMercs",
+		"defaultTrack": "work",
+		"skillsyncToolsRoot": ".cursor/vendor/skillsync"
+	}
 }
 ```
 
