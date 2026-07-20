@@ -15,12 +15,24 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { mdToHtml, extractTitle } = require('./lib/markdown-render.cjs');
+const {
+	renderNotePage,
+	renderDirPage,
+	obsidianNavFromView,
+	obsidianNavFromDash,
+	onCallViewName,
+	isoDate: chromeIsoDate,
+	mondayOf: chromeMondayOf,
+} = require('./lib/journal-chrome.cjs');
 
 const DEFAULT_VAULT =
 	'/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs';
 
 const TRACK_LABEL = { work: 'Work', business: 'Business', life: 'Life' };
 const TRACKS = ['work', 'business', 'life'];
+/** How many recent weekly notes to pre-render for Obsidian HTML. */
+const OBSIDIAN_WEEK_VIEWS = 52;
 
 /**
  * @param {string[]} argv
@@ -48,21 +60,122 @@ function esc(s) {
  * @param {Date} d
  */
 function isoDate(d) {
-	const y = d.getFullYear();
-	const m = String(d.getMonth() + 1).padStart(2, '0');
-	const day = String(d.getDate()).padStart(2, '0');
-	return `${y}-${m}-${day}`;
+	return chromeIsoDate(d);
 }
 
 /**
  * @param {Date} d
  */
 function mondayOf(d) {
-	const x = new Date(d);
-	const day = (x.getDay() + 6) % 7;
-	x.setDate(x.getDate() - day);
-	x.setHours(0, 0, 0, 0);
-	return x;
+	return chromeMondayOf(d);
+}
+
+/**
+ * @param {string} start YYYY-MM-DD
+ */
+function weekViewFile(start) {
+	return `week-${start}.html`;
+}
+
+/**
+ * @param {string} day YYYY-MM-DD
+ */
+function standupViewFile(day) {
+	return `standup-${day}.html`;
+}
+
+/**
+ * Clear and rebuild `_dashboard/view/*.html` so Obsidian keeps nav + styled notes
+ * (HTML plugins cannot run the localhost Markdown wrapper).
+ *
+ * @param {string} vault
+ * @param {string} css
+ * @param {{ weeks?: unknown[] }} indexData
+ * @returns {{ viewDir: string, written: number }}
+ */
+function writeObsidianViews(vault, css, indexData) {
+	const journal = path.join(vault, 'Journal');
+	const viewDir = path.join(vault, 'Journal', '_dashboard', 'view');
+	fs.mkdirSync(viewDir, { recursive: true });
+	for (const name of fs.readdirSync(viewDir)) {
+		if (name.endsWith('.html')) {
+			fs.unlinkSync(path.join(viewDir, name));
+		}
+	}
+
+	const today = new Date();
+	const mondayStr = isoDate(mondayOf(today));
+	const todayStr = isoDate(today);
+	const nav = obsidianNavFromView(mondayStr, todayStr);
+	let written = 0;
+
+	/**
+	 * @param {string} absMd
+	 * @param {string} relFromJournal
+	 * @param {string} outName
+	 */
+	function writeNote(absMd, relFromJournal, outName) {
+		if (!fs.existsSync(absMd) || !fs.statSync(absMd).isFile()) return;
+		const md = fs.readFileSync(absMd, 'utf8');
+		const title = extractTitle(md) || path.basename(absMd, '.md');
+		const html = renderNotePage({
+			title,
+			htmlBody: mdToHtml(md),
+			relPath: relFromJournal,
+			nav,
+			cssInline: css,
+			rawHref: `../../${relFromJournal.split('/').map(encodeURIComponent).join('/')}`,
+		});
+		fs.writeFileSync(path.join(viewDir, outName), html, 'utf8');
+		written++;
+	}
+
+	const weeks = Array.isArray(indexData.weeks) ? indexData.weeks : [];
+	const seenWeek = new Set();
+	for (const w of weeks.slice(0, OBSIDIAN_WEEK_VIEWS)) {
+		const x = /** @type {{ start?: string, path?: string }} */ (w);
+		if (!x.start || !x.path) continue;
+		seenWeek.add(x.start);
+		writeNote(path.join(journal, x.path), x.path, weekViewFile(x.start));
+	}
+
+	// Always include this week's file even if index is stale
+	if (!seenWeek.has(mondayStr)) {
+		const rel = `${today.getFullYear()}/${mondayStr}.md`;
+		writeNote(path.join(journal, rel), rel, weekViewFile(mondayStr));
+	}
+
+	const standupRel = `Standup/${today.getFullYear()}/${todayStr}.md`;
+	writeNote(path.join(journal, standupRel), standupRel, standupViewFile(todayStr));
+
+	const onCallDir = path.join(journal, 'On Call');
+	/** @type {{ name: string, href: string, kind: 'dir' | 'file' }[]} */
+	const onCallEntries = [];
+	if (fs.existsSync(onCallDir) && fs.statSync(onCallDir).isDirectory()) {
+		const files = fs
+			.readdirSync(onCallDir)
+			.filter((n) => n.toLowerCase().endsWith('.md') && !n.startsWith('.'))
+			.sort((a, b) => b.localeCompare(a));
+		for (const name of files) {
+			const viewName = onCallViewName(name);
+			const rel = `On Call/${name}`;
+			writeNote(path.join(onCallDir, name), rel, viewName);
+			onCallEntries.push({ name, href: `./${viewName}`, kind: 'file' });
+		}
+	}
+
+	const onCallIndex = renderDirPage({
+		title: 'On Call',
+		relPath: 'On Call',
+		entries: onCallEntries,
+		nav,
+		cssInline: css,
+		active: 'oncall',
+	});
+	fs.writeFileSync(path.join(viewDir, 'on-call.html'), onCallIndex, 'utf8');
+	written++;
+
+	return { viewDir, written };
 }
 
 /**
@@ -159,13 +272,19 @@ function renderStaticBody(planning, indexData, bundledAt) {
 					const x = /** @type {{ week?: string, start?: string, path?: string, focus?: string[], workFill?: number, businessFill?: number, winsCount?: number, wins?: unknown[], onCallPath?: string | null }} */ (
 						w
 					);
-					const href = x.path ? `../${x.path}` : '#';
+					const href = x.start
+						? `./view/${weekViewFile(x.start)}`
+						: x.path
+							? `../${x.path}`
+							: '#';
 					const focus = (x.focus && x.focus[0]) || '—';
 					const wins =
 						x.winsCount != null ? x.winsCount : (x.wins && x.wins.length) || 0;
-					const onCall = x.onCallPath
-						? `<a href="../${esc(x.onCallPath)}">on call</a>`
-						: '—';
+					let onCall = '—';
+					if (x.onCallPath) {
+						const base = path.basename(String(x.onCallPath));
+						onCall = `<a href="./view/${esc(onCallViewName(base))}">on call</a>`;
+					}
 					return `<tr>
           <td><a href="${esc(href)}">${esc(x.week || x.start || '')}</a></td>
           <td>${esc(focus)}</td>
@@ -182,15 +301,17 @@ function renderStaticBody(planning, indexData, bundledAt) {
 		? `Indexed ${new Date(indexData.generatedAt).toLocaleString()}`
 		: '';
 
+	const dashNav = obsidianNavFromDash(mondayStr, todayStr);
+
 	return `
     <div class="app-shell">
       <nav class="site-nav" aria-label="Journal">
-        <a class="brand" href="#">Journal</a>
+        <a class="brand" href="${esc(dashNav.brand)}">Journal</a>
         <div class="site-nav-links">
-          <a href="#" class="active">Dashboard</a>
-          <a href="../${year}/${mondayStr}.md">Weekly log</a>
-          <a href="../Standup/${today.getFullYear()}/${todayStr}.md">Today’s standup</a>
-          <a href="../On Call/">On Call</a>
+          <a href="${esc(dashNav.dashboard)}" class="active">Dashboard</a>
+          <a href="${esc(dashNav.week)}">Weekly log</a>
+          <a href="${esc(dashNav.standup)}">Today’s standup</a>
+          <a href="${esc(dashNav.oncall)}">On Call</a>
         </div>
       </nav>
     <div class="wrap">
@@ -200,17 +321,15 @@ function renderStaticBody(planning, indexData, bundledAt) {
           <p class="sub">Goals &amp; todos (overall) · weekly log is separate</p>
         </div>
         <div class="actions">
-          <a class="btn primary" href="../${year}/${mondayStr}.md">Weekly log</a>
-          <a class="btn" href="../Standup/${today.getFullYear()}/${todayStr}.md">Today’s standup</a>
-          <a class="btn" href="../On Call/">On Call</a>
+          <a class="btn primary" href="${esc(dashNav.week)}">Weekly log</a>
+          <a class="btn" href="${esc(dashNav.standup)}">Today’s standup</a>
+          <a class="btn" href="${esc(dashNav.oncall)}">On Call</a>
         </div>
       </header>
 
       <div class="banner">
         Obsidian snapshot (static — no JS). Bundled <strong>${esc(when)}</strong>.
-        Reload in Obsidian cannot refresh data — run
-        <code>node tools/journal-dashboard-bundle.cjs</code>
-        (or keep the localhost server running; it rebuilds this file on writes).
+        Notes open as styled HTML under <code>_dashboard/view/</code> (re-run bundle after writing weeks).
         Live interactive UI:
         <code>http://127.0.0.1:8787/dashboard.html</code>
       </div>
@@ -248,7 +367,7 @@ function renderStaticBody(planning, indexData, bundledAt) {
       <section class="section">
         <h2>Weekly activity (archive)</h2>
         <p class="meta" style="margin-top:-0.5rem;margin-bottom:0.75rem;color:var(--muted);font-size:0.8rem">${esc(indexMeta)}</p>
-        <div style="overflow-x:auto">
+        <div class="table-scroll">
           <table class="weeks">
             <thead>
               <tr>
@@ -300,13 +419,14 @@ function bundleDashboard(vault) {
 	}
 
 	const bundledAt = new Date().toISOString();
+	const { written } = writeObsidianViews(vault, css, indexData);
 	const bodyInner = renderStaticBody(planning, indexData, bundledAt);
 
 	const html = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Journal Dashboard (Obsidian)</title>
     <style>
 ${css}
@@ -319,13 +439,14 @@ ${bodyInner}
 `;
 
 	fs.writeFileSync(outPath, html, 'utf8');
-	return { outPath, bundledAt };
+	return { outPath, bundledAt, viewPages: written };
 }
 
 function main() {
 	const { vault } = parseArgs(process.argv.slice(2));
-	const { outPath, bundledAt } = bundleDashboard(vault);
+	const { outPath, bundledAt, viewPages } = bundleDashboard(vault);
 	console.log(`Obsidian dashboard → ${outPath}`);
+	console.log(`Obsidian note views → Journal/_dashboard/view/ (${viewPages} files)`);
 	console.log(`bundledAt ${bundledAt}`);
 }
 
