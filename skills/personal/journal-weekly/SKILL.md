@@ -1,15 +1,27 @@
 ---
 name: journal-weekly
 description: >-
-  Creates and updates weekly Journal notes in the DenMercs Obsidian vault
-  (Work/Lifeway, Meetings/standup, Business/Quickpress). Use when the user
-  asks for a weekly log, journal week, new week, fill this week, weekly login,
-  update journal, or log Work/Business for the week.
+  Creates and updates Markdown weekly Journal notes and daily standup notes in
+  the DenMercs Obsidian vault (Work/Lifeway, Meetings, Business/Quickpress).
+  Use when the user asks for a weekly log, journal week, new week, fill this
+  week, weekly login, standup, daily standup, or log Work/Business for the week.
 ---
 
 # Journal Weekly
 
-Manages weekly notes under the DenMercs **Journal** vault (formerly Log).
+Manages **Markdown** weekly activity logs and **derived** daily standup notes.
+
+## Architecture (hybrid)
+
+| Layer | Format | Role |
+|-------|--------|------|
+| Weekly / standup / on-call | **Markdown** | Notes SoT — edit in Obsidian |
+| Goals / todos | `planning.json` | Overall planning via **journal-planning** (not week-bounded) |
+| Dashboard | **HTML** | Overview UI — does **not** replace weekly `.md` files |
+
+Dashboard reads weeks via `index.json` (from `journal-index.cjs`), not by converting weeks to HTML.
+
+**Do not** create HTML weekly notes. Keep the Weekly Log markdown template.
 
 ## Paths
 
@@ -17,64 +29,81 @@ Vault root: `/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wisc
 
 | Item | Path |
 |------|------|
-| Weekly notes | `Journal/YYYY/YYYY-MM-DD.md` |
-| Template | `_Templates/Weekly Log.md` |
-| On Call (separate) | `Journal/On Call/` |
+| Weekly notes | `Journal/YYYY/YYYY-MM-DD.md` (Monday of week) |
+| Daily standup | `Journal/Standup/YYYY/YYYY-MM-DD.md` |
+| Standup template | `_Templates/Standup.md` |
+| Weekly template | `_Templates/Weekly Log.md` |
+| On Call | `Journal/On Call/` |
 | On Call template | `_Templates/On Call.md` |
+| Goals / todos | `Journal/_dashboard/planning.json` |
+| Obsidian dashboard | `Journal/_dashboard/dashboard.obsidian.html` (static snapshot) |
+| Live dashboard | `node tools/journal-dashboard-server.cjs` → `http://127.0.0.1:8787/dashboard.html` |
 
-- Filename date = **Monday** of that week (`YYYY-MM-DD`).
-- Title inside file: `# Week of YYYY-MM-DD` (same Monday).
-- If the Cursor workspace is the DenMercs vault, relative paths `Journal/...` and `_Templates/...` are fine.
+- Weekly filename = **Monday** (`YYYY-MM-DD`). Title: `# Week of YYYY-MM-DD`.
+- Relative paths work when the Cursor workspace is the DenMercs vault.
 
 ## Tracks
 
-| Column / section | Meaning |
-|------------------|---------|
+| Column | Meaning |
+|--------|---------|
 | **Work** | Lifeway (React / React Native) |
 | **Meetings** | Standups, 5on2s, talking points |
 | **Business** | Quickpress |
 
-Keep On Call out of the weekly body when possible. Link instead: `On call → [[On Call/YYYY-MM-DD]]`.
+On Call stays separate: `On call → [[On Call/YYYY-MM-DD]]`.
 
 ## When to use
 
 - "new week", "weekly log", "journal for this week", "weekly login"
 - "log that I merged X" / "add to Business…" / "fill this week"
+- "standup", "daily standup", "generate standup"
 - "what's in my journal this week"
 
 ## Modes
 
 ### A — Create / open this week
 
-1. Resolve **Monday** of the target week (default: current week in local timezone).
-2. Path: `Journal/YYYY/YYYY-MM-DD.md` (year folder = Monday's year).
-3. If file **exists**: read it and confirm path; do not overwrite.
-4. If file **missing**: create from template below (or copy `_Templates/Weekly Log.md` and replace `{{date}}` with that Monday).
+1. Resolve **Monday** of the target week (default: current week, local TZ).
+2. Path: `Journal/YYYY/YYYY-MM-DD.md`.
+3. If exists: read and confirm; **do not overwrite**.
+4. If missing: create from template below (or `_Templates/Weekly Log.md`, replace `{{date}}`).
 5. Tell the user the full path.
 
 ### B — Fill / update from conversation
 
 1. Open this week’s file (create first if needed).
-2. Map user content into the right place:
-   - Shipped eng work → **Daily log → Work** cell for that day (Mon–Fri)
-   - Standup / meeting notes → **Meetings** cell
-   - Quickpress → **Business** cell
+2. Map content:
+   - Eng shipping → **Daily log → Work** (Mon–Fri cell)
+   - Standup / meeting notes → **Meetings**
+   - Quickpress → **Business**
    - Priorities → **Focus for the week**
-   - Events → **Calendar** (calendar-sync format)
+   - Events → **Calendar**
    - Highlights → **Wins & learnings**
-3. **Merge, don’t wipe**: append bullets; keep existing cell text.
-4. Prefer one short bullet per item; use `<br>` inside table cells when adding a second line (matches existing notes).
-5. If day omitted, use **today** (Mon–Fri). Weekend input → put under Focus or Fri, and ask if unclear.
+3. **Merge, don’t wipe.** Prefer short bullets; use `<br>` for extra lines in cells.
+4. Default day = **today** (Mon–Fri). Weekend → Focus or Fri; ask if unclear.
+5. After meaningful fills, refresh dashboard data:
 
-### C — Standup draft (optional)
+```bash
+node tools/journal-index.cjs
+```
 
-From this week’s **Work** + **Meetings** cells, draft 3 bullets:
+(`journal-index` also rebuilds `dashboard.obsidian.html`.)
 
-- Yesterday
-- Today
-- Blockers
+### C — Daily standup (from weekly)
 
-Do not invent work; only use what’s in the file + what the user just said.
+Standup is **derived** from the weekly Daily log. Weekly remains activity SoT.
+
+1. Ensure weekly file exists (Mode A).
+2. Run from skillsync:
+
+```bash
+node tools/journal-standup.cjs
+node tools/journal-standup.cjs --date YYYY-MM-DD
+```
+
+3. Writes `Journal/Standup/YYYY/YYYY-MM-DD.md` (Yesterday / Today / Blockers / Talking points from Work + Meetings).
+4. Preserve existing `## Notes` when regenerating.
+5. Do not invent work. Report standup path + weekly link.
 
 ## Weekly template
 
@@ -106,8 +135,7 @@ country:
 ---
 
 ## Calendar
-<!-- Items here sync to Google Calendar. Colors: Personal=lavender | Work=blue | Business=orange -->
-<!-- Format: - [emoji] Date, time - Event title (Personal|Work|Business) -->
+<!-- Sync: - [emoji] Date, time - Event title (Personal|Work|Business) -->
 - 
 
 ---
@@ -116,42 +144,44 @@ country:
 - 
 ```
 
-Focus lines `Work:` / `Business:` are preferred for dual-track weeks. If an older note only has plain focus bullets, keep that style when editing.
-
 ## Calendar line format
-
-Compatible with **calendar-sync**:
 
 ```text
 - Date, time - Event title (Personal|Work|Business)
 ```
 
-Examples: `Feb 10, 2pm - Meeting with Robin (Work)` · `2026-07-22 9am - Quickpress ads (Business)`
-
 ## On Call
 
-- Do **not** dump full incident writeups into the weekly file.
-- Create/update under `Journal/On Call/` from `_Templates/On Call.md` when the user is on call.
-- In the weekly note, one link line is enough.
+- Full writeups → `Journal/On Call/` from `_Templates/On Call.md`.
+- Weekly: one link line only.
 
-## Related skills
+## Dashboard refresh (after weekly changes)
 
-- **calendar-sync** — push `## Calendar` to Google Calendar (still may say `Log/`; treat as `Journal/`)
-- **summary-update** — monthly Work/Business summaries from journal weeks (same path rename)
+| View | How to update |
+|------|----------------|
+| Obsidian HTML | Re-run `node tools/journal-index.cjs` or `node tools/journal-dashboard-bundle.cjs`, then **reopen** `dashboard.obsidian.html` (static; Reload in Obsidian does nothing) |
+| Localhost | `node tools/journal-dashboard-server.cjs` — live read of JSON; Reload works in the browser |
+
+Obsidian does **not** live-load `planning.json`. The snapshot must be rebuilt, then reopened.
+
+## Related
+
+- **journal-planning** — overall goals/todos + always rebundle after edits
+- **calendar-sync** — `## Calendar` → Google Calendar (`Journal/YYYY/`, not `Log/`)
+- **summary-update** — monthly summaries from `Journal/YYYY/`
 
 ## Consumer setup (Cursor / Kiro)
 
-Add to the consumer `skillsync.config.json`:
-
 ```json
-"linkedSkills": ["journal-weekly"]
+"linkedSkills": ["journal-weekly", "journal-planning"]
 ```
 
-Then run the consumer’s skillsync link (e.g. `yarn skillsync:link`). Resolves from `skills/personal/journal-weekly`.
+Skillsync tools (from repo root): `journal-index.cjs`, `journal-standup.cjs`, `journal-dashboard-bundle.cjs`, `journal-dashboard-server.cjs`.
 
 ## Rules
 
+- Weekly notes stay **Markdown** — never migrate a week to HTML for the vault.
 - Never overwrite a filled week with a blank template.
-- Never move On Call content into the daily table except a short link.
-- Verb-first bullets: `Merged roku colors PR`, not long paragraphs.
-- Absolute vault path above is canonical when the workspace is not DenMercs.
+- Standup = meeting aid; lasting activity stays in the weekly log.
+- Goals/todos → `planning.json` only.
+- Verb-first bullets. Absolute vault path is canonical when workspace ≠ DenMercs.

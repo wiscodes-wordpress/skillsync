@@ -1,0 +1,3 @@
+# Local OAuth tokens for journal Google Tasks sync — never commit.
+*
+!.gitignore

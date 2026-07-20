@@ -1,0 +1,202 @@
+#!/usr/bin/env node
+/**
+ * Local private bridge for Journal/_dashboard.
+ * Serves dashboard HTML/JSON and enables checkbox writes + Tasks sync button.
+ *
+ * Usage:
+ *   node tools/journal-dashboard-server.cjs
+ *   node tools/journal-dashboard-server.cjs --vault "/path/to/DenMercs" --port 8787
+ *
+ * Then open http://127.0.0.1:8787/dashboard.html
+ */
+
+const fs = require('node:fs');
+const path = require('node:path');
+const http = require('node:http');
+const { sync, planningPath, DEFAULT_VAULT } = require('./sync-google-tasks.cjs');
+const { bundleDashboard } = require('./journal-dashboard-bundle.cjs');
+
+/**
+ * @param {string} vault
+ */
+function refreshObsidianSnapshot(vault) {
+	try {
+		const { outPath } = bundleDashboard(vault);
+		console.log(`Obsidian snapshot refreshed → ${outPath}`);
+	} catch (err) {
+		console.error(
+			'Obsidian bundle failed:',
+			err instanceof Error ? err.message : err,
+		);
+	}
+}
+
+/**
+ * @param {string[]} argv
+ */
+function parseArgs(argv) {
+	let vault = DEFAULT_VAULT;
+	let port = Number(process.env.JOURNAL_DASHBOARD_PORT || 8787);
+	for (let i = 0; i < argv.length; i++) {
+		if (argv[i] === '--vault' && argv[i + 1]) vault = argv[++i];
+		if (argv[i] === '--port' && argv[i + 1]) port = Number(argv[++i]);
+	}
+	return { vault: path.resolve(vault), port };
+}
+
+/**
+ * @param {string} filePath
+ */
+function contentType(filePath) {
+	const ext = path.extname(filePath).toLowerCase();
+	switch (ext) {
+		case '.html':
+			return 'text/html; charset=utf-8';
+		case '.js':
+			return 'text/javascript; charset=utf-8';
+		case '.css':
+			return 'text/css; charset=utf-8';
+		case '.json':
+			return 'application/json; charset=utf-8';
+		case '.md':
+			return 'text/markdown; charset=utf-8';
+		case '.svg':
+			return 'image/svg+xml';
+		default:
+			return 'application/octet-stream';
+	}
+}
+
+/**
+ * @param {http.IncomingMessage} req
+ */
+function readBody(req) {
+	return new Promise((resolve, reject) => {
+		const chunks = [];
+		req.on('data', (c) => chunks.push(c));
+		req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+		req.on('error', reject);
+	});
+}
+
+/**
+ * @param {http.ServerResponse} res
+ * @param {number} status
+ * @param {unknown} body
+ * @param {string} [type]
+ */
+function send(res, status, body, type = 'application/json; charset=utf-8') {
+	const payload = typeof body === 'string' ? body : JSON.stringify(body);
+	res.writeHead(status, {
+		'Content-Type': type,
+		'Cache-Control': 'no-store',
+	});
+	res.end(payload);
+}
+
+function main() {
+	const { vault, port } = parseArgs(process.argv.slice(2));
+	const dashRoot = path.join(vault, 'Journal', '_dashboard');
+	const journalRoot = path.join(vault, 'Journal');
+
+	if (!fs.existsSync(dashRoot)) {
+		console.error(`Missing dashboard folder: ${dashRoot}`);
+		process.exit(1);
+	}
+
+	const server = http.createServer(async (req, res) => {
+		try {
+			const url = new URL(req.url || '/', `http://127.0.0.1:${port}`);
+
+			if (req.method === 'GET' && url.pathname === '/api/health') {
+				return send(res, 200, { ok: true, vault });
+			}
+
+			if (req.method === 'POST' && url.pathname === '/api/todo-status') {
+				const raw = await readBody(req);
+				const body = JSON.parse(raw || '{}');
+				const planFile = planningPath(vault);
+				const planning = JSON.parse(fs.readFileSync(planFile, 'utf8'));
+				const todo = (planning.todos || []).find((t) => t.id === body.id);
+				if (!todo) {
+					return send(res, 404, { error: `todo not found: ${body.id}` });
+				}
+				if (body.status === 'done' || body.status === 'todo' || body.status === 'doing') {
+					todo.status = body.status;
+				}
+				planning.updatedAt = new Date().toISOString();
+				fs.writeFileSync(planFile, `${JSON.stringify(planning, null, 2)}\n`);
+				refreshObsidianSnapshot(vault);
+				return send(res, 200, planning);
+			}
+
+			if (req.method === 'POST' && url.pathname === '/api/sync-tasks') {
+				try {
+					const result = await sync(vault, false);
+					if (!result.ok) {
+						return send(res, 503, {
+							error: result.message || 'sync failed',
+							message: result.message,
+						});
+					}
+					refreshObsidianSnapshot(vault);
+					return send(res, 200, result);
+				} catch (err) {
+					return send(res, 500, {
+						error: err instanceof Error ? err.message : String(err),
+					});
+				}
+			}
+
+			if (req.method !== 'GET' && req.method !== 'HEAD') {
+				return send(res, 405, { error: 'method not allowed' });
+			}
+
+			let rel = decodeURIComponent(url.pathname);
+			if (rel === '/') rel = '/dashboard.html';
+
+			// Serve dashboard assets and allow ../Year/week.md links under Journal/
+			let filePath;
+			if (rel.startsWith('/On%20Call') || rel.startsWith('/On Call')) {
+				filePath = path.join(journalRoot, decodeURIComponent(rel.slice(1)));
+			} else if (/^\/\d{4}\//.test(rel)) {
+				filePath = path.join(journalRoot, rel.slice(1));
+			} else if (rel.startsWith('/Standup/') || rel.startsWith('/Standup%2F')) {
+				filePath = path.join(journalRoot, decodeURIComponent(rel.slice(1)));
+			} else {
+				filePath = path.join(dashRoot, rel.replace(/^\//, ''));
+			}
+
+			const resolved = path.resolve(filePath);
+			const allowedRoots = [path.resolve(dashRoot), path.resolve(journalRoot)];
+			if (!allowedRoots.some((root) => resolved === root || resolved.startsWith(root + path.sep))) {
+				return send(res, 403, { error: 'forbidden' });
+			}
+
+			if (!fs.existsSync(resolved) || fs.statSync(resolved).isDirectory()) {
+				return send(res, 404, { error: 'not found' });
+			}
+
+			const data = fs.readFileSync(resolved);
+			res.writeHead(200, {
+				'Content-Type': contentType(resolved),
+				'Cache-Control': 'no-store',
+			});
+			res.end(req.method === 'HEAD' ? undefined : data);
+		} catch (err) {
+			send(res, 500, {
+				error: err instanceof Error ? err.message : String(err),
+			});
+		}
+	});
+
+	server.listen(port, '127.0.0.1', () => {
+		refreshObsidianSnapshot(vault);
+		console.log(`Journal dashboard → http://127.0.0.1:${port}/dashboard.html`);
+		console.log(`Obsidian file → Journal/_dashboard/dashboard.obsidian.html`);
+		console.log(`Vault: ${vault}`);
+		console.log('Private: bound to 127.0.0.1 only.');
+	});
+}
+
+main();
