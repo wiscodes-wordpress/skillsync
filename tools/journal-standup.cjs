@@ -15,9 +15,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-
-const DEFAULT_VAULT =
-	'/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs';
+const { DEFAULT_VAULT } = require('./lib/journal-vault.cjs');
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 

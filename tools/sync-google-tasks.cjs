@@ -41,9 +41,7 @@ const { loadEnv } = require('./lib/load-env.cjs');
 const skillsyncRoot = path.join(__dirname, '..');
 loadEnv(skillsyncRoot);
 
-const DEFAULT_VAULT =
-	process.env.JOURNAL_VAULT_PATH ||
-	'/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs';
+const { DEFAULT_VAULT } = require('./lib/journal-vault.cjs');
 
 /**
  * @param {string[]} argv

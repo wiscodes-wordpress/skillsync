@@ -16,9 +16,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
-
-const DEFAULT_VAULT =
-	'/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs';
+const { DEFAULT_VAULT } = require('./lib/journal-vault.cjs');
 
 /**
  * @param {string[]} argv

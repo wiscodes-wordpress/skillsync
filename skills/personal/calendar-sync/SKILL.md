@@ -20,7 +20,7 @@ Syncs events from the `## Calendar` section in **weekly Journal** notes to Googl
 ## Paths
 
 Vault root (if not using DenMercs as workspace):  
-`/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs`
+`$HOME/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs` (override with `$JOURNAL_VAULT_PATH` or `--vault`)
 
 - Weekly notes: `Journal/YYYY/YYYY-MM-DD.md` (Monday-dated weeks)
 - Formerly named `Log/` — treat any old `Log/` references as `Journal/`

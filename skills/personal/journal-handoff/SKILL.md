@@ -41,7 +41,7 @@ From the **consumer repository root** (cwd for `/ss-*`):
 
 Fallback vault (same as other journal skills):
 
-`/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs`
+`$HOME/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs` (override with `$JOURNAL_VAULT_PATH` or `--vault`)
 
 | `defaultTrack` | Daily log column | Typical consumer |
 |----------------|------------------|------------------|

@@ -33,7 +33,7 @@ Obsidian HTML plugins do **not** run JavaScript and do **not** live-read JSON. A
 
 ## Paths
 
-Vault root: `/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs`
+Vault root: `$HOME/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs` (override with `$JOURNAL_VAULT_PATH` or `--vault`)
 
 | Item | Path |
 |------|------|

@@ -25,9 +25,7 @@ const {
 	isoDate: chromeIsoDate,
 	mondayOf: chromeMondayOf,
 } = require('./lib/journal-chrome.cjs');
-
-const DEFAULT_VAULT =
-	'/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs';
+const { DEFAULT_VAULT } = require('./lib/journal-vault.cjs');
 
 const TRACK_LABEL = { work: 'Work', business: 'Business', life: 'Life' };
 const TRACKS = ['work', 'business', 'life'];

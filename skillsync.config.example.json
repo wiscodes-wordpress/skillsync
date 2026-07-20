@@ -60,7 +60,7 @@
 	"issueTracker": "github",
 	"journal": {
 		"enabled": true,
-		"vaultPath": "/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs",
+		"vaultPath": "/Users/denmercs/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs",
 		"defaultTrack": "work",
 		"skillsyncToolsRoot": ".cursor/vendor/skillsync"
 	}

@@ -25,7 +25,7 @@ Dashboard reads weeks via `index.json` (from `journal-index.cjs`), not by conver
 
 ## Paths
 
-Vault root: `/Users/dennis.mercado/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs`
+Vault root: `$HOME/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs` (override with `$JOURNAL_VAULT_PATH` or `--vault`)
 
 | Item | Path |
 |------|------|
