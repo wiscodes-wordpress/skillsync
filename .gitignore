@@ -3,6 +3,9 @@
 .env.local
 *.pem
 
+# Local link/verify output when skillsync is used as its own consumer
+.cursor/
+
 # OS / editor
 .DS_Store
 *.swp

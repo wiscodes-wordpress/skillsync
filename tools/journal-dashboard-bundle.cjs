@@ -183,6 +183,16 @@ function renderStaticBody(planning, indexData, bundledAt) {
 		: '';
 
 	return `
+    <div class="app-shell">
+      <nav class="site-nav" aria-label="Journal">
+        <a class="brand" href="#">Journal</a>
+        <div class="site-nav-links">
+          <a href="#" class="active">Dashboard</a>
+          <a href="../${year}/${mondayStr}.md">Weekly log</a>
+          <a href="../Standup/${today.getFullYear()}/${todayStr}.md">Today’s standup</a>
+          <a href="../On Call/">On Call</a>
+        </div>
+      </nav>
     <div class="wrap">
       <header class="top">
         <div>
@@ -260,6 +270,7 @@ function renderStaticBody(planning, indexData, bundledAt) {
         <code>planning.json</code>; weeks from <code>index.json</code>.
         Do not deploy this folder publicly.
       </p>
+    </div>
     </div>`;
 }
 

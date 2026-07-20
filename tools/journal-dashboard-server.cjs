@@ -21,6 +21,8 @@ const {
 } = require('./sync-google-tasks.cjs');
 const { sync: syncCalendar } = require('./sync-google-calendar.cjs');
 const { bundleDashboard } = require('./journal-dashboard-bundle.cjs');
+const { mdToHtml, extractTitle } = require('./lib/markdown-render.cjs');
+const { renderNotePage, renderDirPage } = require('./lib/journal-chrome.cjs');
 
 /**
  * Push todos → Google Tasks and Journal ## Calendar → Google Calendar.
@@ -205,8 +207,58 @@ function main() {
 				return send(res, 403, { error: 'forbidden' });
 			}
 
-			if (!fs.existsSync(resolved) || fs.statSync(resolved).isDirectory()) {
+			if (!fs.existsSync(resolved)) {
 				return send(res, 404, { error: 'not found' });
+			}
+
+			const wantRaw = url.searchParams.get('raw') === '1';
+
+			// Directory browse (On Call/, Standup/, year folders)
+			if (fs.statSync(resolved).isDirectory()) {
+				const relFromJournal = path.relative(journalRoot, resolved).split(path.sep).join('/');
+				const entries = fs
+					.readdirSync(resolved, { withFileTypes: true })
+					.filter((d) => !d.name.startsWith('.'))
+					.sort((a, b) => {
+						if (a.isDirectory() !== b.isDirectory()) {
+							return a.isDirectory() ? -1 : 1;
+						}
+						return b.name.localeCompare(a.name);
+					})
+					.map((d) => {
+						const name = d.name;
+						const href =
+							'/' +
+							[...relFromJournal.split('/').filter(Boolean), name]
+								.map(encodeURIComponent)
+								.join('/') +
+							(d.isDirectory() ? '/' : '');
+						return {
+							name,
+							href,
+							kind: d.isDirectory() ? /** @type {'dir'} */ ('dir') : /** @type {'file'} */ ('file'),
+						};
+					});
+				const title = path.basename(resolved) || 'Journal';
+				const html = renderDirPage({
+					title,
+					relPath: relFromJournal || 'Journal',
+					entries,
+				});
+				return send(res, 200, html, 'text/html; charset=utf-8');
+			}
+
+			// Beautified Markdown notes — ?raw=1 for plain text/markdown
+			if (path.extname(resolved).toLowerCase() === '.md' && !wantRaw) {
+				const md = fs.readFileSync(resolved, 'utf8');
+				const relFromJournal = path.relative(journalRoot, resolved).split(path.sep).join('/');
+				const title = extractTitle(md) || path.basename(resolved, '.md');
+				const html = renderNotePage({
+					title,
+					htmlBody: mdToHtml(md),
+					relPath: relFromJournal,
+				});
+				return send(res, 200, html, 'text/html; charset=utf-8');
 			}
 
 			const data = fs.readFileSync(resolved);
