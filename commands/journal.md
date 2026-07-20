@@ -1,28 +1,29 @@
 # journal
 
-**Personal command** — weekly journal and standup management.
+**Personal command** — weekly journal, standup, and dashboard goal/todo sync.
 
-Activates [`journal-weekly`](../skills/personal/journal-weekly/SKILL.md) for Markdown weekly logs, daily standups, and dashboard refresh in the DenMercs Obsidian vault.
+Activates [`journal-weekly`](../skills/personal/journal-weekly/SKILL.md) for Markdown weekly logs, daily standups, and matching `planning.json` updates in the DenMercs Obsidian vault. Use [`journal-planning`](../skills/personal/journal-planning/SKILL.md) for the goals/todos schema.
 
 ## Usage
 
 | Intent | What happens |
 |--------|--------------|
 | `/journal` | Open/create this week's journal (Mode A) |
-| `/journal` + context about work done | Fill today's entry from conversation (Mode B) |
+| `/journal` + context about work done | Fill today's entry from conversation **and** sync matching dashboard goals/todos when relevant (Mode B) |
 | `/journal standup` | Generate daily standup from weekly log (Mode C) |
 | `/journal` + "what did I do" | Read back this week's activity |
 
 ## Linked skills
 
 ```json
-"linkedSkills": ["journal-weekly"]
+"linkedSkills": ["journal-weekly", "journal-planning"]
 ```
 
 ## Quick reference
 
 - Weekly notes: `Journal/YYYY/YYYY-MM-DD.md` (Monday date)
 - Standups: `Journal/Standup/YYYY/YYYY-MM-DD.md`
+- Goals / todos: `Journal/_dashboard/planning.json`
 - Dashboard refresh: `node tools/journal-index.cjs`
 - Standup gen: `node tools/journal-standup.cjs`
 

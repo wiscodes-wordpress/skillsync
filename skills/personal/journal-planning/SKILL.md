@@ -55,7 +55,8 @@ If `_dashboard/` or `planning.json` is missing, seed empty `goals` / `todos` and
       "title": "…",
       "horizon": "week|month|quarter",
       "status": "active|done|dropped",
-      "target": "YYYY-MM-DD"
+      "target": "YYYY-MM-DD",
+      "completedAt": "YYYY-MM-DD"
     }
   ],
   "todos": [
@@ -82,6 +83,8 @@ If `_dashboard/` or `planning.json` is missing, seed empty `goals` / `todos` and
 
 IDs: `g…` / `t…` unique; prefer `done`/`dropped` over delete. Keep `googleTaskId` when completing.
 
+Optional `completedAt` on goals: set to today (`YYYY-MM-DD`) whenever a goal becomes `done`. Used by the dashboard to show **Done this week**. Backfill to today when touching a bare `done` goal that lacks it.
+
 ## Modes
 
 ### A — Ensure dashboard
@@ -106,11 +109,13 @@ IDs: `g…` / `t…` unique; prefer `done`/`dropped` over delete. Keep `googleTa
 ### D — Complete / drop
 
 - Todo → `done`; goal → `done` or `dropped`.
+- When a goal becomes `done`, set `completedAt` to today (`YYYY-MM-DD`). Clear or omit `completedAt` if reopening a goal to `active`.
+- Backfill `completedAt` to today if updating a goal that is already `done` but missing the field.
 - Rebundle.
 
 ### E — List
 
-Active goals + open todos by track (overall counts). Mention pinned `week` only if set.
+Active goals + **done this week** (via `completedAt` in current Mon–Sun) + open todos by track. Mention pinned `week` only if set.
 
 ### F — Refresh Obsidian snapshot
 
@@ -136,7 +141,7 @@ After rebundle: tell user to **close/reopen** `dashboard.obsidian.html` in Obsid
 
 ## Related
 
-- **journal-weekly** — Markdown weeks + standup; run `journal-index` after big weekly fills
+- **journal-weekly** — Markdown weeks + standup; Mode B may sync matching goals/todos; run `journal-index` after big weekly fills
 - **journal-handoff** — optional weekly + todo updates after `/ss-plan` / `/ss-submit-pr` / `/ss-close-story`
 - **calendar-sync** — Journal `## Calendar` → Google via CLI (not Cursor MCP)
 - **summary-update** — use `Journal/` (renamed from `Log/`)

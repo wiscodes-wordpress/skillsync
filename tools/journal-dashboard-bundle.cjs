@@ -205,6 +205,22 @@ function renderStaticBody(planning, indexData, bundledAt) {
 	const goals = Array.isArray(planning.goals) ? planning.goals : [];
 	const todos = Array.isArray(planning.todos) ? planning.todos : [];
 	const activeGoals = goals.filter((g) => g.status === 'active');
+	const weekStart = mondayStr;
+	const weekEndDate = new Date(mon);
+	weekEndDate.setDate(weekEndDate.getDate() + 6);
+	const weekEnd = isoDate(weekEndDate);
+	/**
+	 * Done this week: completedAt in Mon–Sun, or bare done (no completedAt) for
+	 * one-week display until a skill backfills the field.
+	 * @param {{ status?: string, completedAt?: string }} g
+	 */
+	function isDoneThisWeek(g) {
+		if (g.status !== 'done') return false;
+		const at = g.completedAt;
+		if (!at) return true;
+		return at >= weekStart && at <= weekEnd;
+	}
+	const doneThisWeekGoals = goals.filter(isDoneThisWeek);
 	const openTodos = todos.filter((t) => t.status !== 'done');
 	const inProgress = openTodos.filter(
 		(t) => t.status === 'in progress' || t.status === 'doing',
@@ -243,12 +259,9 @@ function renderStaticBody(planning, indexData, bundledAt) {
 
 	/**
 	 * @param {unknown[]} items
-	 * @param {string} emptyMsg
 	 */
-	function goalListHtml(items, emptyMsg) {
-		if (!items.length) {
-			return `<p class="empty">${esc(emptyMsg)}</p>`;
-		}
+	function goalListHtml(items) {
+		if (!items.length) return '';
 		const ordered = [...items].sort(
 			(a, b) =>
 				TRACKS.indexOf(/** @type {{track?: string}} */ (a).track || '') -
@@ -256,21 +269,39 @@ function renderStaticBody(planning, indexData, bundledAt) {
 		);
 		return `<ul class="goal-list">${ordered
 			.map((g) => {
-				const x = /** @type {{ track?: string, title?: string, horizon?: string, status?: string, target?: string }} */ (
+				const x = /** @type {{ track?: string, title?: string, horizon?: string, status?: string, target?: string, completedAt?: string }} */ (
 					g
 				);
 				const track = TRACK_LABEL[x.track || ''] ? x.track : 'life';
+				const doneCls = x.status === 'done' ? ' class="done"' : '';
 				const metaBits = [
 					x.horizon ? `<span class="meta-plain">${esc(x.horizon)}</span>` : null,
 					statusPill(x.status || 'active'),
 					x.target
 						? `<span class="meta-plain">target ${esc(x.target)}</span>`
 						: null,
+					x.completedAt
+						? `<span class="meta-plain">done ${esc(x.completedAt)}</span>`
+						: null,
 				].filter(Boolean);
-				return `<li><div class="title"><span class="track-label track-${esc(track)}">${esc(TRACK_LABEL[track] || track)}</span>${esc(x.title || '')}<div class="meta meta-row">${metaBits.join('')}</div></div></li>`;
+				return `<li${doneCls}><div class="title"><span class="track-label track-${esc(track)}">${esc(TRACK_LABEL[track] || track)}</span>${esc(x.title || '')}<div class="meta meta-row">${metaBits.join('')}</div></div></li>`;
 			})
 			.join('')}</ul>`;
 	}
+
+	/**
+	 * @param {string} title
+	 * @param {unknown[]} items
+	 */
+	function goalGroup(title, items) {
+		if (!items.length) return '';
+		return `<h3>${esc(title)}</h3>${goalListHtml(items)}`;
+	}
+
+	const goalsHtml =
+		goalGroup('Active', activeGoals) +
+			goalGroup('Done this week', doneThisWeekGoals) ||
+		`<p class="empty">No active goals. Use <code>journal-planning</code> to add some.</p>`;
 
 	/**
 	 * @param {string} title
@@ -381,7 +412,7 @@ function renderStaticBody(planning, indexData, bundledAt) {
         <div class="panel">
           <h2>Goals</h2>
           <div class="value">${activeGoals.length} active</div>
-          <div class="meta">${goals.length} total · not time-bounded</div>
+          <div class="meta">${doneThisWeekGoals.length} done this week · ${goals.length} total</div>
         </div>
         <div class="panel">
           <h2>Todos</h2>
@@ -398,8 +429,8 @@ function renderStaticBody(planning, indexData, bundledAt) {
 
       <div class="grid-2">
         <section class="section">
-          <h2>Goals (all active)</h2>
-          ${goalListHtml(activeGoals, 'No active goals. Use journal-planning to add some.')}
+          <h2>Goals</h2>
+          <div class="todo-groups">${goalsHtml}</div>
         </section>
         <section class="section">
           <h2>Todos (overall)</h2>

@@ -132,7 +132,7 @@ node <skillsyncToolsRoot>/tools/journal-index.cjs --vault "<vault>"
 4. Matching:
    - **Exactly one** → set `status: "done"` (keep `googleTaskId`).
    - **Zero or multiple** → ask the user; do not guess.
-5. If the completed todo has a `goalId`, and that goal has **no remaining** open todos → set goal `status: "done"` (or ask once if ambiguous).
+5. If the completed todo has a `goalId`, and that goal has **no remaining** open todos → set goal `status: "done"` and `completedAt` to today (`YYYY-MM-DD`) (or ask once if ambiguous). Backfill `completedAt` if the goal was already `done` without it.
 6. Set `updatedAt` (ISO-8601). Rebundle, then regenerate standup so `## Focus` drops completed work todos:
 
 ```bash
@@ -151,8 +151,8 @@ Print the checklist (gate, vault, track, bullet text, todo match) and exact comm
 
 ## Related
 
-- **journal-weekly** — Markdown weeks + standup
-- **journal-planning** — goals/todos schema and rebundle rules
+- **journal-weekly** — Markdown weeks + standup; Mode B may also sync goals/todos
+- **journal-planning** — goals/todos schema (`completedAt` on done goals) and rebundle rules
 - **submit-github-pr** / **jira-close-story** — delivery skills that point here
 
 ## Consumer setup (Cursor / Kiro)

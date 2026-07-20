@@ -2,9 +2,12 @@
 name: journal-weekly
 description: >-
   Creates and updates Markdown weekly Journal notes and daily standup notes in
-  the DenMercs Obsidian vault (Work/Lifeway, Meetings, Business/Quickpress).
+  the DenMercs Obsidian vault (Work/Lifeway, Meetings, Business/Quickpress), and
+  syncs matching goals/todos in planning.json when the fill maps to them.
   Use when the user asks for a weekly log, journal week, new week, fill this
-  week, weekly login, standup, daily standup, or log Work/Business for the week.
+  week, weekly login, standup, daily standup, log Work/Business for the week,
+  sync goals, update dashboard goals, or mark a journal goal/todo done from a
+  weekly update.
 ---
 
 # Journal Weekly
@@ -58,6 +61,7 @@ On Call stays separate: `On call → [[On Call/YYYY-MM-DD]]`.
 - "log that I merged X" / "add to Business…" / "fill this week"
 - "standup", "daily standup", "generate standup"
 - "what's in my journal this week"
+- "sync goals" / "update dashboard goals" alongside a weekly fill
 
 ## Modes
 
@@ -87,13 +91,24 @@ node tools/journal-ensure-week.cjs --date YYYY-MM-DD
    - Highlights → **Wins & learnings**
 3. **Merge, don’t wipe.** Prefer short bullets; use `<br>` for extra lines in cells.
 4. Default day = **today** (Mon–Fri). Weekend → Focus or Fri; ask if unclear.
-5. After meaningful fills, refresh dashboard data:
+5. **Sync dashboard planning** when the fill maps to a goal/todo (issue key in title, strong title overlap, or user said “done” / “shipped” / “in progress” for a known item):
+   1. Read `Journal/_dashboard/planning.json`.
+   2. Matching **todo** (prefer KEY; else strong title overlap — same rules as **journal-handoff**):
+      - Progress / started → `status: "in progress"` (keep `googleTaskId`).
+      - Shipped / done → `status: "done"`.
+      - **Zero or multiple** matches → ask; do not guess.
+   3. Matching **goal** → `done` only when the user clearly finished it, or when its last open todo becomes done. Set `completedAt` to today (`YYYY-MM-DD`). Backfill `completedAt` to today on any bare `done` goal you touch.
+   4. Do **not** invent new goals from weekly bullets unless the user asks.
+   5. Set `updatedAt` (ISO-8601).
+6. After meaningful fills (and any planning edits), refresh dashboard data:
 
 ```bash
 node tools/journal-index.cjs
 ```
 
 (`journal-index` also rebuilds `dashboard.obsidian.html`.)
+
+7. Report the weekly path and any planning changes (todo/goal status). Remind the user to **close/reopen** `dashboard.obsidian.html` in Obsidian when the snapshot changed.
 
 ### C — Daily standup (from weekly)
 
@@ -174,7 +189,7 @@ Obsidian does **not** live-load `planning.json`. The snapshot must be rebuilt, t
 
 ## Related
 
-- **journal-planning** — overall goals/todos + always rebundle after edits
+- **journal-planning** — overall goals/todos schema (`completedAt` on done goals) + always rebundle after edits
 - **journal-handoff** — optional weekly + todo updates after `/ss-plan` / `/ss-submit-pr` / `/ss-close-story`
 - **calendar-sync** — `## Calendar` → Google Calendar via `sync-google-calendar.cjs` + `.env` OAuth (`Journal/YYYY/`, not `Log/`)
 - **summary-update** — monthly summaries from `Journal/YYYY/`
@@ -192,5 +207,5 @@ Skillsync tools (from repo root): `journal-ensure-week.cjs`, `journal-index.cjs`
 - Weekly notes stay **Markdown** — never migrate a week to HTML for the vault.
 - Never overwrite a filled week with a blank template (use `journal-ensure-week.cjs`).
 - Standup = meeting aid; lasting activity stays in the weekly log.
-- Goals/todos → `planning.json` only.
+- Goals/todos → `planning.json` only; Mode B may sync status there when the fill maps.
 - Verb-first bullets. Absolute vault path is canonical when workspace ≠ DenMercs.
