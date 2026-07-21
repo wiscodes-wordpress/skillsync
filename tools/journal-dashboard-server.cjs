@@ -5,6 +5,7 @@
  * (Tasks from planning.json + Calendar from Journal ## Calendar).
  * Also GET /api/meetings — pull Google Calendar agenda for the day.
  * Also GET /api/prs — open ready-for-review GitHub PRs (gh + github-prs.json).
+ * Also GET /api/jira-sprint — DCD active unassigned + next/future sprint (jira-sprint.json).
  *
  * Usage:
  *   node tools/journal-dashboard-server.cjs
@@ -24,6 +25,7 @@ const {
 const { sync: syncCalendar } = require('./sync-google-calendar.cjs');
 const { getAgenda } = require('./lib/meetings-agenda.cjs');
 const { listOpenPrs } = require('./lib/github-prs.cjs');
+const { listSprintDigest } = require('./lib/jira-sprint.cjs');
 const { bundleDashboard } = require('./journal-dashboard-bundle.cjs');
 const { mdToHtml, extractTitle } = require('./lib/markdown-render.cjs');
 const { renderNotePage, renderDirPage } = require('./lib/journal-chrome.cjs');
@@ -205,6 +207,24 @@ function main() {
 						ok: false,
 						prs: [],
 						people: [],
+						warnings: [],
+						error: err instanceof Error ? err.message : String(err),
+					});
+				}
+			}
+
+			if (req.method === 'GET' && url.pathname === '/api/jira-sprint') {
+				try {
+					const digest = await listSprintDigest(vault);
+					return send(res, 200, digest);
+				} catch (err) {
+					return send(res, 500, {
+						ok: false,
+						project: 'DCD',
+						activeSprint: null,
+						futureSprint: null,
+						unassigned: [],
+						future: [],
 						warnings: [],
 						error: err instanceof Error ? err.message : String(err),
 					});
