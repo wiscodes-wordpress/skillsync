@@ -158,3 +158,4 @@ After rebundle: tell user to **close/reopen** `dashboard.obsidian.html` in Obsid
 - Never commit `planning.json` to a public repo.
 - Merge updates; verb-first titles.
 - After every mutation: rebundle + remind user to reopen Obsidian snapshot.
+- **Privacy (hard):** Only `Journal/_dashboard/**` (and related `Journal/**` reads for index/standup). Never browse other DenMercs folders (`Private/`, `Workspace/`, etc.) — see `journal-vault-privacy`.

@@ -35,7 +35,8 @@
 	"linkedRules": [
 		"typescript-ai-rules.mdc",
 		"react-patterns.mdc",
-		"frontend-testing.mdc"
+		"frontend-testing.mdc",
+		"journal-vault-privacy.mdc"
 	],
 	"linkedCommands": [
 		"ss-workflow.md",

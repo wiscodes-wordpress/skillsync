@@ -227,3 +227,4 @@ Skillsync tools (from repo root): `journal-ensure-week.cjs`, `journal-index.cjs`
 - Goals/todos → `planning.json` only; Mode B may sync status there when the fill maps.
 - Story/epic keys in weekly (and standup) bullets → markdown browse links when the site is known.
 - Verb-first bullets. Absolute vault path is canonical when workspace ≠ DenMercs.
+- **Privacy (hard):** Only touch `Journal/**` under the vault. Read `_Templates/**` only when creating notes from templates. Never read/write `Private/`, `Workspace/`, `Knowledge/`, or other DenMercs folders — ask if unclear (see rule `journal-vault-privacy`).

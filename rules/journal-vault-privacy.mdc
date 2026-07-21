@@ -1,0 +1,33 @@
+---
+description: >-
+  Hard privacy boundary for DenMercs journal work — agents must not read or
+  write vault paths outside Journal/ (and _Templates for week templates only).
+alwaysApply: true
+---
+
+# Journal vault privacy
+
+When using `/journal`, journal-* skills, journal dashboard tools, or any DenMercs vault path under Google Drive:
+
+## Allowed (only)
+
+| Path | Use |
+|------|-----|
+| `…/DenMercs/Journal/**` | Weekly notes, Standup, On Call, `_dashboard` |
+| `…/DenMercs/_Templates/**` | Read-only templates when creating a week / standup / on-call note |
+
+Vault root itself is only a **prefix** for those joins — never a browse root.
+
+## Forbidden
+
+Do **not** Read, Grep, Glob, Edit, Write, or shell-list:
+
+- `Private/`, `Workspace/`, `Knowledge/`, `BMO/`, `Music/`, `_Media/`, `Excalidraw/`, `copilot*`, or any other DenMercs folder outside the allowlist
+- Broader Google Drive paths (`My Drive/**` outside DenMercs `Journal` / `_Templates`)
+- OAuth token / secrets files under `_scripts` or `tools/.secrets` unless the user explicitly asked to debug auth
+
+If a task seems to need a forbidden path → **stop and ask**. Do not “just check” those folders.
+
+## Tools
+
+Prefer `journal-*.cjs` / sync CLIs with `--vault`; they already scope to `Journal/`. Do not invent one-off scripts that walk the whole vault.

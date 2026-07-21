@@ -194,3 +194,4 @@ Lifeway: `"defaultTrack": "work"`. Quickpress: `"defaultTrack": "business"`. Set
 - Merge weekly cells; do not wipe the week template.
 - Goals/todos only in `planning.json`.
 - Verb-first bullets. Absolute vault path when workspace ≠ vault.
+- **Privacy (hard):** Writes only under `Journal/**`. Do not read other DenMercs folders — see `journal-vault-privacy`.
