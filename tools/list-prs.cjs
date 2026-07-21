@@ -39,6 +39,10 @@ async function main() {
 	console.log(
 		`Open PRs (ready for review) · ${result.prs.length} · people: ${
 			result.people.map((p) => p.label).join(', ') || '—'
+		}${
+			result.hideReviewedByMe
+				? ` · hiding already reviewed by ${result.viewerLogin || 'me'}`
+				: ''
 		}`,
 	);
 	if (!result.prs.length) {

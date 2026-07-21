@@ -149,7 +149,23 @@ function loadConfig(vault) {
 			? Math.min(100, Math.floor(limitRaw))
 			: 50;
 
-	return { people, scopes, limit, warnings, configFile: file };
+	// Hide PRs you already reviewed/approved (teammate PRs). Default on.
+	const envHide = process.env.JOURNAL_GITHUB_PR_HIDE_REVIEWED;
+	let hideReviewedByMe = true;
+	if (fileCfg.hideReviewedByMe === false || fileCfg.hideReviewedByMe === 'false') {
+		hideReviewedByMe = false;
+	}
+	if (envHide === '0' || envHide === 'false') hideReviewedByMe = false;
+	if (envHide === '1' || envHide === 'true') hideReviewedByMe = true;
+
+	return {
+		people,
+		scopes,
+		limit,
+		hideReviewedByMe,
+		warnings,
+		configFile: file,
+	};
 }
 
 /**
@@ -220,8 +236,9 @@ function searchIssues(q, limit) {
  * @param {{ login: string, label: string }[]} people
  * @param {{ track: 'work' | 'business', owners: string[], repos: string[] }} scope
  * @param {number} limit
+ * @param {{ viewerLogin?: string, hideReviewedByMe?: boolean }} [opts]
  */
-function searchScope(people, scope, limit) {
+function searchScope(people, scope, limit, opts = {}) {
 	if (!people.length) {
 		return { prs: [], error: null };
 	}
@@ -233,6 +250,8 @@ function searchScope(people, scope, limit) {
 		return { prs: [], error: null };
 	}
 
+	const viewer = normalizeLogin(opts.viewerLogin || '');
+	const hideReviewed = Boolean(opts.hideReviewedByMe && viewer);
 	const labelByLogin = new Map(people.map((p) => [p.login, p.label]));
 	/** @type {Map<string, object>} */
 	const byId = new Map();
@@ -241,7 +260,13 @@ function searchScope(people, scope, limit) {
 
 	for (const person of people) {
 		for (const part of scopeParts) {
-			const q = `author:${person.login} is:pr is:open -is:draft ${part.kind}:${part.value}`;
+			// Teammate PRs: skip ones you already reviewed/approved.
+			// Own PRs: keep (you are the author, not the reviewer).
+			const skipReviewed =
+				hideReviewed && person.login !== viewer
+					? ` -reviewed-by:${viewer}`
+					: '';
+			const q = `author:${person.login} is:pr is:open -is:draft ${part.kind}:${part.value}${skipReviewed}`;
 			const { items, error } = searchIssues(q, limit);
 			if (error) {
 				errors.push(`${person.login}@${part.value}: ${error.split('\n')[0]}`);
@@ -290,7 +315,8 @@ function searchScope(people, scope, limit) {
  */
 async function listOpenPrs(vault = DEFAULT_VAULT) {
 	const resolved = path.resolve(vault);
-	const { people, scopes, limit, warnings, configFile } = loadConfig(resolved);
+	const { people, scopes, limit, hideReviewedByMe, warnings, configFile } =
+		loadConfig(resolved);
 	const fetchedAt = new Date().toISOString();
 
 	if (!people.length) {
@@ -304,6 +330,7 @@ async function listOpenPrs(vault = DEFAULT_VAULT) {
 			],
 			fetchedAt,
 			configFile,
+			hideReviewedByMe,
 		};
 	}
 	if (!scopes.length) {
@@ -317,6 +344,7 @@ async function listOpenPrs(vault = DEFAULT_VAULT) {
 			],
 			fetchedAt,
 			configFile,
+			hideReviewedByMe,
 		};
 	}
 
@@ -333,15 +361,20 @@ async function listOpenPrs(vault = DEFAULT_VAULT) {
 			],
 			fetchedAt,
 			configFile,
+			hideReviewedByMe,
 		};
 	}
+	const viewerLogin = normalizeLogin(whoami.stdout.trim());
 
 	/** @type {Map<string, object>} */
 	const byId = new Map();
 	const allWarnings = [...warnings];
 
 	for (const scope of scopes) {
-		const { prs, error } = searchScope(people, scope, limit);
+		const { prs, error } = searchScope(people, scope, limit, {
+			viewerLogin,
+			hideReviewedByMe,
+		});
 		if (error) {
 			const label =
 				scope.owners.join(',') ||
@@ -376,6 +409,8 @@ async function listOpenPrs(vault = DEFAULT_VAULT) {
 		warnings: allWarnings,
 		fetchedAt,
 		configFile,
+		hideReviewedByMe,
+		viewerLogin,
 	};
 }
 
