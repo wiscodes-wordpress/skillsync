@@ -1,0 +1,17 @@
+{
+  "people": [
+    { "login": "denmercs", "label": "Me" },
+    { "login": "teammate-github-login", "label": "Teammate" }
+  ],
+  "scopes": [
+    {
+      "track": "work",
+      "owners": ["LifewayIT"]
+    },
+    {
+      "track": "business",
+      "owners": ["wiscodes-wordpress"]
+    }
+  ],
+  "limit": 50
+}
