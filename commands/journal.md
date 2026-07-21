@@ -26,6 +26,7 @@ Activates [`journal-weekly`](../skills/personal/journal-weekly/SKILL.md) for Mar
 - Goals / todos: `Journal/_dashboard/planning.json`
 - Dashboard refresh: `node tools/journal-index.cjs`
 - Standup gen: `node tools/journal-standup.cjs`
+- Story/epic keys in bullets → markdown Jira browse links when `journal.jiraBases` (or `JOURNAL_JIRA_BASES` / `JOURNAL_JIRA_BASE_URL`) is set
 
 See [`journal-weekly SKILL.md`](../skills/personal/journal-weekly/SKILL.md) for full modes and rules.
 

@@ -77,12 +77,17 @@ After `/ss-plan`, `/ss-submit-pr`, and `/ss-close-story`, agents can update a pe
   "enabled": true,
   "vaultPath": "/path/to/DenMercs",
   "defaultTrack": "work",
-  "skillsyncToolsRoot": ".cursor/vendor/skillsync"
+  "skillsyncToolsRoot": ".cursor/vendor/skillsync",
+  "jiraBases": {
+    "DCD": "https://lifeway.atlassian.net",
+    "QUICK": "https://YOUR-SITE.atlassian.net"
+  }
 }
 ```
 
 - Missing or `"enabled": false` → handoff is skipped (no errors for other consumers).
 - Vault is always the Obsidian vault — **not** the consumer repo root.
+- `jiraBases` maps issue **project prefix** → Atlassian site root so `/journal` and handoff bullets link stories/epics (`[KEY](https://site/browse/KEY)`). Override with `JOURNAL_JIRA_BASES` (JSON) or `JOURNAL_JIRA_BASE_URL` if needed.
 - Protocol: [`skills/personal/journal-handoff/SKILL.md`](../skills/personal/journal-handoff/SKILL.md).
 
 ## Link and verify
@@ -207,7 +212,11 @@ Optional **`skillsync.config.json`** keys for tools / journal handoff:
 		"enabled": true,
 		"vaultPath": "/path/to/DenMercs",
 		"defaultTrack": "work",
-		"skillsyncToolsRoot": ".cursor/vendor/skillsync"
+		"skillsyncToolsRoot": ".cursor/vendor/skillsync",
+		"jiraBases": {
+			"DCD": "https://lifeway.atlassian.net",
+			"QUICK": "https://YOUR-SITE.atlassian.net"
+		}
 	}
 }
 ```

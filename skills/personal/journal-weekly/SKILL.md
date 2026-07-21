@@ -91,7 +91,18 @@ node tools/journal-ensure-week.cjs --date YYYY-MM-DD
    - Highlights → **Wins & learnings**
 3. **Merge, don’t wipe.** Prefer short bullets; use `<br>` for extra lines in cells.
 4. Default day = **today** (Mon–Fri). Weekend → Focus or Fri; ask if unclear.
-5. **Sync dashboard planning** when the fill maps to a goal/todo (issue key in title, strong title overlap, or user said “done” / “shipped” / “in progress” for a known item):
+5. **Jira / tracker links** — whenever a bullet mentions a story or epic key (`PROJ-123`), make the key a markdown link to that issue’s browse URL (same board/site the key belongs to):
+
+   `Started [DCD-6903](https://lifeway.atlassian.net/browse/DCD-6903) — Migrate mobile app…`
+
+   Resolve the site in order:
+   1. Browse URL already in the conversation, PR/Jira MCP payload, or pasted link for that key
+   2. `journal.jiraBases` in consumer `skillsync.config.json` (map **project prefix → site root**, e.g. `"DCD": "https://lifeway.atlassian.net"`)
+   3. Env `JOURNAL_JIRA_BASES` (JSON object) or `JOURNAL_JIRA_BASE_URL` (single site for any prefix)
+   4. If still unknown → keep the bare key and ask once for the site (then prefer adding it to `jiraBases`)
+
+   Apply to Daily log, Focus, Wins, and standup-derived lines. Do **not** require links inside `planning.json` todo titles (matching stays on bare `KEY`). Idempotent: skip if the week already has a linked or bare Started/Shipped line for that KEY.
+6. **Sync dashboard planning** when the fill maps to a goal/todo (issue key in title, strong title overlap, or user said “done” / “shipped” / “in progress” for a known item):
    1. Read `Journal/_dashboard/planning.json`.
    2. Matching **todo** (prefer KEY; else strong title overlap — same rules as **journal-handoff**):
       - Progress / started → `status: "in progress"` (keep `googleTaskId`).
@@ -100,7 +111,7 @@ node tools/journal-ensure-week.cjs --date YYYY-MM-DD
    3. Matching **goal** → `done` only when the user clearly finished it, or when its last open todo becomes done. Set `completedAt` to today (`YYYY-MM-DD`). Backfill `completedAt` to today on any bare `done` goal you touch.
    4. Do **not** invent new goals from weekly bullets unless the user asks.
    5. Set `updatedAt` (ISO-8601).
-6. After meaningful fills (and any planning edits), refresh dashboard data:
+7. After meaningful fills (and any planning edits), refresh dashboard data:
 
 ```bash
 node tools/journal-index.cjs
@@ -108,7 +119,7 @@ node tools/journal-index.cjs
 
 (`journal-index` also rebuilds `dashboard.obsidian.html`.)
 
-7. Report the weekly path and any planning changes (todo/goal status). Remind the user to **close/reopen** `dashboard.obsidian.html` in Obsidian when the snapshot changed.
+8. Report the weekly path and any planning changes (todo/goal status). Remind the user to **close/reopen** `dashboard.obsidian.html` in Obsidian when the snapshot changed.
 
 ### C — Daily standup (from weekly)
 
@@ -197,10 +208,16 @@ Obsidian does **not** live-load `planning.json`. The snapshot must be rebuilt, t
 ## Consumer setup (Cursor / Kiro)
 
 ```json
-"linkedSkills": ["journal-weekly", "journal-planning", "journal-handoff", "calendar-sync"]
+"linkedSkills": ["journal-weekly", "journal-planning", "journal-handoff", "calendar-sync"],
+"journal": {
+  "jiraBases": {
+    "DCD": "https://lifeway.atlassian.net",
+    "QUICK": "https://YOUR-SITE.atlassian.net"
+  }
+}
 ```
 
-Skillsync tools (from repo root): `journal-ensure-week.cjs`, `journal-index.cjs`, `journal-standup.cjs`, `journal-dashboard-bundle.cjs`, `journal-dashboard-server.cjs`, `sync-google-calendar.cjs`.
+Skillsync tools (from repo root): `journal-ensure-week.cjs`, `journal-index.cjs`, `journal-standup.cjs`, `journal-dashboard-bundle.cjs`, `journal-dashboard-server.cjs`, `sync-google-calendar.cjs`. Standup / start-story CLIs linkify keys via `tools/lib/journal-jira.cjs` when `jiraBases` (or env) is set.
 
 ## Rules
 
@@ -208,4 +225,5 @@ Skillsync tools (from repo root): `journal-ensure-week.cjs`, `journal-index.cjs`
 - Never overwrite a filled week with a blank template (use `journal-ensure-week.cjs`).
 - Standup = meeting aid; lasting activity stays in the weekly log.
 - Goals/todos → `planning.json` only; Mode B may sync status there when the fill maps.
+- Story/epic keys in weekly (and standup) bullets → markdown browse links when the site is known.
 - Verb-first bullets. Absolute vault path is canonical when workspace ≠ DenMercs.
