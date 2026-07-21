@@ -40,7 +40,7 @@ Vault root: `$HOME/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Driv
 | Planning SoT | `Journal/_dashboard/planning.json` |
 | Week index | `Journal/_dashboard/index.json` |
 | Open PRs config | `Journal/_dashboard/github-prs.json` (people + LifewayIT/Quickpress scopes; see `tools/fixtures/github-prs.example.json`) |
-| Sprint config | `Journal/_dashboard/jira-sprint.json` (DCD active unassigned + next sprint; see `tools/fixtures/jira-sprint.example.json`) |
+| Sprint config | `Journal/_dashboard/jira-sprint.json` (DCD active: mine + unassigned; see `tools/fixtures/jira-sprint.example.json`) |
 | Live shell | `Journal/_dashboard/dashboard.html` + `assets/` |
 | Obsidian snapshot | `Journal/_dashboard/dashboard.obsidian.html` |
 
@@ -137,7 +137,7 @@ After rebundle: tell user to **close/reopen** `dashboard.obsidian.html` in Obsid
 | `node tools/journal-dashboard-bundle.cjs` | Rebuild static Obsidian HTML from `planning.json` + `index.json` |
 | `node tools/journal-dashboard-server.cjs` | Live private UI on `127.0.0.1`; **Sync Google** runs Tasks + Calendar; **Open PRs** via `gh` + `github-prs.json`; **Sprint** via Jira + `jira-sprint.json` |
 | `node tools/list-prs.cjs` | CLI: open ready-for-review PRs for configured people/scopes |
-| `node tools/list-jira-sprint.cjs` | CLI: DCD active unassigned + next/future sprint (`yarn jira:sprint`) |
+| `node tools/list-jira-sprint.cjs` | CLI: DCD active sprint — assigned to me + unassigned (`yarn jira:sprint`) |
 | `node tools/journal-index.cjs` | Parse weekly `.md` → `index.json` (+ rebundle) |
 | `node tools/sync-google-tasks.cjs` | Push todos → Google Tasks (needs OAuth token) |
 | `node tools/sync-google-calendar.cjs` | Push `## Calendar` → Google Calendar (needs OAuth with `--calendar`) |

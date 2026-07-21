@@ -1,9 +1,10 @@
 /**
- * Active + future sprint digest for the journal dashboard (Lifeway / DCD).
+ * Active sprint digest for the journal dashboard (Lifeway / DCD).
  * Config: Journal/_dashboard/jira-sprint.json
  *
- * Returns unassigned issues in the active sprint and issues in the nearest
- * future sprint (when boardId is set), via Jira Cloud REST + Agile API.
+ * Returns:
+ *   1. Unassigned issues in the active sprint
+ *   2. Issues assigned to currentUser() in the active sprint
  */
 
 const fs = require('node:fs');
@@ -107,9 +108,7 @@ function normalizeSprint(sprint) {
  * @param {string} token
  * @param {number} boardId
  */
-async function fetchBoardSprints(baseUrl, email, token, boardId) {
-	/** @type {{ id: number, name: string, state: string, startDate?: string, endDate?: string }[]} */
-	const all = [];
+async function fetchActiveSprint(baseUrl, email, token, boardId) {
 	let startAt = 0;
 	const maxResults = 50;
 	for (let page = 0; page < 10; page++) {
@@ -117,34 +116,17 @@ async function fetchBoardSprints(baseUrl, email, token, boardId) {
 			baseUrl,
 			email,
 			token,
-			`/rest/agile/1.0/board/${boardId}/sprint?state=active,future&startAt=${startAt}&maxResults=${maxResults}`,
+			`/rest/agile/1.0/board/${boardId}/sprint?state=active&startAt=${startAt}&maxResults=${maxResults}`,
 		);
 		const values = Array.isArray(data?.values) ? data.values : [];
 		for (const v of values) {
 			const n = normalizeSprint(v);
-			if (n) all.push(n);
+			if (n && n.state === 'active') return n;
 		}
 		if (data?.isLast || values.length < maxResults) break;
 		startAt += values.length;
 	}
-	return all;
-}
-
-/**
- * Pick active + nearest future sprint from Agile board list.
- * @param {{ id: number, name: string, state: string, startDate?: string, endDate?: string }[]} sprints
- */
-function pickSprints(sprints) {
-	const active = sprints.find((s) => s.state === 'active') || null;
-	const future = sprints
-		.filter((s) => s.state === 'future')
-		.sort((a, b) => {
-			const aT = a.startDate ? Date.parse(a.startDate) : Number.POSITIVE_INFINITY;
-			const bT = b.startDate ? Date.parse(b.startDate) : Number.POSITIVE_INFINITY;
-			if (aT !== bT) return aT - bT;
-			return a.id - b.id;
-		});
-	return { active, future: future[0] || null };
+	return null;
 }
 
 /**
@@ -223,25 +205,17 @@ function mapIssue(issue, site) {
 
 /**
  * @param {string} project
- * @param {{ active: { id: number, name: string } | null, future: { id: number, name: string } | null }} picked
+ * @param {{ id: number, name: string } | null} active
  */
-function buildJql(project, picked) {
+function buildJql(project, active) {
 	const base = `project = ${project} AND statusCategory != Done`;
-	let unassignedJql;
-	if (picked.active) {
-		unassignedJql = `${base} AND sprint = ${picked.active.id} AND assignee is EMPTY ORDER BY Rank`;
-	} else {
-		unassignedJql = `${base} AND sprint in openSprints() AND assignee is EMPTY ORDER BY Rank`;
-	}
-
-	let futureJql;
-	if (picked.future) {
-		futureJql = `${base} AND sprint = ${picked.future.id} ORDER BY Rank`;
-	} else {
-		futureJql = `${base} AND sprint in futureSprints() ORDER BY Rank`;
-	}
-
-	return { unassignedJql, futureJql };
+	const sprintClause = active
+		? `sprint = ${active.id}`
+		: 'sprint in openSprints()';
+	return {
+		unassignedJql: `${base} AND ${sprintClause} AND assignee is EMPTY ORDER BY Rank`,
+		mineJql: `${base} AND ${sprintClause} AND assignee = currentUser() ORDER BY Rank`,
+	};
 }
 
 /**
@@ -257,9 +231,9 @@ async function listSprintDigest(vault = DEFAULT_VAULT) {
 		project: cfg.project || 'DCD',
 		site: cfg.site || '',
 		activeSprint: null,
-		futureSprint: null,
+		me: null,
 		unassigned: [],
-		future: [],
+		mine: [],
 		warnings,
 		error: /** @type {string | undefined} */ (undefined),
 	};
@@ -286,69 +260,68 @@ async function listSprintDigest(vault = DEFAULT_VAULT) {
 
 	/** @type {{ id: number, name: string, state: string, startDate?: string, endDate?: string } | null} */
 	let activeSprint = null;
-	/** @type {{ id: number, name: string, state: string, startDate?: string, endDate?: string } | null} */
-	let futureSprint = null;
+	/** @type {{ displayName: string, accountId?: string } | null} */
+	let me = null;
 
 	try {
+		try {
+			const self = await jiraFetch(baseUrl, email, token, '/rest/api/3/myself');
+			me = {
+				displayName: String(self?.displayName || self?.emailAddress || 'me'),
+				accountId: self?.accountId ? String(self.accountId) : undefined,
+			};
+		} catch (err) {
+			return {
+				...empty,
+				error: `Jira auth failed — check JIRA_EMAIL + JIRA_API_TOKEN (${
+					err instanceof Error ? err.message : err
+				})`,
+			};
+		}
+
 		if (cfg.boardId) {
 			try {
-				const sprints = await fetchBoardSprints(
+				activeSprint = await fetchActiveSprint(
 					baseUrl,
 					email,
 					token,
 					cfg.boardId,
 				);
-				const picked = pickSprints(sprints);
-				activeSprint = picked.active;
-				futureSprint = picked.future;
 				if (!activeSprint) {
 					warnings.push('No active sprint on board');
 				}
-				if (!futureSprint) {
-					warnings.push('No future sprint on board');
-				}
 			} catch (err) {
 				warnings.push(
-					`Agile board sprints failed (falling back to JQL): ${
+					`Agile board sprints failed (falling back to openSprints()): ${
 						err instanceof Error ? err.message : err
 					}`,
 				);
 			}
 		} else {
 			warnings.push(
-				'boardId not set — using openSprints()/futureSprints(); set boardId in jira-sprint.json for a single next sprint',
+				'boardId not set — using openSprints(); set boardId in jira-sprint.json (e.g. 489)',
 			);
 		}
 
-		const { unassignedJql, futureJql } = buildJql(cfg.project, {
-			active: activeSprint,
-			future: futureSprint,
-		});
+		const { unassignedJql, mineJql } = buildJql(cfg.project, activeSprint);
 
-		const [unassignedRaw, futureRaw] = await Promise.all([
+		const [unassignedRaw, mineRaw] = await Promise.all([
 			searchJql(baseUrl, email, token, unassignedJql, cfg.limit),
-			searchJql(baseUrl, email, token, futureJql, cfg.limit),
+			searchJql(baseUrl, email, token, mineJql, cfg.limit),
 		]);
 
 		const unassigned = unassignedRaw
 			.map((i) => mapIssue(i, site))
 			.filter(Boolean);
-		const future = futureRaw.map((i) => mapIssue(i, site)).filter(Boolean);
+		const mine = mineRaw.map((i) => mapIssue(i, site)).filter(Boolean);
 
-		// Infer sprint names from issues if Agile lookup skipped
-		if (!activeSprint && unassigned.length && unassigned[0].sprintName) {
-			activeSprint = {
-				id: 0,
-				name: unassigned[0].sprintName,
-				state: 'active',
-			};
-		}
-		if (!futureSprint && future.length && future[0].sprintName) {
-			futureSprint = {
-				id: 0,
-				name: future[0].sprintName,
-				state: 'future',
-			};
+		if (!activeSprint) {
+			const nameFrom =
+				(mine[0] && mine[0].sprintName) ||
+				(unassigned[0] && unassigned[0].sprintName);
+			if (nameFrom) {
+				activeSprint = { id: 0, name: nameFrom, state: 'active' };
+			}
 		}
 
 		return {
@@ -356,20 +329,22 @@ async function listSprintDigest(vault = DEFAULT_VAULT) {
 			project: cfg.project,
 			site,
 			activeSprint: activeSprint
-				? { id: activeSprint.id, name: activeSprint.name, state: activeSprint.state }
+				? {
+						id: activeSprint.id,
+						name: activeSprint.name,
+						state: activeSprint.state,
+					}
 				: null,
-			futureSprint: futureSprint
-				? { id: futureSprint.id, name: futureSprint.name, state: futureSprint.state }
-				: null,
+			me,
 			unassigned,
-			future,
+			mine,
 			warnings,
 		};
 	} catch (err) {
 		return {
 			...empty,
 			activeSprint,
-			futureSprint,
+			me,
 			error: err instanceof Error ? err.message : String(err),
 		};
 	}

@@ -60,7 +60,7 @@ Open [http://127.0.0.1:8787/dashboard.html](http://127.0.0.1:8787/dashboard.html
 | `yarn google:sync` | CLI Tasks + Calendar push (same as the button) |
 | `yarn google:sync:dry` | Dry-run both syncs |
 | `yarn meetings` | Pull today’s agenda from Google Calendar |
-| `yarn jira:sprint` | DCD active unassigned + next/future sprint (needs `JIRA_*` env) |
+| `yarn jira:sprint` | DCD active sprint: mine + unassigned (needs `JIRA_*` env) |
 | `yarn dashboard:bundle` | Rebuild Obsidian `dashboard.obsidian.html` |
 
 | Action | What it does |
@@ -68,7 +68,7 @@ Open [http://127.0.0.1:8787/dashboard.html](http://127.0.0.1:8787/dashboard.html
 | Checkboxes / edits | Write `Journal/_dashboard/planning.json` |
 | **Sync Google** | Todos → Google Tasks + `## Calendar` → Google Calendar (push) |
 | **Meetings** | Pull today’s agenda from Google Calendar |
-| **Sprint (DCD)** | Unassigned in active sprint + next/future sprint (Jira REST) |
+| **Sprint (DCD)** | Active sprint: assigned to me + unassigned (Jira REST) |
 | Obsidian | Open `Journal/_dashboard/dashboard.obsidian.html` (rebuilt on server writes; reopen to refresh) |
 
 Details: [`skills/personal/`](skills/personal/README.md) (`journal-planning`, `calendar-sync`).

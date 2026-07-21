@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * List DCD active-sprint unassigned + next/future sprint issues.
+ * List DCD active-sprint: assigned to me + unassigned.
  *
  * Usage:
  *   node tools/list-jira-sprint.cjs
@@ -63,13 +63,13 @@ async function main() {
 		console.warn(`Warning: ${w}`);
 	}
 
-	const activeName = result.activeSprint?.name || 'active';
-	const futureName = result.futureSprint?.name || 'future';
+	const sprintName = result.activeSprint?.name || 'active';
+	const me = result.me?.displayName || 'me';
 	console.log(
-		`Sprint digest · ${result.project} · ${result.site || '(no site)'}`,
+		`Sprint digest · ${result.project} · ${result.site || '(no site)'} · ${sprintName}`,
 	);
-	printIssues(result.unassigned || [], `Active — unassigned (${activeName})`);
-	printIssues(result.future || [], `Next sprint (${futureName})`);
+	printIssues(result.mine || [], `Assigned to me — ${me}`);
+	printIssues(result.unassigned || [], 'Unassigned');
 
 	if (!result.ok) process.exitCode = 1;
 }
