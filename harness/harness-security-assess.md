@@ -70,6 +70,7 @@ Update **`.harness/security-posture.html`** per [`security-plan/HTML-REPORT.md`]
 - Probe table (status + one-line detail)
 - ERROR / WARNING counts (facts only — no pen-test score)
 - Open trust decisions / hardening stages for confirmed issues
+- Bottom **`#status`**: Red / Amber / Green chip + risk register (Open | Resolved | Accepted) — see HTML-REPORT
 
 ### 3. Triage (judgment)
 
@@ -92,11 +93,15 @@ Update **`.harness/security-posture.html`** per [`security-plan/HTML-REPORT.md`]
 - ERROR: N (bullets or none)
 - WARNING: N (top items or none)
 
+### Status summary
+- Traffic light: Red | Amber | Green (one sentence why)
+- Risks: Open / Resolved / Accepted (short table)
+
 ### Completeness gaps
 - (reasons) | none
 
 ### Next
-- Update `.harness/security-posture.html` #assess
+- Update `.harness/security-posture.html` #assess + #status
 - Confirmed issues → stages / `/ss-plan`
 - PRs still use `/ss-security-audit` only
 ```

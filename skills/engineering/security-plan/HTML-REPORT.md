@@ -50,6 +50,7 @@ Self-contained HTML briefing for **security posture**. This file is the **postur
       <section id="stages">…</section>
       <section id="nongoals">…</section>
       <section id="gate">…</section>
+      <section id="status">…</section>         <!-- Red/Amber/Green + risk register — bottom -->
       <footer>…</footer>
     </main>
   </body>
@@ -164,6 +165,42 @@ Short card (not a checklist dump):
 - **Phases:** A = `security-audit.cjs` (facts); B = agent judgment on evidence
 - **Rule:** this HTML does not PASS a PR; Evidence in `.harness/state.md` does
 - **Whole-plugin health:** `/ss-security-plan` + `security-assess.cjs` (`#assess`) — separate cadence
+
+## Status summary (`#status`) — required when assess has been run
+
+Bottom-of-page **at-a-glance** health — no percentage score. Derive from `#assess` + `#decisions` + `#stages` + `#nongoals`.
+
+### Traffic light
+
+| Status | When |
+|--------|------|
+| **Red** | Assess incomplete, **or** any untriaged ERROR finding |
+| **Amber** | Assess complete; ERRORs dismissed or ticketed into stages; WARNING findings still open |
+| **Green** | Assess complete; 0 open ERRORs; Wordfence clean (or `wordfence: off`); deps accepted or clear |
+
+Show one large status chip (red / amber / emerald) + one sentence: *why this status*.
+
+### Risk register
+
+Table of confirmed risks from assess + open decisions. Keep rows short.
+
+| Risk | Source | Status | Notes |
+|------|--------|--------|-------|
+| e.g. public REST write route | semgrep / surfaces | **Open** \| **Resolved** \| **Accepted** | file:line or stage/story key / non-goal link |
+
+Rules:
+
+- **Open** — confirmed, not fixed yet (amber row or open badge)
+- **Resolved** — fixed in code or closed by ADR (emerald)
+- **Accepted** — explicit non-goal (stone); must link `#nongoals`
+- Drop noise: do not list dismissed false positives here — those stay only in assess triage notes if needed
+- Update this section whenever assess is re-run or a risk is closed
+
+### Snapshot strip
+
+Compact counts under the chip (facts only):
+
+- Completeness · ERROR open · WARNING open · Last assess date · Ship gate last PASS (if known)
 
 ## Footer
 

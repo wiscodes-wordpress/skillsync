@@ -81,8 +81,9 @@ Optional — same altitude as arch-plan. Run when posture is unclear, hardening 
 
 1. **Locate** `.harness/security-posture.html`.
 2. **If stages/finish-line have keys** → refresh **Jira → HTML** only (same rules as arch-plan); rewrite; reopen.
-3. Then continue draft / decision loop / publish / handoff.
-4. No keys → skip Jira. No file → explore + draft.
+3. **If assess requested** → run `security-assess.cjs --write-state`; fold into `#assess` + bottom `#status`.
+4. Then continue draft / decision loop / publish / handoff.
+5. No keys → skip Jira. No file → explore + draft.
 
 ## Living HTML path
 
