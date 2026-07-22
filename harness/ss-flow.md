@@ -10,9 +10,9 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 |-------|---------|-------------------|-------------------------------|
 | Branch | consumer wrapper | — | — |
 | Initiative (optional) | `/ss-major-feature-roadmap` | — | [`major-feature-roadmap`](../skills/engineering/major-feature-roadmap/SKILL.md) |
-| Architecture (optional) | `/ss-arch-plan` | — | [`arch-plan`](../skills/engineering/arch-plan/SKILL.md) — living HTML plan SoT; Jira epic keys join stages; refresh status on run |
-| Security posture (optional) | `/ss-security-plan` | — | [`security-plan`](../skills/engineering/security-plan/SKILL.md) — living HTML posture SoT; hardening stages; does not replace `/ss-security-audit` |
-| UI/UX plan (optional) | `/ss-ui-ux-plan` | — | [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md) — living HTML UX SoT; before `/ss-plan` when UI-heavy |
+| Architecture (optional) | `/ss-arch-plan` | — | [`arch-plan`](../skills/engineering/arch-plan/SKILL.md) — living HTML plan (source of truth); Jira epic keys join stages; refresh status on run |
+| Security posture (optional) | `/ss-security-plan` | — | [`security-plan`](../skills/engineering/security-plan/SKILL.md) — living HTML posture (source of truth); hardening stages; does not replace `/ss-security-audit` |
+| UI/UX plan (optional) | `/ss-ui-ux-plan` | — | [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md) — living HTML UX (source of truth); before `/ss-plan` when UI-heavy |
 | Plan | `/ss-plan` | [`harness-planner-tdd.md`](./harness-planner-tdd.md) | 1a: [`grill-me`](../skills/productivity/grill-me/SKILL.md) or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) · 1b: [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) |
 | Slice to issues | `/ss-to-issues` | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
 | Implement | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
@@ -29,14 +29,15 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 
 **Security posture order:** `/ss-security-plan` (living HTML → hardening stages) when trust model is unclear; **every PR** still runs `/ss-security-audit` after review. Do not fold the audit into the posture HTML.
 
-**Release / go-to-market order:** after merge or tag (or on user request) → `/ss-release` (brief → demo seed/E2E proof → channel pack → anti-slop). Partial: `/ss-release-distribution` or `/ss-release-marketing`. Does **not** block `/ss-submit-pr`.
+**Release / go-to-market order:** after merge or tag (or on user request) → `/ss-release` (brief → demo seed / end-to-end (E2E) proof → channel pack → anti-slop). Partial: `/ss-release-distribution` or `/ss-release-marketing`. Does **not** block `/ss-submit-pr`.
 ## Context budget rules
 
 1. **One harness file per command** — do not chain duplicate harnesses.
 2. **Stack skills on demand** — read `jest-react-testing`, `wordpress-testing-qa`, etc. only when `AGENTS.md` / diff surface says that stack; not on every implement/review.
 3. **No `testing-expert` in this loop** — encyclopedic reference; use `tdd` + stack skill instead.
-4. **Locators** — [accessible-locator-priority.md](./accessible-locator-priority.md) when writing or reviewing **UI/E2E** tests only.
+4. **Locators** — [accessible-locator-priority.md](./accessible-locator-priority.md) when writing or reviewing **UI / end-to-end (E2E)** tests only.
 5. **State is the contract** — after plan, `Behavior & Test Contracts` and `RED→GREEN Plan` in **`.harness/state.md`** replace re-reading `grill-tdd` at review.
+6. **Prose** — when writing plans, living HTML briefings, issue text, PR bodies, or skill docs, apply [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) (expand abbreviations on first use; no hype filler). Skip for pure code and mechanical evidence tables. Marketing packs still finish with a full anti-slop pass.
 
 ## TDD loop (implement)
 

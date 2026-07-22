@@ -54,4 +54,4 @@ Do not start at step 5. Stop at the lowest fidelity that unblocks `/ss-plan`.
 | Journey `step > step > outcome` | Test **expectation** chain |
 | Journey / surface goal title | Test **name** |
 | Empty / error / success | Extra cycles or guard cases |
-| Primary action + a11y name | **locator** on UI contracts |
+| Primary action + accessible name | **locator** on UI contracts |

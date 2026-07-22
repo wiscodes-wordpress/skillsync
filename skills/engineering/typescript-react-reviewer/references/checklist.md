@@ -153,7 +153,9 @@ function MyProvider({ children }: { children: ReactNode }) {
 
 ---
 
-## Accessibility (a11y)
+## Accessibility
+
+Accessibility (a11y) checks:
 
 ### Semantic HTML
 

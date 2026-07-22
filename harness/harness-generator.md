@@ -12,7 +12,7 @@ See [ss-flow.md](./ss-flow.md) for phase context and context-budget rules.
 ## Mission
 
 - **Default:** implement **all Remaining** RED→GREEN cycles (or legacy sprint slices) in this session, in plan order.
-- **Still vertical** — finish each cycle’s RED→GREEN→re-break before starting the next. Never batch all REDs then all GREENs (horizontal slice).
+- **Still one behavior at a time** — finish each cycle’s RED→GREEN→re-break before starting the next. Never batch all REDs then all GREENs.
 - Keep each cycle’s production diff tight; avoid speculative or drive-by changes across later cycles.
 - Apply **[ponytail](../skills/engineering/ponytail/SKILL.md)** unless the user opts out.
 
@@ -34,17 +34,18 @@ If **Remaining** is empty, stop and point **Next Action** at `harness-critic` (r
 
 1. **Restate** full session scope (which cycles/slices) and **non-goals** (ponytail rung 1 — can anything be skipped?).
 2. **For each scoped cycle/slice (sequential):**
-   1. Restate that cycle’s acceptance criteria and non-goals.
+   1. Restate that cycle’s **expectation** (if TDD), acceptance criteria, and non-goals.
    2. **TDD plans** (when state has **Behavior & Test Contracts** or **RED→GREEN Plan**):
-      - Read [`tdd`](../skills/engineering/tdd/SKILL.md) — **this cycle only**; vertical RED→GREEN.
+      - Read [`tdd`](../skills/engineering/tdd/SKILL.md) — **this cycle only**; one RED→GREEN at a time.
+      - Encode the planned **expectation** in the test; assert the **last hop**.
       - **RED:** named test → scoped command **FAIL** → log in **`## TDD Evidence`**; diff test-only.
       - **GREEN:** minimal **production** fix; [test integrity rules](./critic-tdd-testing.md#step-2--test-tampering-diff-audit); scoped **PASS** + regression.
       - **Re-break (required):** stash/revert prod hunks → scoped test **FAIL** → restore → **PASS**; record in TDD Evidence.
-      - **UI tests:** [accessible-locator-priority.md](./accessible-locator-priority.md) · stack skill from **`AGENTS.md`** only if needed (e.g. RTL, WP QA).
+      - **UI tests:** [accessible-locator-priority.md](./accessible-locator-priority.md) · stack skill from **`AGENTS.md`** only if needed (e.g. React Testing Library, WordPress QA).
    3. **Legacy / non-TDD slices:** minimal change for that slice’s acceptance criteria only.
    4. Run that cycle’s **Verification Plan** rows (RED before prod when listed). No cycle “done” without command results.
    5. **Update state mid-session:** move the cycle to **Completed**; shrink **Remaining**; append **TDD Evidence** row. Then start the next Remaining item.
-3. After the last scoped cycle (or on hard stop), run any **suite-level** Verification Plan commands (full unit/E2E/lint) listed after per-cycle steps.
+3. After the last scoped cycle (or on hard stop), run any **suite-level** Verification Plan commands (full unit / end-to-end / lint) listed after per-cycle steps.
 4. **Summarize** all cycles touched: files, pass/fail evidence, risks.
 5. **Update** `.harness/state.md` — one **`## Next Action`** (usually `harness-critic` when Remaining is empty).
 

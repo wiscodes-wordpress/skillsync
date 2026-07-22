@@ -9,6 +9,8 @@ maxTurns: 20
 
 This file is **feature-first** planning for consumers that skip TDD grilling (step 1b). Output sprint **feature slices** instead of RED→GREEN cycles.
 
+**Prose:** apply [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) to Spec Overview and narrative sections.
+
 ## When to use
 
 - Local wrapper explicitly chains this file (e.g. `qb-plan` without TDD).

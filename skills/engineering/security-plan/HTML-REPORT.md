@@ -10,7 +10,7 @@ Self-contained HTML briefing for **security posture**. This file is the **postur
 
 | Format | Use |
 |--------|-----|
-| **`.harness/security-posture.html`** | Posture SoT |
+| **`.harness/security-posture.html`** | posture source of truth |
 | ADRs | Load-bearing *why* |
 | `/ss-security-audit` + state Evidence | Ship gate |
 | Chat TODO list / Canvas | Not a substitute for the HTML |
@@ -63,7 +63,7 @@ Only scripts: Tailwind CDN + Mermaid ESM.
 - `h1` serif: **Security posture**
 - Meta: Status · Updated · Last Jira refreshed
 - **Primary job** — one sentence
-- SoT one-liner + reminder: ship gate = `/ss-security-audit`
+- Source-of-truth one-liner + reminder: ship gate = `/ss-security-audit`
 
 ## Phase (`#phase`) — when tracker keys exist
 
@@ -147,8 +147,8 @@ Short card (not a checklist dump):
 
 ## Footer
 
-Next hardening pickup + path to SoT + link to `/ss-security-audit`.
+Next hardening pickup + path to the source of truth + link to `/ss-security-audit`.
 
 ## Style / tone
 
-Match arch-plan: serif headings, emerald/sky/amber, sparse bullets. No invented CVEs. No pen-test scores. No hedging.
+Match arch-plan: serif headings, emerald/sky/amber, sparse bullets. No invented CVEs. No pen-test scores. No hedging. Apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) — expand abbreviations on first use; keep trust decisions concrete.

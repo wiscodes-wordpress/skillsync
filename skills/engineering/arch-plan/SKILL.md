@@ -12,17 +12,19 @@ description: >
 
 Set **project or plugin architecture direction** as a visual **living HTML** briefing. Invoke via **`/ss-arch-plan`**.
 
+**Prose:** apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) to HTML copy and chat — expand abbreviations on first use; no hype in “At a glance”.
+
 ## Source of truth
 
 The living HTML (`.harness/architecture-plan.html`) is **the** source of truth for this architecture plan: target shape, diagrams, open/resolved decisions, phased rollout, epic/story keys, and **status as shown** after refresh.
 
-**Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — sticky nav, Phase + At a glance, Current|Target side by side, compact decisions, stages with keys. That browser HTML is the deliverable; do **not** substitute a Cursor Canvas or chat-only summary for the SoT.
+**Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — sticky nav, Phase + At a glance, Current|Target side by side, compact decisions, stages with keys. That browser HTML is the deliverable; do **not** substitute a Cursor Canvas or chat-only summary for the source of truth.
 
 | Layer | Role |
 |-------|------|
-| **HTML** | Plan SoT — read and decide from here |
+| **HTML** | Plan source of truth — read and decide from here |
 | **Jira epics / stories** | Workflow; **keys join** stages to tickets; status **feeds into** HTML on command run |
-| **ADRs / `CONTEXT.md`** | Narrow permanence for load-bearing *why* and glossary names |
+| **Architecture decision records (ADRs) / `CONTEXT.md`** | Narrow permanence for load-bearing *why* and glossary names |
 
 **One-way only:** Jira → HTML on refresh. Never push workflow status from this skill back to Jira. Create/link epic keys when publishing stages; do not transition issues here.
 
@@ -35,7 +37,7 @@ Follow-up answers **update that same HTML** before the next question. Do not spa
 | Use this | Use something else |
 |----------|-------------------|
 | Plugin/project target shape, seams, phased migration | One story behaviors → [`ss-plan`](../../../commands/ss-plan.md) |
-| Living plan SoT (HTML) + epic-keyed stages | Multi-epic product scope → [`major-feature-roadmap`](../major-feature-roadmap/SKILL.md) |
+| Living plan source of truth (HTML) + epic-keyed stages | Multi-epic product scope → [`major-feature-roadmap`](../major-feature-roadmap/SKILL.md) |
 | Open decisions + stages toward a target | Deepening friction only → [`improve-codebase-architecture`](../improve-codebase-architecture/SKILL.md) (reuse inside this flow when exploring existing code) |
 | Structural direction before delivery | UI flows → [`ui-ux-planner`](../ui-ux-planner/SKILL.md) |
 | Module shape / seams | Security posture → [`security-plan`](../security-plan/SKILL.md); per-PR gate → [`/ss-security-audit`](../../../commands/ss-security-audit.md) |
@@ -84,7 +86,7 @@ Create `.harness/` if needed. One file — rewrite in place.
 
 **Fallback:** `$TMPDIR` / `/tmp` / `%TEMP%` → `architecture-plan-<repo-slug>.html` (stable name, not timestamped).
 
-On user **"lock this"** / approve: optionally copy to `docs/architecture/architecture-plan.html` (or path from consumer `docs/agents/domain.md`). HTML remains plan SoT; ADRs still record irreversible *why*.
+On user **"lock this"** / approve: optionally copy to `docs/architecture/architecture-plan.html` (or path from consumer `docs/agents/domain.md`). HTML remains the plan source of truth; architecture decision records (ADRs) still record irreversible *why*.
 
 Open after write: `open <path>` (macOS), `xdg-open` (Linux), `start` (Windows).
 
@@ -158,7 +160,7 @@ When direction is **agreed**:
 | Artifact | When |
 |----------|------|
 | `CONTEXT.md` terms | New module/concept names |
-| ADR | Load-bearing *why* (optional one-liner: `Arch plan: .harness/architecture-plan.html`) |
+| Architecture decision record (ADR) | Load-bearing *why* (optional one-liner: `Arch plan: .harness/architecture-plan.html`) |
 | `.harness/state.md` | Pointer + migration stages with epic keys |
 | `/ss-to-issues` | Publish stages as epics if keys missing |
 | `/ss-plan` | Per stage / first vertical slice — behavior/TDD |
@@ -168,7 +170,7 @@ Mirror into state when `.harness/state.md` exists:
 ```markdown
 ## Architecture Plan
 
-- **HTML:** `.harness/architecture-plan.html`  ← plan SoT
+- **HTML:** `.harness/architecture-plan.html`  ← plan source of truth
 - **Status:** draft | agreed
 - **Locked:** <date or —>
 - **Last Jira refresh:** <date or —>

@@ -10,9 +10,9 @@ Self-contained HTML briefing for **product UX** (flows + surfaces). This file is
 
 | Format | Use |
 |--------|-----|
-| **`.harness/ux-plan.html`** | Plan SoT — journeys, surfaces, states, decisions, open questions |
-| Optional `docs/ux/ux-<slug>.md` | Thin paste/export for tracker — **not** a second SoT |
-| Cursor Canvas | Optional chat-side scratch only — **never** replace the HTML SoT |
+| **`.harness/ux-plan.html`** | plan source of truth — journeys, surfaces, states, decisions, open questions |
+| Optional `docs/ux/ux-<slug>.md` | Thin paste/export for tracker — **not** a second source of truth |
+| Cursor Canvas | Optional chat-side scratch only — **never** replace the HTML source of truth |
 
 ## Scaffold
 
@@ -66,7 +66,7 @@ Compact top bar (`text-xs`): product/slug label + in-page anchors. Emphasize **J
 - `h1` serif: **UX plan**
 - Meta row: **Status** (`draft` | `agreed`), **Updated**, optional related key
 - **Primary job** — one strong sentence (user/caller outcome)
-- SoT one-liner: living HTML; journeys seed `/ss-plan` Behavior & Test Contracts
+- Source-of-truth one-liner: living HTML; journeys seed `/ss-plan` Behavior & Test Contracts
 
 ## Job frame (`#job`) — required
 
@@ -74,7 +74,7 @@ Cards or short lists:
 
 - **Actors**
 - **Success looks like**
-- **Constraints** — platform, density, existing components, a11y bar
+- **Constraints** — platform, density, existing components, accessibility bar
 
 ## At a glance (`#locks`) — when any decision is locked
 
@@ -137,7 +137,7 @@ Sky border card:
 
 1. Next command: **`/ss-plan`**
 2. Seed from journeys: each J* → Behavior & Test Contract (`name` + `expectation`)
-3. Path to this HTML SoT
+3. Path to this HTML source of truth
 4. Optional: path to thin markdown export if written
 
 ## Footer
@@ -152,4 +152,4 @@ One-liner: status + next action + HTML path.
 
 ## Tone
 
-Plain English. Cards and tables carry the plan. If a sentence could be a bullet, make it a bullet. No hedging. No pixel polish specs unless required by constraints.
+Plain English. Cards and tables carry the plan. If a sentence could be a bullet, make it a bullet. No hedging. No pixel polish specs unless required by constraints. Apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) — expand abbreviations on first use; no brochure voice.

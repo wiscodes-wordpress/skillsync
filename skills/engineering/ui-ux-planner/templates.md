@@ -13,7 +13,7 @@ Only when the user wants a pasteable file or tracker attachment. Keep it short; 
 
 **Status:** draft | agreed  
 **Slug:** <slug>  
-**SoT (HTML):** `.harness/ux-plan.html`  
+**Source of truth (HTML):** `.harness/ux-plan.html`  
 **Related:** <story/epic key or title — optional>
 
 ## Primary job
@@ -40,7 +40,7 @@ Only when the user wants a pasteable file or tracker attachment. Keep it short; 
 
 ## Handoff
 
-**Next:** `/ss-plan` — seed Behavior & Test Contracts from journeys in the HTML SoT.
+**Next:** `/ss-plan` — seed Behavior & Test Contracts from journeys in the HTML source of truth.
 ```
 
 Default export path: **`docs/ux/ux-<slug>.md`** (create `docs/ux/` if needed).
@@ -52,7 +52,7 @@ Use when enriching a larger parent item (capability, epic, initiative section):
 ```markdown
 ## UX scope
 
-- **SoT:** `.harness/ux-plan.html`
+- **Source of truth:** `.harness/ux-plan.html`
 - **Jobs:** …
 - **Journeys:** J1 …; J2 …
 - **Principles for this area:** shortest path; one primary action; …
@@ -71,7 +71,7 @@ Use when enriching a larger parent item (capability, epic, initiative section):
 ```markdown
 ## UX
 
-**Plan SoT:** `.harness/ux-plan.html` (status: agreed | draft)  
+**plan source of truth:** `.harness/ux-plan.html` (status: agreed | draft)  
 **Export (optional):** `docs/ux/ux-<slug>.md`
 
 ### Flow slice

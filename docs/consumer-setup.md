@@ -26,10 +26,10 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 
 | Skill | Used by |
 |-------|---------|
-| `arch-plan` | `/ss-arch-plan` (optional; architecture plan SoT + epic-keyed stages) |
-| `security-plan` | `/ss-security-plan` (optional; security posture SoT; not the PR gate) |
+| `arch-plan` | `/ss-arch-plan` (optional; architecture plan source of truth + epic-keyed stages) |
+| `security-plan` | `/ss-security-plan` (optional; security posture source of truth; not the PR gate) |
 | `improve-codebase-architecture` | Optional with `/ss-arch-plan` when deepening existing friction |
-| `ui-ux-planner` | `/ss-ui-ux-plan` (optional; living HTML UX SoT before `/ss-plan`) |
+| `ui-ux-planner` | `/ss-ui-ux-plan` (optional; living HTML UX source of truth before `/ss-plan`) |
 | `grill-tdd` | `/ss-plan` (step 1b) |
 | `tdd` | `/ss-implement` when state has RED→GREEN Plan |
 | `ponytail` | `/ss-implement` |
@@ -62,6 +62,8 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
 ```
 
 For post-ship go-to-market, also link productivity skills **`anti-slop`**, **`release-distribution`**, and **`release-marketing`** (see [`skills/productivity/README.md`](../skills/productivity/README.md)).
+
+Link **`anti-slop`** even when you skip release marketing: the delivery loop uses it for plan / HTML / issue prose (see [`harness/ss-flow.md`](../harness/ss-flow.md) context budget rule 6).
 
 ### Personal journal handoff (optional)
 
@@ -129,9 +131,9 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 |---------|--------|
 | `/ss-workflow` | Orientation — phase index |
 | `/ss-major-feature-roadmap` | Multi-epic initiative → story map, spec, tracker publish (consumer) |
-| `/ss-arch-plan` | Architecture plan SoT (living HTML); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
-| `/ss-security-plan` | Security posture SoT (living HTML); hardening stages — optional; does **not** replace `/ss-security-audit` |
-| `/ss-ui-ux-plan` | UX plan SoT (living HTML; flows + surfaces) — before `/ss-plan` when UI-heavy |
+| `/ss-arch-plan` | Architecture plan source of truth (living HTML); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
+| `/ss-security-plan` | Security posture source of truth (living HTML); hardening stages — optional; does **not** replace `/ss-security-audit` |
+| `/ss-ui-ux-plan` | UX plan source of truth (living HTML; flows + surfaces) — before `/ss-plan` when UI-heavy |
 | `/ss-plan` | Grill + TDD plan → `.harness/state.md` |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
 | `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential |
@@ -139,7 +141,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-security-audit` | Security gate (scripts + agent) — after review, before PR |
 | `/ss-submit-pr` | Open GitHub PR (does not merge; requires Security Evidence PASS) |
 | `/ss-close-story` | Tracker Done + clear harness files |
-| `/ss-release` | Post-ship GTM — brief → demo proof → channel pack → anti-slop (optional; not a PR gate) |
+| `/ss-release` | Post-ship go-to-market — brief → demo proof → channel pack → anti-slop (optional; not a PR gate). **`anti-slop`** also applies to delivery-loop prose (plans, HTML, issues) per ss-flow rule 6. |
 | `/ss-release-distribution` | Legit seed + tagged E2E clips/screenshots → proof on brief |
 | `/ss-release-marketing` | Email / social / YouTube / SEO blog pack from brief |
 

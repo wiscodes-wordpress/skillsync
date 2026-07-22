@@ -1,8 +1,8 @@
 ---
 name: to-issues
 description: >
-  Break a plan, spec, PRD, or harness sprint plan into independently-grabbable tracker
-  issues using tracer-bullet vertical slices (HITL / AFK). Quiz the user before publish.
+  Break a plan, spec, PRD, or harness sprint plan into independently grabbable tracker
+  issues using vertical slices (human-in-the-loop / away-from-keyboard). Quiz the user before publish.
   Use when the user wants to convert a plan into issues, create implementation tickets,
   break down work into subtasks, or run /ss-to-issues.
 disable-model-invocation: true
@@ -10,9 +10,11 @@ disable-model-invocation: true
 
 # To issues
 
-Break a plan into **independently-grabbable** issues on the project **issue tracker** using **vertical slices** (tracer bullets).
+Break a plan into **independently grabbable** issues on the project **issue tracker**. Each issue is a thin **vertical slice**: one complete path through every relevant layer (data, API, UI, tests — as they apply here), not a horizontal layer (schema-only, API-only, UI-only).
 
-**Tracker vocabulary** (project key, issue types, parent/child rules, AFK triage labels) lives in the **consumer’s** issue-tracker / agent docs (for example `docs/agents/issue-tracker.md`) or the human’s instructions — not in this shared skill. If those docs are missing, ask before publishing.
+**Prose:** apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) to titles and bodies — expand abbreviations on first use; behavior in plain English.
+
+**Tracker vocabulary** (project key, issue types, parent/child rules, away-from-keyboard triage labels) lives in the **consumer’s** issue-tracker / agent docs (for example `docs/agents/issue-tracker.md`) or the human’s instructions — not in this shared skill. If those docs are missing, ask before publishing.
 
 ## Relationship to planning
 
@@ -37,16 +39,16 @@ Work from whatever is already in the conversation. Acceptable sources (in priori
 
 Skip this step if **`/ss-plan`** (or equivalent exploration) just ran and context is fresh.
 
-Otherwise, explore enough to name slices with the project’s **domain glossary** and to respect **ADRs** in the area you are touching. Issue text should describe **behavior**, not file paths (see template).
+Otherwise, explore enough to name slices with the project’s **domain glossary** and to respect **architecture decision records (ADRs)** in the area you are touching. Issue text should describe **behavior**, not file paths (see template).
 
 ### 3. Draft vertical slices
 
-Break the work into **tracer bullet** issues. Each issue is a thin vertical slice through **all integration layers** end-to-end — not a horizontal layer (schema-only, API-only, UI-only).
+Break the work into thin vertical-slice issues. Each issue is a complete path through **all relevant layers** end to end — not a horizontal layer (schema-only, API-only, UI-only).
 
-Slices may be **HITL** or **AFK**:
+Slices may be **human-in-the-loop (HITL)** or **away-from-keyboard (AFK)**:
 
-- **HITL** — needs human interaction (architectural decision, design review, product sign-off).
-- **AFK** — can be implemented and merged without human interaction.
+- **Human-in-the-loop (HITL)** — needs human interaction (architectural decision, design review, product sign-off).
+- **Away-from-keyboard (AFK)** — can be implemented and merged without human interaction.
 
 Prefer **AFK** over **HITL** where possible. Map **AFK** slices to the consumer’s **ready / triage labels** when docs define them.
 
@@ -62,7 +64,7 @@ Prefer **AFK** over **HITL** where possible. Map **AFK** slices to the consumer�
 Present the proposed breakdown as a **numbered list**. For each slice, show:
 
 - **Title** — short descriptive name
-- **Type** — HITL / AFK
+- **Type** — human-in-the-loop (HITL) / away-from-keyboard (AFK)
 - **Blocked by** — which other slices (by number or title) must complete first, or none
 - **User stories covered** — if the source material has user stories
 

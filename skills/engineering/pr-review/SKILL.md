@@ -145,7 +145,7 @@ Then provide a compact table:
 | 1 | High | includes/Services/PostTypes/Routes.php | Missing nonce verification | Add PermissionHelper::verify_nonce($request) |
 | 2 | Medium | src/features/posts/PostForm.tsx | Hardcoded color literal | Replace with cssVars token |
 | 3 | Medium | src/services/postService.ts | Query logic leaked into component boundary | Move/normalize in queryService.ts |
-| 4 | Low | src/features/shared/components/Button.tsx | Minor a11y labeling inconsistency | Align aria-label behavior |
+| 4 | Low | src/features/shared/components/Button.tsx | Minor accessibility labeling inconsistency | Align aria-label behavior |
 ```
 
 After the table, include:

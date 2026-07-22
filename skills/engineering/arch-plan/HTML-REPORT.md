@@ -4,15 +4,15 @@ Self-contained HTML briefing for **project/plugin direction**. This file is the 
 
 **Presentation reference:** match the Quick Builder style — sticky nav (highlight **Start → finish**), Phase, ordered **finish-line** story path, dual-track Epic A/B when needed, At a glance, Current|Target side by side, compact decisions, stages, optional sizing + epic portfolio. Editorial stone/slate + emerald/sky/violet accents; Mermaid for structure; sparse prose.
 
-**Lifecycle:** rewrite this **same file** after every material follow-up and after every Jira status refresh. Do not timestamp a new file per answer. Rejected explorations may live in a sibling archive HTML (e.g. `architecture-plan-archive-*.html`) linked from the nav — do not clutter the SoT with discarded forks.
+**Lifecycle:** rewrite this **same file** after every material follow-up and after every Jira status refresh. Do not timestamp a new file per answer. Rejected explorations may live in a sibling archive HTML (e.g. `architecture-plan-archive-*.html`) linked from the nav — do not clutter the source of truth with discarded forks.
 
 ## Why HTML (not Canvas / markdown alone)
 
 | Format | Use |
 |--------|-----|
-| **`.harness/architecture-plan.html`** | Plan SoT — decisions, diagrams, stages, keys, refreshed status |
+| **`.harness/architecture-plan.html`** | plan source of truth — decisions, diagrams, stages, keys, refreshed status |
 | Markdown ADRs / `CONTEXT.md` | Narrow permanence for *why* / glossary |
-| Cursor Canvas | Optional chat-side scratch only — **never** replace the HTML SoT |
+| Cursor Canvas | Optional chat-side scratch only — **never** replace the HTML source of truth |
 
 ## Scaffold
 
@@ -66,7 +66,7 @@ Compact top bar (`text-xs`): product label + in-page anchors. Emphasize **Start 
 - `h1` serif: **Architecture plan**
 - Meta row: **Status** (e.g. `draft` | `decisions locked` · stages mirrored…), **Updated**, **Last Jira refreshed** (note what was refreshed, e.g. finish-line / Epic B table)
 - **Primary job** — one strong sentence (what this architecture delivers)
-- SoT one-liner: epic keys join Jira; status refreshed on `/ss-arch-plan`
+- Source-of-truth one-liner: epic keys join Jira; status refreshed on `/ss-arch-plan`
 - Legend chips: module · seam · leakage · deep
 
 ## Phase we are at (`#phase`) — required once tracking exists
@@ -82,7 +82,7 @@ Skip a full phase section only on the **first draft** before any tracker join; a
 
 ## Start → finish line (`#finish-line`) — required once stories are keyed
 
-The **ordered delivery path** humans follow — not a second SoT, a reading of the plan as a sequence. Refresh story statuses here on `/ss-arch-plan`.
+The **ordered delivery path** humans follow — not a second source of truth, a reading of the plan as a sequence. Refresh story statuses here on `/ss-arch-plan`.
 
 1. **▶ Start here (now)** — sky border card: current coding story key, status badge, epic home, what it blocks, next command after close.
 2. **Spine table** — columns: `#` · Story · Epic · Role · Jira · Depends on  
@@ -180,7 +180,7 @@ One-way read for humans; refresh statuses on command run. Do not create parallel
 
 ## Footer
 
-Handoff one-liner with next issue keys + path to SoT (+ archive link if any).
+Handoff one-liner with next issue keys + path to the source of truth (+ archive link if any).
 
 ## Style
 
@@ -191,4 +191,4 @@ Handoff one-liner with next issue keys + path to SoT (+ archive link if any).
 
 ## Tone
 
-Plain English. Diagrams carry structure; cards carry decisions; **finish-line** carries pickup order. If a sentence could be a bullet, make it a bullet. No hedging.
+Plain English. Diagrams carry structure; cards carry decisions; **finish-line** carries pickup order. If a sentence could be a bullet, make it a bullet. No hedging. Apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) — expand abbreviations on first use; no hype in “At a glance”.

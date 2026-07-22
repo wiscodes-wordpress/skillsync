@@ -14,6 +14,8 @@ description: >
 
 Plan a **major feature** (multi-epic, multi-release) before slice-level delivery. Invoke via **`/ss-major-feature-roadmap`** ([`commands/ss-major-feature-roadmap.md`](../../../commands/ss-major-feature-roadmap.md)). Produces a **markdown initiative spec**, a **required story map**, and **Jira epics** (plus **v1 stories only**) when Atlassian MCP is available.
 
+**Prose:** apply [`anti-slop`](../productivity/anti-slop/SKILL.md) to the initiative spec, story map, and Jira descriptions — expand abbreviations on first use; concrete scope, no roadmap buzzwords.
+
 ## Boundaries
 
 | Use this skill | Use something else |
@@ -21,9 +23,9 @@ Plan a **major feature** (multi-epic, multi-release) before slice-level delivery
 | Multi-epic initiative, release train, capability map | One epic or story → [`ss-plan`](../../../commands/ss-plan.md) / [`to-prd`](./to-prd/SKILL.md) |
 | Story map + constraints + phased slices | Stress-test one decision → [`grill-with-docs`](./grill-with-docs/SKILL.md) |
 | Relentless pre-plan interview (no draft first) | [`grill-me`](../productivity/grill-me/SKILL.md) |
-| Publish capability epics + v1 stories to Jira | Tracer-bullet vertical slices from a plan → [`to-issues`](./to-issues/SKILL.md) |
+| Publish capability epics + v1 stories to Jira | Thin vertical slices from a plan → [`to-issues`](./to-issues/SKILL.md) |
 
-**Non-goals:** no code, no RED tests, no full story backlog for future slices, no ADRs unless listing ADR candidates.
+**Non-goals:** no code, no RED tests, no full story backlog for future slices, no architecture decision records (ADRs) unless listing ADR candidates.
 
 ## Interaction model
 
@@ -45,7 +47,7 @@ Plan a **major feature** (multi-epic, multi-release) before slice-level delivery
 Read consumer docs before planning:
 
 1. **`docs/agents/issue-tracker.md`** — Jira project key, issue types (`Epic`, `Story`, …), epic link field conventions, labels. Run [`setup-matt-pocock-skills`](./setup-matt-pocock-skills/SKILL.md) if missing.
-2. **`docs/agents/domain.md`** — `CONTEXT.md` layout, ADR paths, **initiative spec directory** (if documented).
+2. **`docs/agents/domain.md`** — `CONTEXT.md` layout, architecture decision record (ADR) paths, **initiative spec directory** (if documented).
 3. **`CONTEXT.md`** / **`docs/adr/`** — domain language and decisions in scope.
 
 **Initiative spec path** (pick first match):
@@ -101,7 +103,7 @@ Surface unknowns explicitly so the roadmap stays honest and feature planning sta
 3. **Epic descriptions** — may list `Open ambiguities` only for `v1.1+` or `initiative` (deferred/honest overview).
 4. **v1 stories** — each includes **resolved assumptions** that locked the implementation spec.
 
-Optional: unresolved `initiative`-level ambiguities → ADR candidates or `grill-with-docs` handoff (does not block v1 stories if they do not touch v1 scope).
+Optional: unresolved `initiative`-level ambiguities → architecture decision record (ADR) candidates or `grill-with-docs` handoff (does not block v1 stories if they do not touch v1 scope).
 
 ## Getting started (first prompt)
 
@@ -145,7 +147,7 @@ From conversation + repo exploration, draft:
 - **v1 slice detail** — features → story stubs with acceptance criteria (full implementation spec for stories comes in step 5)
 - **Out of scope** — per slice and initiative-wide
 - **Ambiguity register** — open questions with impact, draft assumptions, block level (see above)
-- **ADR candidates** — unresolved decisions that need `grill-with-docs`; do not write ADRs here
+- **Architecture decision record (ADR) candidates** — unresolved decisions that need `grill-with-docs`; do not write ADRs here
 
 If the codebase can answer a question, explore it — do not ask the user ([`grill-me`](../productivity/grill-me/SKILL.md) rule).
 

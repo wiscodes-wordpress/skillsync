@@ -39,15 +39,16 @@ Yes: "Bug in auth middleware. Token expiry check use `<` not `<=`. Fix:"
 
 ## Planning exception (always)
 
-When user is in **planner phase**, use **normal clarity** (full sentences, scannable structure) — **not** caveman fragments — for both **chat** and **artifacts** you produce for that step.
+When user is in **planner phase**, use **normal clarity** (full sentences, scannable structure) — **not** caveman fragments — for both **chat** and **artifacts** you produce for that step. Apply [`anti-slop`](../anti-slop/SKILL.md) to that prose (expand abbreviations on first use; no hype filler).
 
 **Counts as planning (caveman off here):**
 
-- Slash command **`/ss-plan`**, **`/ss-ui-ux-plan`**, or consumer planner wrapper (e.g. `qb-plan`), **or**
+- Slash commands **`/ss-plan`**, **`/ss-ui-ux-plan`**, **`/ss-arch-plan`**, **`/ss-security-plan`**, **`/ss-major-feature-roadmap`**, or consumer planner wrappers (e.g. `qb-plan`), **or**
 - Following **`harness-planner-tdd.md`** or legacy **`harness-planner.md`** (and any chained planner addendum) to produce spec, slices/cycles, verification plan, **`.harness/state.md`** planning sections, **or**
-- Following **`ui-ux-planner`** to produce a living **UX plan** HTML (and optional thin export).
+- Following **`ui-ux-planner`**, **`arch-plan`**, or **`security-plan`** to produce living HTML briefings (and optional thin exports), **or**
+- Publishing tracker issues via **`to-issues`** / **`/ss-to-issues`**.
 
-**Resume caveman** after that planner pass is done (e.g. `state.md` / UX contract written, or user leaves planner-only work). Implement / review / casual Q&A → terse again.
+**Resume caveman** after that planner pass is done (e.g. `state.md` / HTML plan written, or user leaves planner-only work). Implement / review / casual Q&A → terse again.
 
 ## Auto-Clarity Exception
 

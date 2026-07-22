@@ -15,8 +15,8 @@ General workflow tools — not stack-specific.
 
 Post-ship optional flow — see [`ss-flow.md`](../../harness/ss-flow.md) and `/ss-release`.
 
-- **[anti-slop](./anti-slop/SKILL.md)** — Human-sounding prose gate (ban AI-marker density; not detector evasion).
-- **[release-distribution](./release-distribution/SKILL.md)** — Legit demo seed + tagged E2E clips/screenshots → proof index on the Release Brief.
+- **[anti-slop](./anti-slop/SKILL.md)** — Human-sounding prose gate for marketing **and** skillsync plans / skills / issues (ban AI-marker density; expand abbreviations; not detector evasion).
+- **[release-distribution](./release-distribution/SKILL.md)** — Legit demo seed + tagged end-to-end (E2E) clips/screenshots → proof index on the Release Brief.
 - **[release-marketing](./release-marketing/SKILL.md)** — Email, social, YouTube, SEO blog pack from the brief; always runs anti-slop.
 
 ## From [mindrally/skills](https://github.com/mindrally/skills) (upstream)

@@ -14,6 +14,8 @@ Set **security posture** as a visual **living HTML** briefing. Invoke via **`/ss
 
 This is **posture planning** (durable intent), not a relentless grill and not the ship gate.
 
+**Prose:** apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) to HTML copy and chat — expand abbreviations on first use; keep trust decisions concrete.
+
 ## Source of truth
 
 The living HTML (`.harness/security-posture.html`) is **the** source of truth for security posture: surface inventory, open/resolved trust decisions, hardening stages, optional epic/story keys, and **status as shown** after refresh.
@@ -22,9 +24,9 @@ The living HTML (`.harness/security-posture.html`) is **the** source of truth fo
 
 | Layer | Role |
 |-------|------|
-| **HTML** | Posture SoT — read and decide from here |
+| **HTML** | Posture source of truth — read and decide from here |
 | **Jira epics / stories** | Workflow; keys join stages; status feeds into HTML on command run |
-| **ADRs** | Load-bearing *why* (e.g. public REST policy) |
+| **Architecture decision records (ADRs)** | Load-bearing *why* (e.g. public REST policy) |
 | **`/ss-security-audit`** | Per-PR **gate** — Phase A scripts + Phase B judgment; consumes posture, does not replace it |
 
 **One-way only:** Jira → HTML on refresh. Never push workflow status from this skill back to Jira.
@@ -118,14 +120,14 @@ Fold into existing security/hardening epics when possible; write `data-epic` / `
 | `/ss-to-issues` | Publish hardening stages |
 | `/ss-plan` | Behavior + TDD for one hardening slice |
 | `/ss-security-audit` | **Every** PR after review — required gate |
-| ADR | Public-by-design routes, secret storage, capability model |
+| Architecture decision record (ADR) | Public-by-design routes, secret storage, capability model |
 
 Mirror into `.harness/state.md` when present:
 
 ```markdown
 ## Security Posture
 
-- **HTML:** `.harness/security-posture.html`  ← posture SoT
+- **HTML:** `.harness/security-posture.html`  ← posture source of truth
 - **Status:** draft | agreed
 - **Last Jira refresh:** <date or —>
 - **Ship gate:** `/ss-security-audit` (unchanged)

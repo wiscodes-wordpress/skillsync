@@ -149,7 +149,7 @@ Deferred or unresolved at epic level — not blocking v1 stories, or pending fut
 | Capability | ... | PROJ-xxx |
 | Story (v1) | ... | PROJ-xxx |
 
-## ADR candidates
+## Architecture decision record (ADR) candidates
 
 Unresolved decisions better captured as ADRs (link to `grill-with-docs`):
 

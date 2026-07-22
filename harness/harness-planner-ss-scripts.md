@@ -32,7 +32,7 @@ See [ss-flow.md](./ss-flow.md) for phase context. This file is **not** loaded by
 |-------|---------|----------------|
 | Branch | — | Issue key → branch name, checkout, optional state header |
 | `/ss-plan` | grill-me, grill-tdd, planner content | State template init, section validation |
-| `/ss-to-issues` | Slice design, HITL/AFK quiz | Publish approved slices from state → tracker API |
+| `/ss-to-issues` | Slice design, human-in-the-loop (HITL) / away-from-keyboard (AFK) quiz | Publish approved slices from state → tracker API |
 | `/ss-implement` | Code + tests | Run Verification Plan, log TDD Evidence, re-break sequence |
 | `/ss-review` | Rubric scores (functionality, security, UX) | Hard gates: tampering diff, RED evidence, locator grep, command runner |
 | `/ss-submit-pr` | Summary prose, risk narrative | push, duplicate PR check, title from branch, body skeleton, `gh pr create` |
@@ -178,7 +178,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 - Render issue bodies from [to-issues](../skills/engineering/to-issues/SKILL.md) template.
 - **Dry-run** (default): print markdown table slice → would-be body.
 - **`--publish`:** call `gh issue create` or Jira REST per consumer config (`issueTracker: github|jira`, project key, parent key, labels).
-- Require `--approved` flag or stdin `yes` after dry-run (HITL gate — no auto-publish without explicit flag).
+- Require `--approved` flag or stdin `yes` after dry-run (human-in-the-loop (HITL) gate — no auto-publish without explicit flag).
 
 **Used by:** `/ss-to-issues` after human approves breakdown in chat.
 

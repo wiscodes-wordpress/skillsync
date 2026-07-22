@@ -5,24 +5,24 @@ Code work, delivery workflow, and technical review skills.
 ## From [Matt Pocock](https://github.com/mattpocock/skills) (upstream)
 
 - **[diagnose](./diagnose/SKILL.md)** — Disciplined diagnosis loop for hard bugs and performance regressions.
-- **[grill-with-docs](./grill-with-docs/SKILL.md)** — Grilling session against the domain model; updates `CONTEXT.md` and ADRs inline.
-- **[grill-tdd](./grill-tdd/SKILL.md)** — TDD grilling after domain align: behaviors, RED contracts, locator strategy, false-positive audit (`/ss-plan` step 1b).
+- **[grill-with-docs](./grill-with-docs/SKILL.md)** — Grilling session against the domain model; updates `CONTEXT.md` and architecture decision records (ADRs) inline.
+- **[grill-tdd](./grill-tdd/SKILL.md)** — Test-driven development grilling after domain align: behaviors, expectations, RED contracts, locator strategy, false-positive audit (`/ss-plan` step 1b).
 - **[improve-codebase-architecture](./improve-codebase-architecture/SKILL.md)** — Find deepening opportunities informed by `CONTEXT.md` and ADRs.
 - **[prototype](./prototype/SKILL.md)** — Throwaway prototype to flesh out a design before committing.
 - **[setup-matt-pocock-skills](./setup-matt-pocock-skills/SKILL.md)** — Scaffold per-repo config (issue tracker, triage labels, domain docs).
-- **[tdd](./tdd/SKILL.md)** — Test-driven development with red-green-refactor vertical slices.
-- **[to-issues](./to-issues/SKILL.md)** — Break a plan into independently-grabbable tracker issues (skillsync harness variant).
+- **[tdd](./tdd/SKILL.md)** — Test-driven development with red-green-refactor, one behavior at a time.
+- **[to-issues](./to-issues/SKILL.md)** — Break a plan into independently grabbable tracker issues (skillsync harness variant).
 - **[to-prd](./to-prd/SKILL.md)** — Turn conversation context into a PRD on the issue tracker.
 - **[triage](./triage/SKILL.md)** — Triage issues through a state machine of triage roles.
 - **[zoom-out](./zoom-out/SKILL.md)** — Higher-level perspective on an unfamiliar section of code.
 
 ## Skillsync shared
 
-- **[arch-plan](./arch-plan/SKILL.md)** — Architecture plan SoT as living HTML (`/ss-arch-plan`); Quick-Builder-style briefing; epic/story keys; one-way Jira refresh on run.
-- **[security-plan](./security-plan/SKILL.md)** — Security posture SoT as living HTML (`/ss-security-plan`); hardening stages; does not replace `/ss-security-audit`.
+- **[arch-plan](./arch-plan/SKILL.md)** — Architecture plan as living HTML source of truth (`/ss-arch-plan`); Quick-Builder-style briefing; epic/story keys; one-way Jira refresh on run.
+- **[security-plan](./security-plan/SKILL.md)** — Security posture as living HTML source of truth (`/ss-security-plan`); hardening stages; does not replace `/ss-security-audit`.
 - **[dependabot-batch-merge](./dependabot-batch-merge/SKILL.md)** — Batch-merge Dependabot PRs safely.
 - **[frontend-react-best-practices](./frontend-react-best-practices/SKILL.md)** — React performance and composition patterns.
-- **[jest-react-testing](./jest-react-testing/SKILL.md)** — Jest + RTL (link when consumer uses React; not default ss-flow load).
+- **[jest-react-testing](./jest-react-testing/SKILL.md)** — Jest + React Testing Library (link when consumer uses React; not default ss-flow load).
 - **[testing-expert](./testing-expert/SKILL.md)** — Optional reference encyclopedia; **not** in **`ss-*`** flow (`tdd` + stack skill instead).
 - **[jira-close-story](./jira-close-story/SKILL.md)** — Close Jira stories and reset harness state (MCP).
 - **[major-feature-roadmap](./major-feature-roadmap/SKILL.md)** — Multi-epic initiative planning with story map, initiative spec, and Jira epic/story publish via MCP.
@@ -30,7 +30,7 @@ Code work, delivery workflow, and technical review skills.
 - **[pr-review](./pr-review/SKILL.md)** — Structured pull request review workflow.
 - **[submit-github-pr](./submit-github-pr/SKILL.md)** — Open a GitHub PR via `gh`.
 - **[typescript-react-reviewer](./typescript-react-reviewer/SKILL.md)** — TypeScript + React code review expert.
-- **[ui-ux-planner](./ui-ux-planner/SKILL.md)** — Flows + surfaces → living HTML UX SoT before `/ss-plan` (`/ss-ui-ux-plan`).
+- **[ui-ux-planner](./ui-ux-planner/SKILL.md)** — Flows + surfaces → living HTML UX source of truth before `/ss-plan` (`/ss-ui-ux-plan`).
 
 ## WordPress
 
@@ -40,7 +40,7 @@ Code work, delivery workflow, and technical review skills.
 - **[wordpress-performance-best-practices](./wordpress-performance-best-practices/SKILL.md)** — Performance rules and AGENTS.md builder.
 - **[wordpress-plugin-fundamentals](./wordpress-plugin-fundamentals/SKILL.md)** — Plugin structure, hooks, and core APIs.
 - **[wordpress-security-validation](./wordpress-security-validation/SKILL.md)** — Sanitization, validation, escaping.
-- **[wordpress-testing-qa](./wordpress-testing-qa/SKILL.md)** — PHPUnit, E2E, and QA workflows.
+- **[wordpress-testing-qa](./wordpress-testing-qa/SKILL.md)** — PHPUnit, end-to-end (E2E), and QA workflows.
 - **[wp-abilities-api](./wp-abilities-api/SKILL.md)** — WordPress Abilities API integration.
 - **[wp-block-development](./wp-block-development/SKILL.md)** — Block editor block development.
 - **[wp-block-themes](./wp-block-themes/SKILL.md)** — Block themes, templates, and patterns.

@@ -18,7 +18,7 @@ Manages **Markdown** weekly activity logs and **derived** daily standup notes.
 
 | Layer | Format | Role |
 |-------|--------|------|
-| Weekly / standup / on-call | **Markdown** | Notes SoT — edit in Obsidian |
+| Weekly / standup / on-call | **Markdown** | notes source of truth — edit in Obsidian |
 | Goals / todos | `planning.json` | Overall planning via **journal-planning** (not week-bounded) |
 | Dashboard | **HTML** | Overview UI — does **not** replace weekly `.md` files |
 
@@ -112,7 +112,7 @@ node tools/journal-index.cjs
 
 ### C — Daily standup (from weekly)
 
-Standup is **derived** from the weekly Daily log. Weekly remains activity SoT.
+Standup is **derived** from the weekly Daily log. Weekly remains activity source of truth.
 
 1. Ensure weekly file exists (Mode A).
 2. Run from skillsync:

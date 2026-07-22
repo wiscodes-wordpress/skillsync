@@ -9,9 +9,9 @@ Consumer repos use **thin wrappers** (`qb-*`, etc.) for tracker-specific steps; 
 | # | Phase | Command |
 |---|--------|---------|
 | 1 | Branch | consumer wrapper |
-| 2 | Architecture (structure in flux) | [`ss-arch-plan`](./ss-arch-plan.md) — optional; HTML plan SoT; epic keys; Jira→HTML refresh on run |
-| 3 | Security posture (trust model) | [`ss-security-plan`](./ss-security-plan.md) — optional; HTML posture SoT; not the PR gate |
-| 4 | UI/UX plan (UI-heavy) | [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) — optional; living HTML SoT; **before** ss-plan |
+| 2 | Architecture (structure in flux) | [`ss-arch-plan`](./ss-arch-plan.md) — optional; HTML plan source of truth; epic keys; Jira→HTML refresh on run |
+| 3 | Security posture (trust model) | [`ss-security-plan`](./ss-security-plan.md) — optional; HTML posture source of truth; not the PR gate |
+| 4 | UI/UX plan (UI-heavy) | [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) — optional; living HTML source of truth; **before** ss-plan |
 | 5 | Grill domain | step 1a of [`ss-plan`](./ss-plan.md) |
 | 6 | Grill TDD | step 1b of [`ss-plan`](./ss-plan.md) |
 | 7 | Plan | steps 2–3 of [`ss-plan`](./ss-plan.md) |

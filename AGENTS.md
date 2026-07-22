@@ -26,6 +26,7 @@ See **`docs/consumer-setup.md`**. Typical flow:
 1. Keep additions **reusable** across consumers; push product flavor into consumer wrappers or harness addenda.
 2. After changing skills, commands, or **`tools/`** ss-* helpers, run **`node tools/verify-skills.cjs .`**, **`node tools/verify-commands.cjs .`**, and **`node tools/verify-tools.cjs .`** from this repo root (`.` = skillsync root).
 3. Prefer **symlink** `linkMode` in consumers unless the platform cannot create directory symlinks.
+4. **Prose** — follow [`skills/productivity/anti-slop`](skills/productivity/anti-slop/SKILL.md): expand abbreviations on first use (architecture decision record (ADR), end-to-end (E2E), source of truth, human-in-the-loop (HITL), away-from-keyboard (AFK), …); cut AI-marker density and empty hype; prefer concrete paths and behaviors over jargon.
 
 ## Naming
 

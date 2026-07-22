@@ -1,24 +1,26 @@
 ---
 name: anti-slop
 description: >
-  Revise prose so it sounds human — ban AI-marker density, empty hype, and corporate
-  synonym soup. Use when drafting or revising release marketing copy, emails, social posts,
-  blog intros, YouTube descriptions, or any skillsync output that must not read like AI slop.
-  Not for detector evasion.
+  Revise prose so it sounds human — ban AI-marker density, empty hype, unexplained
+  abbreviations, and corporate synonym soup. Use for release marketing, and for
+  skillsync workflow output (plans, HTML briefings, issues, skill docs, harness
+  narrative). Not for detector evasion or caveman chat.
 ---
 
 # Anti-slop
 
-Revision gate for **human-sounding prose**. Load before declaring release marketing (or similar) copy done.
+Revision gate for **human-sounding prose**. Use it for **marketing copy** and for **skillsync workflow writing** (plans, briefings, issues, skills).
 
-**Not:** rewriting text to dodge AI detectors. **Is:** cutting tells, empty intensifiers, and fake warmth so a person who shipped the feature could have written it.
+**Not:** rewriting text to dodge AI detectors. **Is:** cutting tells, empty intensifiers, unexplained shorthand, and fake warmth so a person on the team could have written it.
 
 ## When to use
 
 | Use this | Skip |
 |----------|------|
-| Email, social, YouTube, launch blog, changelog blurbs | Pure code, harness state tables, ADR decision logs |
-| After drafting channel copy in [`release-marketing`](../release-marketing/SKILL.md) | Chat terseness — that is [`caveman`](../caveman/SKILL.md) |
+| Email, social, YouTube, launch blog, changelog blurbs | Pure code |
+| Living HTML plans (architecture, security, UX), `.harness/state.md` narrative, issue bodies | Mechanical evidence tables (commands, pass/fail rows) |
+| Skill / harness / command markdown in this repo | Architecture decision record (ADR) decision logs that stay short and factual |
+| After [`release-marketing`](../release-marketing/SKILL.md) | Chat terseness — that is [`caveman`](../caveman/SKILL.md) |
 | Softening technical blog intros that sound generated | Deep tutorial body — prefer [`technical-writing`](../technical-writing/SKILL.md) |
 
 ## Density, not banlists alone
@@ -27,50 +29,82 @@ Slop is a **density** problem. One “seamless” in a long piece can stand. A c
 
 Score roughly per ~100 words: if two or more tier-1 markers appear, rewrite that block.
 
-## Tier-1 markers (rewrite on sight in marketing)
+## Tier-1 markers (rewrite on sight)
 
 - unlock, seamless, delve, tapestry, embark, landscape (as metaphor)
 - “I’m excited to announce”, “We’re thrilled”, “game-changing”, “revolutionary”
 - “In today’s fast-paced…”, “At the end of the day”, “It goes without saying”
 - Fake empathy openers (“We know how hard it is to…”) with no specific product fact after
 - Empty intensifiers stacked: truly / really / simply / robust / powerful / next-level
+- Vague plan filler: “leverage synergies”, “holistic approach”, “best-in-class”, “empower users”
+
+## Abbreviations (skillsync-wide)
+
+On **first use** in a skill, plan, HTML briefing, or issue: write the full phrase, then the short form in parentheses. After that, the short form is fine.
+
+| Prefer first use | Then |
+|------------------|------|
+| architecture decision record (ADR) | ADR |
+| information architecture (IA) | IA |
+| end-to-end (E2E) | E2E |
+| source of truth | Prefer the full phrase; do not write “SoT” |
+| human-in-the-loop (HITL) | HITL |
+| away-from-keyboard (AFK) | AFK |
+| React Testing Library (RTL) | RTL |
+| accessibility (not only “a11y”) | a11y only after first expansion, or spell out |
+
+Do not invent new shorthand. Prefer the repo’s `CONTEXT.md` terms over clever synonyms.
 
 ## Prefer
 
-- **Specific nouns** — name the feature, screen, or outcome
+- **Specific nouns** — name the feature, screen, path, or outcome
 - **One claim per sentence** — cut stacked benefits in one breath
-- **Real product verbs** — ship, filter, save, export, schedule (not “empower”, “elevate”, “leverage”)
-- **Short paragraphs** — especially email and social
-- **Proof** — what changed for the user, or point at a clip / screenshot from the brief
+- **Real verbs** — ship, filter, save, export, schedule, test, merge (not “empower”, “elevate”, “leverage”)
+- **Short paragraphs** — especially email, social, and HTML “at a glance”
+- **Proof** — what changed, which command, which file, or a clip / screenshot from the brief
+- **Plain process language** — “one behavior at a time” over metaphor stacks
 
-## Channel modulation
+## Channel / surface modulation
 
-| Channel | Tone |
+| Surface | Tone |
 |---------|------|
 | Email | Warmer, direct; subject line earns the open; no brochure voice |
 | Social | Shorter; hook in first line; hard length caps in templates |
 | YouTube description | Scannable; chapters; no keyword stuffing |
 | Blog / SEO shell | Clear promise; keywords in title/meta/H1 once; body still human |
+| Living HTML plans | Scannable sections; concrete decisions; no hype in “At a glance” |
+| Harness state / issues | Behavior and acceptance in plain English; expand abbreviations once |
+| Skill / harness markdown | Imperative, unambiguous; same abbreviation rule |
 
 Never compensate for weak substance with corporate-synonym soup.
 
 ## Consumer `TONE.md`
 
-If the consumer has a brand `TONE.md` (path in the Release Brief or repo root), apply its bans and voice attributes **in addition** to this skill. When they conflict, consumer tone wins on brand words; this skill still wins on tier-1 AI markers.
+If the consumer has a brand `TONE.md` (path in the Release Brief or repo root), apply its bans and voice attributes **in addition** to this skill. When they conflict, consumer tone wins on brand words; this skill still wins on tier-1 AI markers and unexplained abbreviations.
 
 ## Slop pass checklist
 
-Before calling copy done:
+### Marketing / release pack
 
 - [ ] Opening states a concrete change or problem — not a press-release throat-clear
 - [ ] No tier-1 cluster in any ~100-word window
 - [ ] Every paragraph earns its keep (cut filler)
 - [ ] Claims match the Release Brief; nothing oversold in **Out of scope / do-not-claim**
-- [ ] CTA is one clear action with a real URL when available
+- [ ] Call to action is one clear action with a real URL when available
 - [ ] Reads like a teammate wrote it after shipping — not like a launch template filled by a bot
+
+### Skillsync plans, skills, issues, HTML briefings
+
+- [ ] Abbreviations expanded on first use (table above)
+- [ ] No tier-1 marketing markers in planning prose
+- [ ] Each section has one job; headings say what the reader gets
+- [ ] Decisions name options and the choice — not “we should align stakeholders holistically”
+- [ ] Paths, commands, and behavior names are concrete where they matter
+- [ ] Someone new to the repo could follow without a glossary of slang
 
 ## Out of scope
 
 - Detector-evasion pipelines or “humanize API” tools
 - Changing product facts to sound nicer
 - Replacing [`technical-writing`](../technical-writing/SKILL.md) for long tutorials
+- Rewriting [`caveman`](../caveman/SKILL.md) chat output into full prose mid-session

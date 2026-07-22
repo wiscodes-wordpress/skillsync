@@ -51,7 +51,7 @@ Objective success criteria — not “looks good”:
 
 Read what the consumer links in **`AGENTS.md`** / **`skillsync.config.json`**, for example:
 
-- [`jest-react-testing`](../skills/engineering/jest-react-testing/SKILL.md) — RTL unit/component
+- [`jest-react-testing`](../skills/engineering/jest-react-testing/SKILL.md) — React Testing Library unit/component
 - [`wordpress-testing-qa`](../skills/engineering/wordpress-testing-qa/SKILL.md) — PHPUnit, WP E2E
 
 ## Further reading (Playwright example)

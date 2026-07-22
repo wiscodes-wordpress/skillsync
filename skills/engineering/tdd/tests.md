@@ -2,7 +2,7 @@
 
 ## Good Tests
 
-**Integration-style**: Test through real interfaces, not mocks of internal parts.
+**Integration-style:** Test through real interfaces, not mocks of internal parts. Prefer tests that walk an **expectation** chain (setup > action > observable result) from the plan.
 
 ```typescript
 // GOOD: Tests observable behavior
@@ -20,7 +20,7 @@ Characteristics:
 - Uses public API only
 - Survives internal refactors
 - Describes WHAT, not HOW
-- One logical assertion per test
+- One logical assertion per test (the last hop of the expectation)
 
 ## Bad Tests
 

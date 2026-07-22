@@ -1,11 +1,11 @@
 # Critic module — TDD test integrity
 
-Load when **`.harness/state.md`** contains **Behavior & Test Contracts** or a **RED→GREEN Plan** (typical after **`/ss-plan`** TDD flow).
+Load when **`.harness/state.md`** contains **Behavior & Test Contracts** or a **RED→GREEN Plan** (typical after **`/ss-plan`** test-driven development flow).
 
 Also read:
 
-- [`tdd/tests.md`](../skills/engineering/tdd/tests.md) — good/bad test examples (not full `tdd` skill)
-- [accessible-locator-priority.md](./accessible-locator-priority.md) when UI or E2E specs are in the diff
+- [`tdd/tests.md`](../skills/engineering/tdd/tests.md) — good/bad test examples (not the full `tdd` skill)
+- [accessible-locator-priority.md](./accessible-locator-priority.md) when UI or end-to-end (E2E) specs are in the diff
 
 **Contract source:** **`.harness/state.md`** (not `grill-tdd` — planning is done).
 
@@ -13,19 +13,20 @@ Also read:
 
 Prevent **false positives** and **test tampering**: tests must prove planned behaviors; green must come from **production fixes**, not deleted or weakened assertions.
 
-## Rubric additions (score when TDD plan present)
+## Rubric additions (score when a TDD plan is present)
 
 Add these categories to the core critic rubric:
 
 | Category | Question |
 |----------|----------|
 | **Test contract fidelity** | Every behavior ID in the plan maps to a test that would catch regression |
+| **Expectation fidelity** | The test walks the planned **expectation**; the last hop is asserted |
 | **RED discipline** | Completed cycles have RED evidence in state (fail output before GREEN) |
-| **Test integrity** | GREEN did not remove/weaken tests to pass |
-| **E2E sync** | Spines cover journey gaps only; no duplicate of unit branches |
+| **Test integrity** | GREEN did not remove or weaken tests to pass |
+| **End-to-end (E2E) sync** | Spines cover journey gaps only; no duplicate of unit branches |
 | **Locator discipline** (UI/E2E) | Role/label priority per accessible-locator-priority; no gratuitous test IDs |
 
-**FAIL** if test tampering detected or RED evidence missing for claimed TDD cycles.
+**FAIL** if test tampering is detected or RED evidence is missing for claimed TDD cycles.
 
 ## Step 1 — Contract vs diff
 
@@ -34,11 +35,12 @@ Build a table from **Behavior & Test Contracts** in state.md (cards with **name*
 | Behavior ID | Planned layer | **name** match in diff? | Last hop of **expectation** asserted? |
 |-------------|---------------|-------------------------|---------------------------------------|
 | B1 | unit | | |
-| S1 | E2E spine | | |
+| S1 | end-to-end (E2E) spine | | |
 
 **FAIL** if a planned behavior has no matching test in the diff (unless explicitly deferred in Remaining with human approval). Match on Behavior ID + **name**; treat the final ` > ` hop of **expectation** as the required assertion.
 
 **Mechanical assist:** `tools/tdd-audit.cjs` parses contract cards and fails completed cycles whose **name** is absent from the test diff; last-hop / **path** mismatches are warnings (`--strict-warn` to fail).
+
 ## Step 2 — Test tampering diff audit
 
 Inspect test file changes:
@@ -58,6 +60,7 @@ git diff -- '*.test.*' '*.spec.*' '__tests__/*' 'e2e/*' 'tests/*'
 | Hollow interaction | assert visibility only, no user action |
 | Mock hides behavior | new mock that prevents exercising the behavior under test |
 | Test-only GREEN | cycle went green with **zero** production file changes |
+| Expectation drift | test scenario no longer matches planned **expectation** |
 
 ### Allowed test changes in GREEN (require note in findings)
 
@@ -92,9 +95,9 @@ Record in verdict:
 | 1 | yes | stashed src/... only |
 ```
 
-**FAIL** if test passes with production fix removed (test does not prove behavior).
+**FAIL** if the test passes with the production fix removed (test does not prove behavior).
 
-## Step 5 — E2E sync
+## Step 5 — End-to-end (E2E) sync
 
 When E2E spines are planned:
 
@@ -116,21 +119,21 @@ git diff -- '*.test.*' '*.spec.*' '__tests__/*' 'e2e/*' 'tests/*'
 | CSS class / xpath selectors as primary | medium — IN_PROGRESS minimum |
 | Role / label for interactive elements | expected |
 
-**FAIL** if agent added `data-testid` to production components only to satisfy tests — fix semantics instead.
+**FAIL** if the agent added `data-testid` to production components only to satisfy tests — fix semantics instead.
 
 ## Output section (add to critic chat output)
 
 ```markdown
 ### TDD Contract Audit
-| Behavior ID | Layer | Test found | RED evidenced | Tampering | Locator OK |
-|-------------|-------|------------|---------------|-----------|------------|
+| Behavior ID | Layer | Test found | Expectation last hop | RED evidenced | Tampering | Locator OK |
+|-------------|-------|------------|----------------------|---------------|-----------|------------|
 
 ### Test integrity
 - Prod lines changed: …
 - Test assertion delta: …
 - Re-break: …
 
-### E2E sync
+### End-to-end (E2E) sync
 - …
 ```
 
@@ -143,4 +146,5 @@ git diff -- '*.test.*' '*.spec.*' '__tests__/*' 'e2e/*' 'tests/*'
 | Re-break fails (test passes without prod) | **FAIL** |
 | Gratuitous test ID in UI tests or production markup | **FAIL** |
 | Contract gap (planned behavior untested) | **FAIL** |
+| Expectation last hop not asserted | **FAIL** |
 | Minor locator nit, strong otherwise | **IN_PROGRESS** |

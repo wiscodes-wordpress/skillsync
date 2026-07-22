@@ -18,8 +18,8 @@ Weekly activity = Markdown via **journal-weekly**. Planning = `planning.json` on
 
 | Layer | Format | Role |
 |-------|--------|------|
-| Goals / todos | `planning.json` | SoT — overall; optional `week`/`due` are pins only |
-| Weekly / standup notes | Markdown | Activity SoT — dashboard indexes weeks, does not store goals there |
+| Goals / todos | `planning.json` | source of truth — overall; optional `week`/`due` are pins only |
+| Weekly / standup notes | Markdown | activity source of truth — dashboard indexes weeks, does not store goals there |
 | `dashboard.html` + assets | HTML | Live UI (localhost server) |
 | `dashboard.obsidian.html` | Static HTML | Obsidian day-to-day — **pre-rendered**; no JS in Obsidian |
 
@@ -37,7 +37,7 @@ Vault root: `$HOME/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Driv
 
 | Item | Path |
 |------|------|
-| Planning SoT | `Journal/_dashboard/planning.json` |
+| planning source of truth | `Journal/_dashboard/planning.json` |
 | Week index | `Journal/_dashboard/index.json` |
 | Live shell | `Journal/_dashboard/dashboard.html` + `assets/` |
 | Obsidian snapshot | `Journal/_dashboard/dashboard.obsidian.html` |

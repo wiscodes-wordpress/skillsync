@@ -12,7 +12,7 @@ In **Agent** mode, follow [`ui-ux-planner`](../skills/engineering/ui-ux-planner/
 4. Inventory surfaces (primary action + empty/loading/error/success).
 5. Record design decisions; leave open questions tagged `blocks: ss-plan` or `defer`.
 6. **Draft or rewrite** the living HTML per [`HTML-REPORT.md`](../skills/engineering/ui-ux-planner/HTML-REPORT.md). Open the file; tell the user the path. Follow-ups **rewrite the same HTML**.
-7. Optionally write a **thin** markdown export to `docs/ux/ux-<slug>.md` for tracker paste — HTML remains SoT. Point `.harness/state.md` at the HTML when present.
+7. Optionally write a **thin** markdown export to `docs/ux/ux-<slug>.md` for tracker paste — HTML remains the source of truth. Point `.harness/state.md` at the HTML when present.
 8. **Handoff:** run **`/ss-plan`** next — seed Behavior & Test Contracts from journeys.
 
 **Skip** when there is no product UI (API-only, infra). **After** [`ss-major-feature-roadmap`](./ss-major-feature-roadmap.md) when a capability is UI-heavy but still needs flow detail before a story-level `/ss-plan`.

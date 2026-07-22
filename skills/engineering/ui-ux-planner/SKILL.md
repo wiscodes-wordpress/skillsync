@@ -14,16 +14,18 @@ Plan **product UX** (flows + surfaces) as a visual **living HTML** briefing befo
 
 The HTML is the **source of truth**. **`/ss-plan`** consumes journeys from it for Behavior & Test Contracts — do not skip straight to implement on UI-heavy work.
 
+**Prose:** apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) to HTML copy and chat — expand abbreviations on first use (information architecture (IA), architecture decision record (ADR), accessibility); no brochure voice.
+
 ## Source of truth
 
-The living HTML (`.harness/ux-plan.html`) is **the** source of truth for this UX plan: primary job, journeys, surfaces, states, design decisions, a11y, and open questions.
+The living HTML (`.harness/ux-plan.html`) is **the** source of truth for this UX plan: primary job, journeys, surfaces, states, design decisions, accessibility, and open questions.
 
-**Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — sticky nav, Job, Journeys, Surfaces, States, Decisions, Handoff. That browser HTML is the deliverable; do **not** substitute a Cursor Canvas or chat-only summary for the SoT.
+**Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — sticky nav, Job, Journeys, Surfaces, States, Decisions, Handoff. That browser HTML is the deliverable; do **not** substitute a Cursor Canvas or chat-only summary for the source of truth.
 
 | Layer | Role |
 |-------|------|
-| **HTML** | Plan SoT — read and decide from here |
-| Optional **`docs/ux/ux-<slug>.md`** | Thin paste/export for tracker — not a competing SoT |
+| **HTML** | Plan source of truth — read and decide from here |
+| Optional **`docs/ux/ux-<slug>.md`** | Thin paste/export for tracker — not a competing source of truth |
 | **`.harness/state.md` pointer** | Path + status for the delivery loop |
 
 Follow-up answers **update that same HTML** before the next question. Do not spawn timestamped copies per answer.
@@ -36,7 +38,7 @@ Follow-up answers **update that same HTML** before the next question. Do not spa
 | Flow efficiency ("too many steps", unclear primary action) | Multi-epic initiative first → [`major-feature-roadmap`](../major-feature-roadmap/SKILL.md), then this for UI-heavy capabilities |
 | Design decisions that should stick through TDD | Pixel polish while implementing → keep decisions here; polish later |
 | Critique of an existing flow before rewriting | Code review of React performance → [`frontend-react-best-practices`](../frontend-react-best-practices/SKILL.md) |
-| Living visual UX SoT before `/ss-plan` | Structure/modules → [`arch-plan`](../arch-plan/SKILL.md); security posture → [`security-plan`](../security-plan/SKILL.md) |
+| Living visual UX source of truth before `/ss-plan` | Structure/modules → [`arch-plan`](../arch-plan/SKILL.md); security posture → [`security-plan`](../security-plan/SKILL.md) |
 
 **Non-goals:** no production UI code, no RED tests, no tracker publish required, no replacing grill-me / grill-tdd, no Jira status refresh (v1).
 
@@ -72,7 +74,7 @@ Create `.harness/` if needed. One active file — rewrite in place.
 
 **Fallback:** `$TMPDIR` / `/tmp` / `%TEMP%` → `ux-plan-<repo-slug>.html` (stable name, not timestamped).
 
-On user **"lock this"** / approve: optionally write a **thin** markdown export to `docs/ux/ux-<slug>.md` (or consumer UX path) for tracker paste — HTML remains SoT. Do not maintain a full duplicate contract in markdown.
+On user **"lock this"** / approve: optionally write a **thin** markdown export to `docs/ux/ux-<slug>.md` (or consumer UX path) for tracker paste — HTML remains the source of truth. Do not maintain a full duplicate contract in markdown.
 
 Open after write: `open <path>` (macOS), `xdg-open` (Linux), `start` (Windows).
 
@@ -92,7 +94,7 @@ Also mirror a short pointer into **`.harness/state.md`** when that file already 
 ```markdown
 ## UX Plan
 
-- **HTML:** `.harness/ux-plan.html`  ← plan SoT
+- **HTML:** `.harness/ux-plan.html`  ← plan source of truth
 - **Status:** agreed | draft
 - **Slug:** <slug>
 - **Export (optional):** `docs/ux/ux-<slug>.md`
@@ -110,16 +112,16 @@ Capture in HTML `#job`:
 - **Actors** — who uses this
 - **Success** — how we know the flow worked
 - **Non-goals** — flows/screens out of scope
-- **Constraints** — platform, a11y bar, existing components, brand/density
+- **Constraints** — platform, accessibility bar, existing components, brand/density
 
 ### 2. Map efficient flows
 
 For each priority journey (HTML `#journeys`):
 
-1. List steps as `step > step > outcome` (same shape later used in TDD **expectation**).
+1. List steps as `step > step > outcome` (same shape later used in test-driven development **expectation**).
 2. **Cut steps** — merge, default, or progressive-disclose until the happy path is minimal.
 3. Add **one** primary failure/recovery path (validation, empty, permission) — not every edge.
-4. Apply [foundations.md](foundations.md) — Hick, Fitts, progressive disclosure, feedback.
+4. Apply [foundations.md](foundations.md) — Hick’s Law, Fitts’s Law, progressive disclosure, feedback.
 
 ### 3. Inventory surfaces and states
 
@@ -129,7 +131,7 @@ Prefer **one primary action** per surface. Split screens that compete for two jo
 
 ### 4. Decide (and record)
 
-Irreversible or high-conflict choices go in `#decisions` (problem → options → choice → why). Offer an ADR only when the consumer already uses ADRs for UX/IA and the choice is hard to reverse.
+Irreversible or high-conflict choices go in `#decisions` (problem → options → choice → why). Offer an architecture decision record (ADR) only when the consumer already uses ADRs for UX / information architecture (IA) and the choice is hard to reverse.
 
 Material follow-ups: rewrite the **same** HTML before the next question.
 
@@ -140,7 +142,7 @@ Before closing:
 - [ ] Happy path step count is explicit and justified
 - [ ] Primary action obvious on each surface
 - [ ] Empty / error / success named
-- [ ] A11y expectations listed (labels, keyboard, contrast)
+- [ ] Accessibility expectations listed (labels, keyboard, contrast)
 - [ ] Open questions tagged `blocks: ss-plan` vs `defer`
 - [ ] Living HTML written/updated; opened for the user; agreed (or explicitly draft)
 - [ ] Next Action: **`/ss-plan`** with HTML path referenced
@@ -155,7 +157,7 @@ If the user wants parent/epic/story text updated, use [templates.md](templates.m
 - Skipping flow work and jumping to colors/shadows
 - Inventing a new pattern when the product already has one
 - Specifying implementation (CSS grid, component library internals) unless required by constraints
-- Dual SoT — full markdown contract *and* HTML saying different things
+- Dual source of truth — full markdown contract *and* HTML saying different things
 - Replacing `/ss-plan` — this skill stops at the UX plan HTML
 
 ## Done definition

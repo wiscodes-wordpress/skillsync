@@ -110,8 +110,10 @@ Split into separate files when:
 After drafting, verify:
 
 - [ ] Description includes triggers ("Use when...")
-- [ ] SKILL.md under 100 lines
+- [ ] SKILL.md under 100 lines (or split to reference files)
 - [ ] No time-sensitive info
 - [ ] Consistent terminology
 - [ ] Concrete examples included
 - [ ] References one level deep
+- [ ] **Anti-slop** — apply [`anti-slop`](../anti-slop/SKILL.md): expand abbreviations on first use; no hype filler; instructions are unambiguous
+- [ ] Someone new could follow the skill without a private glossary of slang
