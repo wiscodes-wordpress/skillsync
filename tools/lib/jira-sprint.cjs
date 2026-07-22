@@ -22,7 +22,50 @@ const ISSUE_FIELDS = [
 	'priority',
 	'issuetype',
 	'sprint',
+	'parent',
+	// Classic company-managed Epic Link (fallback when parent is unset)
+	'customfield_10008',
 ];
+
+/**
+ * @param {Record<string, unknown>} fields
+ * @returns {{ key: string, summary: string } | null}
+ */
+function resolveEpic(fields) {
+	const parent = /** @type {Record<string, unknown> | null} */ (fields.parent);
+	if (parent && typeof parent === 'object') {
+		const parentFields = /** @type {Record<string, unknown>} */ (
+			parent.fields || {}
+		);
+		const parentType = /** @type {{ name?: string } | null} */ (
+			parentFields.issuetype
+		);
+		const key = String(parent.key || '').toUpperCase();
+		if (key && /epic/i.test(String(parentType?.name || ''))) {
+			return {
+				key,
+				summary: String(parentFields.summary || ''),
+			};
+		}
+	}
+
+	const epicLink = fields.customfield_10008;
+	if (typeof epicLink === 'string' && epicLink.trim()) {
+		return { key: epicLink.trim().toUpperCase(), summary: '' };
+	}
+	if (epicLink && typeof epicLink === 'object') {
+		const e = /** @type {Record<string, unknown>} */ (epicLink);
+		const key = String(e.key || e.value || '').toUpperCase();
+		if (key) {
+			return {
+				key,
+				summary: String(e.summary || e.name || ''),
+			};
+		}
+	}
+
+	return null;
+}
 
 /**
  * @param {string} vault
@@ -191,6 +234,12 @@ function mapIssue(issue, site) {
 		browseUrlForKey(key) ||
 		(site ? `${site.replace(/\/$/, '')}/browse/${key}` : null);
 
+	const epic = resolveEpic(fields);
+	const epicBrowse =
+		epic &&
+		(browseUrlForKey(epic.key) ||
+			(site ? `${site.replace(/\/$/, '')}/browse/${epic.key}` : null));
+
 	return {
 		key,
 		summary: String(fields.summary || ''),
@@ -199,6 +248,9 @@ function mapIssue(issue, site) {
 		issuetype: issuetype?.name || '',
 		assignee: assignee?.displayName || null,
 		sprintName,
+		epic: epic
+			? { key: epic.key, summary: epic.summary, url: epicBrowse }
+			: null,
 		url: browse,
 	};
 }

@@ -31,7 +31,7 @@ function parseArgs(argv) {
 }
 
 /**
- * @param {{ key: string, summary: string, status: string, assignee: string | null, url: string | null }[]} issues
+ * @param {{ key: string, summary: string, status: string, assignee: string | null, url: string | null, epic?: { key: string, summary: string } | null }[]} issues
  * @param {string} label
  */
 function printIssues(issues, label) {
@@ -40,10 +40,36 @@ function printIssues(issues, label) {
 		console.log('  (none)');
 		return;
 	}
+	/** @type {Map<string, { title: string, issues: typeof issues }>} */
+	const groups = new Map();
 	for (const i of issues) {
-		const who = i.assignee ? ` · ${i.assignee}` : ' · unassigned';
-		console.log(`  ${i.key}  ${i.summary}  [${i.status}]${who}`);
-		if (i.url) console.log(`         ${i.url}`);
+		const epicKey = i.epic?.key || '';
+		const groupKey = epicKey || '__none__';
+		let g = groups.get(groupKey);
+		if (!g) {
+			g = {
+				title: epicKey
+					? i.epic?.summary
+						? `${epicKey} — ${i.epic.summary}`
+						: epicKey
+					: 'No epic',
+				issues: [],
+			};
+			groups.set(groupKey, g);
+		}
+		g.issues.push(i);
+	}
+	const ordered = Array.from(groups.entries()).sort(([a], [b]) => {
+		if (a === '__none__') return 1;
+		if (b === '__none__') return -1;
+		return 0;
+	});
+	for (const [, g] of ordered) {
+		console.log(`  Epic  ${g.title}`);
+		for (const i of g.issues) {
+			const who = i.assignee ? ` · ${i.assignee}` : ' · unassigned';
+			console.log(`         ${i.key}  ${i.summary}  [${i.status}]${who}`);
+		}
 	}
 }
 
