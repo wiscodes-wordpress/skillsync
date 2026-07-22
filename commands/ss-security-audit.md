@@ -9,6 +9,8 @@ Run **after** [`/ss-review`](./ss-review.md) PASS (and any review fixes), **befo
 1. **Phase A (scripts)** — deterministic inventory + pattern gates via `security-audit.cjs` (court record).
 2. **Phase B (agent)** — judgment only on evidence; dismiss-by-default; never invent scanner findings or override Phase A FAIL.
 
+**Lean every-PR gate only.** Whole-plugin Semgrep / Wordfence health is **`/ss-security-plan`** + [`harness-security-assess.md`](../harness/harness-security-assess.md) — do not run those here.
+
 In **Agent** mode, read and follow [`harness-security-audit.md`](../harness/harness-security-audit.md) end-to-end.
 
 **Pre-step / Phase A (when vendored):**

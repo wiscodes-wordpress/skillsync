@@ -26,6 +26,7 @@ const REQUIRED_TOOLS = [
 	'open-pr.cjs',
 	'tdd-audit.cjs',
 	'security-audit.cjs',
+	'security-assess.cjs',
 	'run-verification.cjs',
 	're-break.cjs',
 	'publish-slices-from-state.cjs',
@@ -265,6 +266,51 @@ function main() {
 		console.log('OK: security-audit Phase B + check-state');
 	}
 
+	const assessConsumer = makeTempConsumer();
+	fs.mkdirSync(path.join(assessConsumer, '.harness'), { recursive: true });
+	fs.mkdirSync(path.join(assessConsumer, 'includes'), { recursive: true });
+	fs.writeFileSync(
+		path.join(assessConsumer, 'includes', 'ok.php'),
+		"<?php\n// safe plugin stub\n",
+		'utf8',
+	);
+	fs.writeFileSync(
+		path.join(assessConsumer, 'skillsync.config.json'),
+		JSON.stringify({ securityAssess: { wordfence: 'off' } }, null, '\t'),
+		'utf8',
+	);
+	runTool(path.join(toolsDir, 'security-assess.cjs'), [
+		assessConsumer,
+		'--write-state',
+		'--skip-semgrep',
+		'--wordfence',
+		'off',
+	]);
+	const assessState = fs.readFileSync(
+		path.join(assessConsumer, '.harness', 'state.md'),
+		'utf8',
+	);
+	const assessJsonPath = path.join(
+		assessConsumer,
+		'.harness',
+		'security-assess.json',
+	);
+	if (
+		!assessState.includes('## Security Assess') ||
+		!fs.existsSync(assessJsonPath)
+	) {
+		console.error('security-assess: expected ## Security Assess + JSON report');
+		failed = true;
+	} else {
+		const assessReport = JSON.parse(fs.readFileSync(assessJsonPath, 'utf8'));
+		if (assessReport.kind !== 'security-assess') {
+			console.error('security-assess: unexpected report kind');
+			failed = true;
+		} else {
+			console.log('OK: security-assess write-state + JSON');
+		}
+	}
+
 	const releaseConsumer = makeTempConsumer();
 	runTool(path.join(toolsDir, 'init-release-brief.cjs'), [
 		releaseConsumer,
@@ -343,6 +389,7 @@ function main() {
 	fs.rmSync(publishConsumer, { recursive: true, force: true });
 	fs.rmSync(secConsumer, { recursive: true, force: true });
 	fs.rmSync(cleanConsumer, { recursive: true, force: true });
+	fs.rmSync(assessConsumer, { recursive: true, force: true });
 	fs.rmSync(releaseConsumer, { recursive: true, force: true });
 
 	if (failed) {

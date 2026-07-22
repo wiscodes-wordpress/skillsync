@@ -11,7 +11,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 | Branch | consumer wrapper | — | — |
 | Initiative (optional) | `/ss-major-feature-roadmap` | — | [`major-feature-roadmap`](../skills/engineering/major-feature-roadmap/SKILL.md) |
 | Architecture (optional) | `/ss-arch-plan` | — | [`arch-plan`](../skills/engineering/arch-plan/SKILL.md) — living HTML plan (source of truth); Jira epic keys join stages; refresh status on run |
-| Security posture (optional) | `/ss-security-plan` | — | [`security-plan`](../skills/engineering/security-plan/SKILL.md) — living HTML posture (source of truth); hardening stages; does not replace `/ss-security-audit` |
+| Security posture (optional) | `/ss-security-plan` | [`harness-security-assess.md`](./harness-security-assess.md) when whole-plugin health | [`security-plan`](../skills/engineering/security-plan/SKILL.md) — living HTML posture; optional Stage 2 assess (Semgrep + deps + Wordfence); does not replace `/ss-security-audit` |
 | UI/UX plan (optional) | `/ss-ui-ux-plan` | — | [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md) — living HTML UX (source of truth); before `/ss-plan` when UI-heavy |
 | Plan | `/ss-plan` | [`harness-planner-tdd.md`](./harness-planner-tdd.md) | 1a: [`grill-me`](../skills/productivity/grill-me/SKILL.md) or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) · 1b: [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) |
 | Slice to issues | `/ss-to-issues` | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
@@ -27,7 +27,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 
 **Structure-in-flux order:** `/ss-arch-plan` (living HTML → lock stages) → optional `/ss-ui-ux-plan` → `/ss-plan` per stage. Skip arch-plan when module shape is already agreed.
 
-**Security posture order:** `/ss-security-plan` (living HTML → hardening stages) when trust model is unclear; **every PR** still runs `/ss-security-audit` after review. Do not fold the audit into the posture HTML.
+**Security posture order:** `/ss-security-plan` (living HTML → hardening stages; optional whole-plugin **assess**) when trust model is unclear or health is requested; **every PR** still runs `/ss-security-audit` after review. Do not fold the PR audit into the posture HTML. Do not run Wordfence/full Semgrep on every PR.
 
 **Release / go-to-market order:** after merge or tag (or on user request) → `/ss-release` (brief → demo seed / end-to-end (E2E) proof → channel pack → anti-slop). Partial: `/ss-release-distribution` or `/ss-release-marketing`. Does **not** block `/ss-submit-pr`.
 ## Context budget rules
@@ -58,7 +58,8 @@ Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-
 | Plan (post-write) | `validate-state.cjs --mode plan` |
 | New story | `init-state.cjs --task "KEY title"` |
 | Implement / review | `run-verification.cjs`, `tdd-audit.cjs`, `re-break.cjs` |
-| Security | `security-audit.cjs` (`--write-state`, `--set-phase-b`, `--check-state`) |
+| Security (PR gate) | `security-audit.cjs` (`--write-state`, `--set-phase-b`, `--check-state`) |
+| Security (whole plugin) | `security-assess.cjs` (`--write-state` → `#assess` / `security-assess.json`) |
 | Submit PR | `render-pr-body.cjs`, `open-pr.cjs` (requires Security Evidence PASS) |
 | To issues (post-approve) | `publish-slices-from-state.cjs` |
 | Close story | `harness-reset.cjs`, optional `jira-close.cjs` |

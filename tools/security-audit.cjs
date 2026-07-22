@@ -737,4 +737,5 @@ module.exports = {
 	parseSecurityEvidence,
 	formatEvidenceSection,
 	listPhpFiles,
+	runDependencyAudits,
 };

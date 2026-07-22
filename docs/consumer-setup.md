@@ -27,7 +27,7 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 | Skill | Used by |
 |-------|---------|
 | `arch-plan` | `/ss-arch-plan` (optional; architecture plan source of truth + epic-keyed stages) |
-| `security-plan` | `/ss-security-plan` (optional; security posture source of truth; not the PR gate) |
+| `security-plan` | `/ss-security-plan` (optional; posture HTML + whole-plugin assess; not the PR gate) |
 | `improve-codebase-architecture` | Optional with `/ss-arch-plan` when deepening existing friction |
 | `ui-ux-planner` | `/ss-ui-ux-plan` (optional; living HTML UX source of truth before `/ss-plan`) |
 | `grill-tdd` | `/ss-plan` (step 1b) |
@@ -139,7 +139,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-workflow` | Orientation — phase index |
 | `/ss-major-feature-roadmap` | Multi-epic initiative → story map, spec, tracker publish (consumer) |
 | `/ss-arch-plan` | Architecture plan source of truth (living HTML); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
-| `/ss-security-plan` | Security posture source of truth (living HTML); hardening stages — optional; does **not** replace `/ss-security-audit` |
+| `/ss-security-plan` | Security posture source of truth (living HTML); optional whole-plugin **assess** (Semgrep + deps + Wordfence) — does **not** replace `/ss-security-audit` |
 | `/ss-ui-ux-plan` | UX plan source of truth (living HTML; flows + surfaces) — before `/ss-plan` when UI-heavy |
 | `/ss-plan` | Grill + TDD plan → `.harness/state.md` |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
@@ -166,7 +166,8 @@ Product repos usually keep **thin wrappers** (e.g. `qb-*`, `qp-close-jira-story`
 | `harness/harness-generator.md` | `/ss-implement` |
 | `harness/harness-critic.md` | `/ss-review` |
 | `harness/critic-tdd-testing.md` | Auto-loaded when state has TDD contracts |
-| `harness/harness-security-audit.md` | `/ss-security-audit` |
+| `harness/harness-security-audit.md` | `/ss-security-audit` (every PR) |
+| `harness/harness-security-assess.md` | `/ss-security-plan` whole-plugin health (not every PR) |
 | `harness/accessible-locator-priority.md` | UI/E2E query priority (when applicable) |
 
 Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/generator addenda live under **`.cursor/harness/`** on the consumer repo.
@@ -195,6 +196,7 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `open-pr.cjs` | `/ss-submit-pr` | Push, duplicate check, `gh pr create` (`--no-push`, `--dry-run`) |
 | `tdd-audit.cjs` | `/ss-review` | Hard TDD gates (contract cards, tampering, RED evidence, locators) |
 | `security-audit.cjs` | `/ss-security-audit`, `/ss-submit-pr` | Phase A inventory/patterns; `--set-phase-b`; `--check-state` before PR |
+| `security-assess.cjs` | `/ss-security-plan` (assess) | Whole-plugin Semgrep + deps + Wordfence; writes `security-assess.json` / `## Security Assess` |
 | `run-verification.cjs` | `/ss-implement`, `/ss-review` | Run Verification Plan commands from state |
 | `re-break.cjs` | TDD evidence | Stash prod paths → test FAIL → restore → PASS |
 | `publish-slices-from-state.cjs` | `/ss-to-issues` | Dry-run or publish slices (`--publish --approved`) |
@@ -212,6 +214,11 @@ Optional **`skillsync.config.json`** keys for tools / journal handoff:
 	"issueKeyPattern": "^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$",
 	"issueTracker": "github",
 	"githubIssueLabels": "ready-for-agent",
+	"securityAssess": {
+		"wordpressRoot": "../wordpress",
+		"wordfence": "required",
+		"semgrepExtraConfigs": []
+	},
 	"journal": {
 		"enabled": true,
 		"vaultPath": "/path/to/DenMercs",
@@ -224,6 +231,16 @@ Optional **`skillsync.config.json`** keys for tools / journal handoff:
 	}
 }
 ```
+
+**`securityAssess`** (whole-plugin health via `security-assess.cjs` / `/ss-security-plan`):
+
+| Key | Meaning |
+|-----|---------|
+| `wordpressRoot` | Path to a WordPress install for Wordfence `vuln-scan` (absolute or relative to consumer root). Empty → Wordfence blocked → health **incomplete** when `wordfence` is `required`. |
+| `wordfence` | `required` (default for WP) or `off` |
+| `semgrepExtraConfigs` | Extra Semgrep `--config` values beyond skillsync local rules + `p/php` |
+
+Install for Stage 2: `pipx install semgrep`, `pip install wordfence` (license may be required). Stage 1 PR gate does **not** need these.
 
 Example **`package.json`** scripts (consumer root):
 

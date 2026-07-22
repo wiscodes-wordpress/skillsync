@@ -44,6 +44,8 @@ Use this inventory-first list (also mirrored in Phase A where automatable):
 - [ ] `fallow security` candidates addressed (install `fallow` for CI signal)
 - [ ] XSS sinks, unsafe URL/open redirects, secrets in client bundles
 
+**Whole-plugin health** (not every PR): use [`harness-security-assess.md`](./harness-security-assess.md) via `/ss-security-plan` — Semgrep + deps + Wordfence.
+
 ## Procedure (Agent)
 
 ### 1. Phase A — run scripts

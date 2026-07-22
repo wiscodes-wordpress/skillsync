@@ -2,7 +2,7 @@
 
 Self-contained HTML briefing for **security posture**. This file is the **posture source of truth**. Same craft as [`arch-plan/HTML-REPORT.md`](../arch-plan/HTML-REPORT.md): sticky nav, stone/slate + emerald/sky/amber, Mermaid when structure helps, sparse prose.
 
-**Not** the per-PR gate — that remains [`/ss-security-audit`](../../../commands/ss-security-audit.md). This HTML answers *how we intend to be secure*; the audit answers *may this PR ship?*
+**Not** the per-PR gate — that remains [`/ss-security-audit`](../../../commands/ss-security-audit.md). This HTML answers *how we intend to be secure* and (when assessed) *is the plugin healthy as a whole*; the audit answers *may this PR ship?*
 
 **Lifecycle:** rewrite the **same** file after material follow-ups and after Jira→HTML refresh.
 
@@ -35,7 +35,7 @@ Self-contained HTML briefing for **security posture**. This file is the **postur
   </head>
   <body class="bg-stone-50 text-slate-900 font-sans">
     <nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2">
-      <!-- Phase · Locks · Surfaces · CVEs · Current · Target · Decisions · Stages · Non-goals · Gate -->
+      <!-- Phase · Locks · Surfaces · Assess · CVEs · Current · Target · Decisions · Stages · Non-goals · Gate -->
     </nav>
     <main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
       <header>…</header>
@@ -43,6 +43,7 @@ Self-contained HTML briefing for **security posture**. This file is the **postur
       <section id="finish-line">…</section>    <!-- optional; when hardening stories keyed -->
       <section id="locks">…</section>
       <section id="surfaces">…</section>
+      <section id="assess">…</section>         <!-- whole-plugin assess snapshot when run -->
       <section id="cves">…</section>            <!-- required: dep/CVE scan snapshot -->
       <section><!-- Current | Target --></section>
       <section id="decisions">…</section>
@@ -93,16 +94,34 @@ Inventory table or compact cards (from harness themes — product-neutral labels
 
 Mark **in scope** vs **accepted / out of scope**. Do not paste a full pen-test report.
 
+## Whole-plugin assess (`#assess`) — when Stage 2 has been run
+
+Machine **health snapshot** from `security-assess.cjs` — not a pen-test score and **not** the PR ship gate. See [`harness-security-assess.md`](../../../harness/harness-security-assess.md).
+
+| Field | Source |
+|-------|--------|
+| Last run | Date + `security-assess.cjs . --write-state` |
+| Completeness | `complete` \| `incomplete` (+ reasons: missing Semgrep, blocked Wordfence, etc.) |
+| Probes | surfaces · semgrep · deps · wordfence — status + one-line detail |
+| ERROR / WARNING | Counts from the report (link top findings; do not invent IDs) |
+| Action | Confirmed → hardening stage / story; dismissed → note with evidence; incomplete → configure `securityAssess.wordpressRoot` + install CLIs |
+
+Rules:
+
+- Prefer **`.harness/security-assess.json`** / `## Security Assess` facts. If never run: show **Not run** + one-line next step.
+- Wordfence is for a **WordPress install path** (`securityAssess.wordpressRoot`) — required for **complete** WP health by default.
+- Do **not** treat completeness as “secure enough to skip `/ss-security-audit`.”
+
 ## CVE / dependency scan (`#cves`) — required
 
 Machine **advisory snapshot** for known dependency CVEs — not a pen-test score, readiness %, or subjective “security grade.”
 
 | Field | Source |
 |-------|--------|
-| Last run | Date + command (prefer `security-audit.cjs . --deps`, else `npm audit` / `composer audit`) |
+| Last run | Date + command (prefer assess deps probe / `security-audit.cjs . --deps`, else `npm audit` / `composer audit`) |
 | Critical / high | Counts from the scanner (or “not run”) |
 | Moderate / low | Optional; keep compact |
-| Action | Fix before ship / accepted risk (link non-goal) / re-run on next `/ss-security-plan` |
+| Action | Fix before ship / accepted risk (link non-goal) / re-run on next `/ss-security-plan` or assess |
 
 Rules:
 
@@ -144,10 +163,11 @@ Short card (not a checklist dump):
 - **When:** after `/ss-review` PASS, before `/ss-submit-pr`
 - **Phases:** A = `security-audit.cjs` (facts); B = agent judgment on evidence
 - **Rule:** this HTML does not PASS a PR; Evidence in `.harness/state.md` does
+- **Whole-plugin health:** `/ss-security-plan` + `security-assess.cjs` (`#assess`) — separate cadence
 
 ## Footer
 
-Next hardening pickup + path to the source of truth + link to `/ss-security-audit`.
+Next hardening pickup + path to the source of truth + link to `/ss-security-audit` + last assess date if any.
 
 ## Style / tone
 

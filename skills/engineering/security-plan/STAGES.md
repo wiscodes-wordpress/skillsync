@@ -9,12 +9,14 @@ Ordered hardening checklist for the living HTML `#stages` section. Adapt titles 
 | **H2** | Input / output / SQL discipline on hot paths | Sanitize/validate/escape; prepared SQL where dynamic |
 | **H3** | Secrets + dangerous APIs | No hardcoded secrets; no eval/extract patterns on entry paths |
 | **H4** | Uploads / outbound / FE sinks (as applicable) | Allowlists + capability; FE XSS/redirect review or fallow follow-ups noted |
+| **H4a** | Whole-plugin assess wired | `security-assess.cjs` run recorded in HTML `#assess`; `wordpressRoot` set for WP; Semgrep + Wordfence complete or gaps ticketed |
 | **H5** | Gate wired | `/ss-security-audit` documented in posture + consumer flow; Evidence PASS required before PR |
 
 ## Rules
 
 - Stages are **hardening slices**, not a pen-test novel, pen-test score, or chat TODO dump.
 - Known dependency CVEs belong in the HTML `#cves` snapshot (and optionally a hardening story) — not as a graded “pen-test readiness” metric.
+- Whole-plugin Semgrep / Wordfence findings belong in `#assess` — promote confirmed ERRORs into H1–H4 stories; do not block every PR with Stage 2 tools.
 - Skip a stage only with an explicit non-goal in the HTML.
 - H1–H4 may each become one or more `/ss-plan` stories.
 - **H5** does not replace running the audit — it ensures the gate is part of the delivery loop.

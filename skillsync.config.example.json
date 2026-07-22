@@ -59,6 +59,11 @@
 	"prBaseBranch": "main",
 	"issueKeyPattern": "^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$",
 	"issueTracker": "github",
+	"securityAssess": {
+		"wordpressRoot": "",
+		"wordfence": "required",
+		"semgrepExtraConfigs": []
+	},
 	"journal": {
 		"enabled": true,
 		"vaultPath": "/Users/denmercs/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs",
