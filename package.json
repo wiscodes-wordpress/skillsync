@@ -10,6 +10,8 @@
     "google:sync": "node tools/sync-google-tasks.cjs && node tools/sync-google-calendar.cjs",
     "google:sync:dry": "node tools/sync-google-tasks.cjs --dry-run && node tools/sync-google-calendar.cjs --dry-run",
     "meetings": "node tools/list-meetings.cjs",
+    "prs": "node tools/list-prs.cjs",
+    "jira:sprint": "node tools/list-jira-sprint.cjs",
     "verify:tools": "node tools/verify-tools.cjs ."
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"

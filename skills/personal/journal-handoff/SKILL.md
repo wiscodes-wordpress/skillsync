@@ -61,6 +61,14 @@ node <skillsyncToolsRoot>/tools/journal-ensure-week.cjs --vault "<vault>"
 
 Idempotent — never overwrites a filled week. Prefer this CLI over hand-writing the template (same template as journal-weekly Mode A).
 
+## Issue key links (Jira)
+
+Weekly bullets that mention a story/epic key must use a markdown browse link when the site is known:
+
+`Started [KEY](https://SITE.atlassian.net/browse/KEY) — short title`
+
+Resolve site: conversation/MCP URL → `journal.jiraBases[PREFIX]` → `JOURNAL_JIRA_BASES` / `JOURNAL_JIRA_BASE_URL` → ask once. Same rule as **journal-weekly** Mode B. Keep bare `KEY` in `planning.json` titles for matching.
+
 ## Todo status
 
 Canonical values: `todo` \| `in progress` \| `done`.
@@ -85,7 +93,9 @@ Run once the planner has written state (not at the first grill question). Idempo
    - **Multiple** → ask the user; do not guess.
 6. Weekly Daily log (today’s cell for the track column): append **one** bullet only if this week’s note does **not** already contain a Started/Planning line for that KEY:
 
-   `Started KEY — short title`
+   `Started [KEY](https://SITE/browse/KEY) — short title`
+
+   (Bare `Started KEY — …` also counts as already present — do not duplicate.)
 
 7. Set `updatedAt` (ISO-8601). Refresh index/bundle, then **regenerate today’s standup** so `## Focus` picks up work-track `in progress` todos:
 
@@ -108,9 +118,9 @@ Do **not** mark todos or goals done. Prefer leaving status `in progress` if alre
 1. **Ensure weekly note** (see above).
 2. Merge one verb-first bullet into **today’s** Daily log cell for the track column, e.g.:
 
-   `Opened PR for KEY — short title (https://…)`
+   `Opened PR for [KEY](https://SITE/browse/KEY) — short title (https://…)`
 
-   Prefer issue key from branch, PR title, or `.harness/state.md`. Include PR URL when known. Skip if this week already has an Opened-PR line for that KEY.
+   Prefer issue key from branch, PR title, or `.harness/state.md`. Include PR URL when known. Link the KEY when the Jira site is known. Skip if this week already has an Opened-PR line for that KEY.
 3. Refresh index:
 
 ```bash
@@ -123,7 +133,7 @@ node <skillsyncToolsRoot>/tools/journal-index.cjs --vault "<vault>"
 
 1. **Ensure weekly note** (see above), then append (Daily log **and** a short **Wins & learnings** line when the ship is noteworthy):
 
-   `Shipped KEY — short title`
+   `Shipped [KEY](https://SITE/browse/KEY) — short title`
 
 2. Read `Journal/_dashboard/planning.json`.
 3. Among **open** todos (`status` `todo` \| `in progress`, plus legacy `doing`) on `defaultTrack`, match by:
@@ -163,11 +173,15 @@ Print the checklist (gate, vault, track, bullet text, todo match) and exact comm
   "enabled": true,
   "vaultPath": "/path/to/DenMercs",
   "defaultTrack": "work",
-  "skillsyncToolsRoot": ".cursor/vendor/skillsync"
+  "skillsyncToolsRoot": ".cursor/vendor/skillsync",
+  "jiraBases": {
+    "DCD": "https://lifeway.atlassian.net",
+    "QUICK": "https://YOUR-SITE.atlassian.net"
+  }
 }
 ```
 
-Lifeway: `"defaultTrack": "work"`. Quickpress: `"defaultTrack": "business"`.
+Lifeway: `"defaultTrack": "work"`. Quickpress: `"defaultTrack": "business"`. Set each project prefix’s Atlassian site under `jiraBases` so journal bullets link to the right board.
 
 ## Rules
 
@@ -176,6 +190,8 @@ Lifeway: `"defaultTrack": "work"`. Quickpress: `"defaultTrack": "business"`.
 - Never mark todos done on `start-story` or `submit-pr`.
 - On `start-story`, set todo status to `in progress` (never write legacy `doing`).
 - Idempotent weekly bullets per KEY (no spam on re-plan).
+- Link story/epic keys in weekly Markdown when the Jira site is known (`jiraBases` / env / MCP URL).
 - Merge weekly cells; do not wipe the week template.
 - Goals/todos only in `planning.json`.
 - Verb-first bullets. Absolute vault path when workspace ≠ vault.
+- **Privacy (hard):** Writes only under `Journal/**`. Do not read other DenMercs folders — see `journal-vault-privacy`.

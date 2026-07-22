@@ -35,7 +35,8 @@
 	"linkedRules": [
 		"typescript-ai-rules.mdc",
 		"react-patterns.mdc",
-		"frontend-testing.mdc"
+		"frontend-testing.mdc",
+		"journal-vault-privacy.mdc"
 	],
 	"linkedCommands": [
 		"ss-workflow.md",
@@ -62,6 +63,10 @@
 		"enabled": true,
 		"vaultPath": "/Users/denmercs/Library/CloudStorage/GoogleDrive-contact@wiscodes.com/My Drive/DenMercs",
 		"defaultTrack": "work",
-		"skillsyncToolsRoot": ".cursor/vendor/skillsync"
+		"skillsyncToolsRoot": ".cursor/vendor/skillsync",
+		"jiraBases": {
+			"DCD": "https://lifeway.atlassian.net",
+			"QUICK": "https://YOUR-SITE.atlassian.net"
+		}
 	}
 }

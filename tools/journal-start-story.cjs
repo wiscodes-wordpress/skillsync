@@ -18,6 +18,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { DEFAULT_VAULT } = require('./lib/journal-vault.cjs');
+const { linkKey } = require('./lib/journal-jira.cjs');
 
 function parseArgs(argv) {
 	let vault = DEFAULT_VAULT;
@@ -122,10 +123,12 @@ function main() {
 	}
 
 	let content = fs.readFileSync(weeklyPath, 'utf8');
-	const startedText = `Started ${key} — ${title}`;
+	const keyNorm = String(key).trim().toUpperCase();
+	const startedText = `Started ${linkKey(keyNorm)} — ${title}`;
+	const startedBare = `Started ${keyNorm} — ${title}`;
 
-	if (content.includes(startedText)) {
-		console.log(`Daily log already has: "${startedText}"`);
+	if (content.includes(startedText) || content.includes(startedBare)) {
+		console.log(`Daily log already has a Started line for ${keyNorm}`);
 		return;
 	}
 

@@ -16,32 +16,7 @@ const {
 	resolveConsumerRoot,
 	assertOrExit,
 } = require('./lib/ss-tools.cjs');
-
-/**
- * @param {string} baseUrl
- * @param {string} email
- * @param {string} token
- * @param {string} pathname
- * @param {RequestInit} [init]
- */
-async function jiraFetch(baseUrl, email, token, pathname, init = {}) {
-	const url = `${baseUrl.replace(/\/$/, '')}${pathname}`;
-	const auth = Buffer.from(`${email}:${token}`).toString('base64');
-	const res = await fetch(url, {
-		...init,
-		headers: {
-			Authorization: `Basic ${auth}`,
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			...(init.headers ?? {}),
-		},
-	});
-	if (!res.ok) {
-		const text = await res.text();
-		throw new Error(`Jira ${res.status} ${pathname}: ${text.slice(0, 500)}`);
-	}
-	return res.json();
-}
+const { jiraFetch, resolveJiraCreds } = require('./lib/jira-rest.cjs');
 
 /**
  * @param {object} issue
@@ -97,12 +72,10 @@ async function main() {
 
 	assertOrExit(Boolean(issueKey), 'Missing --issue PROJECT-123');
 
-	const baseUrl = process.env.JIRA_BASE_URL ?? '';
-	const email = process.env.JIRA_EMAIL ?? '';
-	const token = process.env.JIRA_API_TOKEN ?? '';
+	const creds = resolveJiraCreds();
+	assertOrExit(creds.ok, creds.ok === false ? creds.error : 'Jira credentials missing');
+	const { baseUrl, email, token } = creds;
 	const doneName = process.env.JIRA_DONE_TRANSITION ?? 'Done';
-
-	assertOrExit(Boolean(baseUrl && email && token), 'Set JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN');
 
 	const issue = await jiraFetch(
 		baseUrl,

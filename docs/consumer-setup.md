@@ -79,12 +79,17 @@ After `/ss-plan`, `/ss-submit-pr`, and `/ss-close-story`, agents can update a pe
   "enabled": true,
   "vaultPath": "/path/to/DenMercs",
   "defaultTrack": "work",
-  "skillsyncToolsRoot": ".cursor/vendor/skillsync"
+  "skillsyncToolsRoot": ".cursor/vendor/skillsync",
+  "jiraBases": {
+    "DCD": "https://lifeway.atlassian.net",
+    "QUICK": "https://YOUR-SITE.atlassian.net"
+  }
 }
 ```
 
 - Missing or `"enabled": false` → handoff is skipped (no errors for other consumers).
 - Vault is always the Obsidian vault — **not** the consumer repo root.
+- `jiraBases` maps issue **project prefix** → Atlassian site root so `/journal` and handoff bullets link stories/epics (`[KEY](https://site/browse/KEY)`). Override with `JOURNAL_JIRA_BASES` (JSON) or `JOURNAL_JIRA_BASE_URL` if needed.
 - Protocol: [`skills/personal/journal-handoff/SKILL.md`](../skills/personal/journal-handoff/SKILL.md).
 
 ## Link and verify
@@ -122,6 +127,8 @@ Omit `link-rules` / `verify-rules` if `linkedRules` is empty; omit `link-command
 ## Cursor project rules (`.mdc`)
 
 Cursor loads **project rules** from **`.cursor/rules/`** only — not from paths under `vendor/`. Canonical `.mdc` files live in this repo under **`rules/`**; list them in **`linkedRules`** and run **`link-rules.cjs`** / **`verify-rules.cjs`**. Confirm under **Settings → Rules → Project Rules**.
+
+For personal journal privacy, also link **`journal-vault-privacy.mdc`** and keep DenMercs **`.cursorignore`** allowlisting only `Journal/` + `_Templates/` (skills alone are soft; ignore is the hard filesystem gate when the vault is in Cursor’s scope).
 
 ## Slash commands and `ss-*`
 
@@ -209,7 +216,11 @@ Optional **`skillsync.config.json`** keys for tools / journal handoff:
 		"enabled": true,
 		"vaultPath": "/path/to/DenMercs",
 		"defaultTrack": "work",
-		"skillsyncToolsRoot": ".cursor/vendor/skillsync"
+		"skillsyncToolsRoot": ".cursor/vendor/skillsync",
+		"jiraBases": {
+			"DCD": "https://lifeway.atlassian.net",
+			"QUICK": "https://YOUR-SITE.atlassian.net"
+		}
 	}
 }
 ```

@@ -16,6 +16,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { DEFAULT_VAULT } = require('./lib/journal-vault.cjs');
+const { linkifyIssueKeys } = require('./lib/journal-jira.cjs');
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -175,7 +176,10 @@ function buildStandup(vault, target) {
 	];
 	const blockers = today.meetings.filter(isBlocker);
 	const talkingPoints = today.meetings.filter(isTalkingPoint);
-	const focusItems = focusTitlesFromPlanning(vault);
+	const focusItems = focusTitlesFromPlanning(vault).map((t) =>
+		linkifyIssueKeys(t),
+	);
+	const linkifyList = (items) => items.map((t) => linkifyIssueKeys(t));
 
 	const weeklyLink = `[[${year}/${mondayStr}|Week of ${mondayStr}]]`;
 	const outDir = path.join(vault, 'Journal', 'Standup', String(target.getFullYear()));
@@ -194,13 +198,13 @@ Derived from ${weeklyLink} + planning Focus (work in progress). Edit the weekly 
 ## Focus
 ${bullets(focusItems, '(none in progress)')}
 ## Yesterday (${yesterdayLabel})
-${bullets(yesterdayItems)}
+${bullets(linkifyList(yesterdayItems))}
 ## Today (${todayKey})
-${bullets(todayItems)}
+${bullets(linkifyList(todayItems))}
 ## Blockers
-${bullets(blockers, '(none)')}
+${bullets(linkifyList(blockers), '(none)')}
 ## Talking points
-${bullets(talkingPoints, '(none)')}
+${bullets(linkifyList(talkingPoints), '(none)')}
 ## Notes
 - 
 `;

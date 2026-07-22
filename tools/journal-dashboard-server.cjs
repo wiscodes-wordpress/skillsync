@@ -4,6 +4,8 @@
  * Serves dashboard HTML/JSON and enables checkbox writes + unified Google sync button
  * (Tasks from planning.json + Calendar from Journal ## Calendar).
  * Also GET /api/meetings — pull Google Calendar agenda for the day.
+ * Also GET /api/prs — open ready-for-review GitHub PRs (gh + github-prs.json).
+ * Also GET /api/jira-sprint — DCD active unassigned + next/future sprint (jira-sprint.json).
  *
  * Usage:
  *   node tools/journal-dashboard-server.cjs
@@ -22,6 +24,8 @@ const {
 } = require('./sync-google-tasks.cjs');
 const { sync: syncCalendar } = require('./sync-google-calendar.cjs');
 const { getAgenda } = require('./lib/meetings-agenda.cjs');
+const { listOpenPrs } = require('./lib/github-prs.cjs');
+const { listSprintDigest } = require('./lib/jira-sprint.cjs');
 const { bundleDashboard } = require('./journal-dashboard-bundle.cjs');
 const { mdToHtml, extractTitle } = require('./lib/markdown-render.cjs');
 const { renderNotePage, renderDirPage } = require('./lib/journal-chrome.cjs');
@@ -189,6 +193,39 @@ function main() {
 				} catch (err) {
 					return send(res, 500, {
 						ok: false,
+						error: err instanceof Error ? err.message : String(err),
+					});
+				}
+			}
+
+			if (req.method === 'GET' && url.pathname === '/api/prs') {
+				try {
+					const prs = await listOpenPrs(vault);
+					return send(res, 200, prs);
+				} catch (err) {
+					return send(res, 500, {
+						ok: false,
+						prs: [],
+						people: [],
+						warnings: [],
+						error: err instanceof Error ? err.message : String(err),
+					});
+				}
+			}
+
+			if (req.method === 'GET' && url.pathname === '/api/jira-sprint') {
+				try {
+					const digest = await listSprintDigest(vault);
+					return send(res, 200, digest);
+				} catch (err) {
+					return send(res, 500, {
+						ok: false,
+						project: 'DCD',
+						activeSprint: null,
+						me: null,
+						unassigned: [],
+						mine: [],
+						warnings: [],
 						error: err instanceof Error ? err.message : String(err),
 					});
 				}
