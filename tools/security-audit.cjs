@@ -158,7 +158,9 @@ function scanPhpSecurity(consumerRoot, phpFiles) {
 
 			if (/register_rest_route\s*\(/.test(line)) {
 				const window = lines.slice(i, Math.min(lines.length, i + 50)).join('\n');
-				const hasPermissionCallback = /permission_callback\s*=>/.test(window);
+				// WordPress style: 'permission_callback' => … (quote between key and =>)
+				const hasPermissionCallback =
+					/['"]?permission_callback['"]?\s*=>/.test(window);
 				const detailMatch = line.match(/register_rest_route\s*\(\s*([^,]+)/);
 				entrypoints.push({
 					kind: 'rest',
@@ -176,7 +178,7 @@ function scanPhpSecurity(consumerRoot, phpFiles) {
 						file: rel,
 						line: lineNo,
 					});
-				} else if (/permission_callback\s*=>\s*['"]?__return_true/.test(window)) {
+				} else if (/['"]?permission_callback['"]?\s*=>\s*['"]?__return_true/.test(window)) {
 					findings.push({
 						severity: 'warning',
 						id: 'rest-public-permission',
@@ -212,7 +214,13 @@ function scanPhpSecurity(consumerRoot, phpFiles) {
 				});
 			}
 
-			if (/\beval\s*\(/.test(line) || /\bassert\s*\(/.test(line)) {
+			// Flag eval() and bare assert(); skip $this->assert / private function assert helpers.
+			if (
+				/\beval\s*\(/.test(line) ||
+				(/\bassert\s*\(/.test(line) &&
+					!/->assert\s*\(/.test(line) &&
+					!/function\s+assert\s*\(/.test(line))
+			) {
 				findings.push({
 					severity: 'error',
 					id: 'dangerous-eval-assert',
