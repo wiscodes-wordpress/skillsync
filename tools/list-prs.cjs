@@ -52,8 +52,14 @@ async function main() {
 			const when = pr.updatedAt
 				? new Date(pr.updatedAt).toLocaleString()
 				: '';
+			const status =
+				pr.approved
+					? ' · ✓ approved'
+					: pr.reviewDecision === 'CHANGES_REQUESTED'
+						? ' · ! changes requested'
+						: '';
 			console.log(
-				`  - [${pr.track}] ${pr.repo}#${pr.number} · ${pr.authorLabel} · ${pr.title}`,
+				`  - [${pr.track}] ${pr.repo}#${pr.number} · ${pr.authorLabel} · ${pr.title}${status}`,
 			);
 			console.log(`    ${pr.url}${when ? ` · updated ${when}` : ''}`);
 		}

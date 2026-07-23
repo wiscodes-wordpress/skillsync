@@ -96,6 +96,10 @@ async function main() {
 	);
 	printIssues(result.mine || [], `Assigned to me — ${me}`);
 	printIssues(result.unassigned || [], 'Unassigned');
+	printIssues(
+		result.potentialNext || [],
+		`Potential Next Sprint — ${result.nextSprint?.name || 'future'}`,
+	);
 
 	if (!result.ok) process.exitCode = 1;
 }

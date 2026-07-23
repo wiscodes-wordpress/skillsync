@@ -222,9 +222,11 @@ function main() {
 						ok: false,
 						project: 'DCD',
 						activeSprint: null,
+						nextSprint: null,
 						me: null,
 						unassigned: [],
 						mine: [],
+						potentialNext: [],
 						warnings: [],
 						error: err instanceof Error ? err.message : String(err),
 					});

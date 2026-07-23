@@ -204,6 +204,79 @@ function repoFromPullUrl(htmlUrl) {
 }
 
 /**
+ * @param {string} repoName owner/name
+ * @param {number} number
+ */
+function parseRepo(repoName) {
+	const [owner, name] = String(repoName || '').split('/');
+	if (!owner || !name) return null;
+	return { owner, name };
+}
+
+/**
+ * Batch-fetch GraphQL reviewDecision for open PRs.
+ * @param {{ repo: string, number: number, id: string }[]} prs
+ * @returns {Map<string, string | null>}
+ */
+function fetchReviewDecisions(prs) {
+	/** @type {Map<string, string | null>} */
+	const out = new Map();
+	if (!prs.length) return out;
+
+	const chunkSize = 20;
+	for (let i = 0; i < prs.length; i += chunkSize) {
+		const chunk = prs.slice(i, i + chunkSize);
+		const aliases = [];
+		const vars = {};
+		const varDefs = [];
+		chunk.forEach((pr, idx) => {
+			const parsed = parseRepo(pr.repo);
+			if (!parsed || !pr.number) return;
+			const o = `o${idx}`;
+			const n = `n${idx}`;
+			const num = `num${idx}`;
+			varDefs.push(`$${o}: String!`, `$${n}: String!`, `$${num}: Int!`);
+			vars[o] = parsed.owner;
+			vars[n] = parsed.name;
+			vars[num] = pr.number;
+			aliases.push(
+				`p${idx}: repository(owner: $${o}, name: $${n}) { pullRequest(number: $${num}) { reviewDecision } }`,
+			);
+		});
+		if (!aliases.length) continue;
+
+		const query = `query(${varDefs.join(', ')}) { ${aliases.join('\n')} }`;
+		const args = ['api', 'graphql', '-f', `query=${query}`];
+		for (const [key, value] of Object.entries(vars)) {
+			if (typeof value === 'number') {
+				args.push('-F', `${key}=${value}`);
+			} else {
+				args.push('-f', `${key}=${value}`);
+			}
+		}
+		const result = runGh(args);
+		if (!result.ok) continue;
+		try {
+			const payload = JSON.parse(result.stdout || '{}');
+			const data = payload.data || {};
+			chunk.forEach((pr, idx) => {
+				const node = data[`p${idx}`];
+				const decision =
+					node &&
+					node.pullRequest &&
+					typeof node.pullRequest.reviewDecision === 'string'
+						? node.pullRequest.reviewDecision
+						: null;
+				out.set(pr.id, decision);
+			});
+		} catch {
+			/* keep missing decisions as unset */
+		}
+	}
+	return out;
+}
+
+/**
  * @param {string} q
  * @param {number} limit
  */
@@ -401,6 +474,14 @@ async function listOpenPrs(vault = DEFAULT_VAULT) {
 		const tb = Date.parse(b.updatedAt) || 0;
 		return tb - ta;
 	});
+
+	const decisions = fetchReviewDecisions(list);
+	for (const pr of list) {
+		pr.reviewDecision = decisions.has(pr.id)
+			? decisions.get(pr.id)
+			: null;
+		pr.approved = pr.reviewDecision === 'APPROVED';
+	}
 
 	return {
 		ok: allWarnings.length === 0 || list.length > 0,
