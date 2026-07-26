@@ -43,7 +43,7 @@ When user is in **planner phase**, use **normal clarity** (full sentences, scann
 
 **Counts as planning (caveman off here):**
 
-- Slash commands **`/ss-plan`**, **`/ss-ui-ux-plan`**, **`/ss-arch-plan`**, **`/ss-security-plan`**, **`/ss-major-feature-roadmap`**, or consumer planner wrappers (e.g. `qb-plan`), **or**
+- Slash commands **`/ss-plan`**, **`/ss-ui-ux-plan`**, **`/ss-arch-plan`**, **`/ss-security-plan`**, **`/ss-roadmap`**, or consumer planner wrappers (e.g. `qb-plan`), **or**
 - Following **`harness-planner-tdd.md`** or legacy **`harness-planner.md`** (and any chained planner addendum) to produce spec, slices/cycles, verification plan, **`.harness/state.md`** planning sections, **or**
 - Following **`ui-ux-planner`**, **`arch-plan`**, or **`security-plan`** to produce living HTML briefings (and optional thin exports), **or**
 - Publishing tracker issues via **`to-issues`** / **`/ss-to-issues`**.
