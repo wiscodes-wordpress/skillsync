@@ -1,6 +1,6 @@
 # ss-submit-pr
 
-**Phase: open PR** — follow [`ss-flow.md`](../harness/ss-flow.md) (after critic PASS, **security PASS**, or human sign-off).
+**Phase: open PR** — follow [`ss-flow.md`](../harness/ss-flow.md) (after critic PASS, **security PASS**, optional [`/ss-handoff`](./ss-handoff.md), or human sign-off).
 
 Opens a **GitHub pull request** from the **current branch**. **Does not merge.**
 
@@ -15,7 +15,7 @@ node .cursor/vendor/skillsync/tools/security-audit.cjs . --check-state
 If this fails, stop and run [`ss-security-audit`](./ss-security-audit.md) (or fix findings) before opening a PR.
 
 2. Prefer deterministic helpers when vendored: `node .cursor/vendor/skillsync/tools/render-pr-body.cjs .` then `node .cursor/vendor/skillsync/tools/open-pr.cjs .` (or `yarn ss:open-pr` if wired in consumer `package.json`). Use `--dry-run` / `--no-push` when checking only.
-3. For title/body prose the script cannot infer, follow [`submit-github-pr`](../skills/engineering/submit-github-pr/SKILL.md) — write narrative into `.harness/pr-body.md` before `open-pr.cjs`.
+3. For title/body prose the script cannot infer, follow [`submit-github-pr`](../skills/engineering/submit-github-pr/SKILL.md) — write narrative into `.harness/pr-body.md` before `open-pr.cjs`. When **`.harness/code-handoff.md`** exists, reuse its Intent and What to verify (do not paste the whole handoff into the PR).
 
 In **Ask** mode, print the skill checklist and exact tool commands.
 

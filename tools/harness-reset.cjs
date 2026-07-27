@@ -25,6 +25,7 @@ function main() {
 		{ type: 'write-empty', path: path.join(dir, 'state.md') },
 		{ type: 'write-empty', path: path.join(dir, 'qa-current.md') },
 		{ type: 'delete', path: path.join(dir, 'pr-body.md') },
+		{ type: 'delete', path: path.join(dir, 'code-handoff.md') },
 	];
 
 	for (const action of actions) {
@@ -63,7 +64,9 @@ function main() {
 	}
 
 	if (!dryRun) {
-		console.log('harness-reset: cleared .harness/state.md, .harness/qa-current.md; removed pr-body.md if present.');
+		console.log(
+			'harness-reset: cleared .harness/state.md, .harness/qa-current.md; removed pr-body.md and code-handoff.md if present.',
+		);
 	}
 }
 

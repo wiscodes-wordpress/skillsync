@@ -90,6 +90,7 @@ function main() {
 	const harnessReset = path.join(toolsDir, 'harness-reset.cjs');
 	runTool(harnessReset, [temp, '--dry-run']);
 	fs.writeFileSync(path.join(temp, '.harness', 'pr-body.md'), 'draft', 'utf8');
+	fs.writeFileSync(path.join(temp, '.harness', 'code-handoff.md'), 'walkthrough', 'utf8');
 	runTool(harnessReset, [temp]);
 
 	const stateFile = path.join(temp, '.harness', 'state.md');
@@ -99,6 +100,10 @@ function main() {
 	}
 	if (fs.existsSync(path.join(temp, '.harness', 'pr-body.md'))) {
 		console.error('harness-reset: pr-body.md should be deleted');
+		failed = true;
+	}
+	if (fs.existsSync(path.join(temp, '.harness', 'code-handoff.md'))) {
+		console.error('harness-reset: code-handoff.md should be deleted');
 		failed = true;
 	}
 	console.log('OK: harness-reset integration');

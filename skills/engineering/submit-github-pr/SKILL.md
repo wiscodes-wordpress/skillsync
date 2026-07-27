@@ -33,7 +33,7 @@ description: >
 ## Steps (agent)
 
 1. Confirm **remote branch** exists (`git status`; `git push -u origin HEAD` if needed).
-2. Build **title** and **body** from `git diff <base>...HEAD`, commits, **`.harness/state.md`**, or human paste. Prefer **`render-pr-body.cjs`** + **`open-pr.cjs`** from vendored `tools/` when available; write narrative into **`.harness/pr-body.md`** first when prose is needed. Write body to a **temp file** (e.g. `/tmp/pr-body.md`) to avoid shell escaping issues when not using `open-pr.cjs`.
+2. Build **title** and **body** from `git diff <base>...HEAD`, commits, **`.harness/state.md`**, optional **`.harness/code-handoff.md`** (Intent / What to verify only), or human paste. Prefer **`render-pr-body.cjs`** + **`open-pr.cjs`** from vendored `tools/` when available; write narrative into **`.harness/pr-body.md`** first when prose is needed. Write body to a **temp file** (e.g. `/tmp/pr-body.md`) to avoid shell escaping issues when not using `open-pr.cjs`.
 3. Create the PR:
 
    ```bash

@@ -19,8 +19,9 @@ Consumer repos use **thin wrappers** (`qb-*`, etc.) for tracker-specific steps; 
 | 9 | Implement | [`ss-implement`](./ss-implement.md) — all Remaining cycles/slices |
 | 10 | Review | [`ss-review`](./ss-review.md) |
 | 11 | Security gate | [`ss-security-audit`](./ss-security-audit.md) — after review PASS, before PR |
-| 12 | PR → merge → Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
-| 13 | Release / GTM (optional) | [`ss-release`](./ss-release.md) — or [`ss-release-distribution`](./ss-release-distribution.md) / [`ss-release-marketing`](./ss-release-marketing.md) |
+| 12 | Human walkthrough (optional) | [`ss-handoff`](./ss-handoff.md) — `.harness/code-handoff.md` before PR |
+| 13 | PR → merge → Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
+| 14 | Release / GTM (optional) | [`ss-release`](./ss-release.md) — or [`ss-release-distribution`](./ss-release-distribution.md) / [`ss-release-marketing`](./ss-release-marketing.md) |
 
 Initiative-scale work may run [`ss-major-feature-roadmap`](./ss-major-feature-roadmap.md) before step 2. Architecture (`/ss-arch-plan`) and security posture (`/ss-security-plan`) when shape or trust model is undecided — before UI/UX and story plan. **Every PR** still runs `/ss-security-audit`. Release/GTM is **after** ship — not a PR gate.
 ## Harness skeleton (skillsync)

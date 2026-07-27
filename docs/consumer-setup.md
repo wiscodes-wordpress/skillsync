@@ -34,6 +34,7 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 | `tdd` | `/ss-implement` when state has RED→GREEN Plan |
 | `ponytail` | `/ss-implement` |
 | `submit-github-pr` | `/ss-submit-pr` |
+| `code-handoff` | `/ss-handoff` (optional; human walkthrough before PR) |
 | `jira-close-story` | `/ss-close-story` |
 | `to-issues` | `/ss-to-issues` (optional) |
 
@@ -53,6 +54,7 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
   "ss-implement.md",
   "ss-review.md",
   "ss-security-audit.md",
+  "ss-handoff.md",
   "ss-submit-pr.md",
   "ss-close-story.md",
   "ss-release.md",
@@ -146,6 +148,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential |
 | `/ss-review` | Critic / quality gate |
 | `/ss-security-audit` | Security gate (scripts + agent) — after review, before PR |
+| `/ss-handoff` | Human code walkthrough → `.harness/code-handoff.md` (optional; before PR) |
 | `/ss-submit-pr` | Open GitHub PR (does not merge; requires Security Evidence PASS) |
 | `/ss-close-story` | Tracker Done + clear harness files |
 | `/ss-release` | Post-ship go-to-market — brief → demo proof → channel pack → anti-slop (optional; not a PR gate). **`anti-slop`** also applies to delivery-loop prose (plans, HTML, issues) per ss-flow rule 6. |
@@ -176,7 +179,7 @@ Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/gen
 
 ```text
 branch (consumer) → /ss-arch-plan? → /ss-security-plan? → /ss-ui-ux-plan? → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
-  → /ss-security-audit → /ss-submit-pr → merge (consumer) → /ss-close-story
+  → /ss-security-audit → /ss-handoff? → /ss-submit-pr → merge (consumer) → /ss-close-story
   → /ss-release? (or /ss-release-distribution / /ss-release-marketing)
 ```
 

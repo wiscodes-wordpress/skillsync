@@ -63,6 +63,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 - Ensure `.harness/` exists at consumer repo root.
 - Write **empty** `.harness/state.md` and `.harness/qa-current.md`.
 - Delete `.harness/pr-body.md` if present (do not truncate to empty).
+- Delete `.harness/code-handoff.md` if present (do not truncate to empty).
 - Exit `0` on success; non-zero on filesystem error.
 - `--dry-run` prints actions without writing.
 
@@ -216,7 +217,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 ### Slice 1 — harness-reset
 
 - [ ] Running twice is idempotent (empty files stay empty).
-- [ ] `pr-body.md` removed when present; absent file does not error.
+- [ ] `pr-body.md` and `code-handoff.md` removed when present; absent files do not error.
 - [ ] `--dry-run` makes no filesystem changes.
 - [ ] Documented in consumer-setup.md.
 
