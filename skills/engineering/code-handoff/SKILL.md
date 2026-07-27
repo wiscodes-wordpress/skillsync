@@ -74,10 +74,11 @@ Use when it clarifies structure (module edges, request flow, before→after). Sk
 
 ### Snippets
 
-- Prefer **added/changed** lines that embody the decision.
-- Escape HTML in `<pre class="code">` blocks.
+- Prefer **added/changed** lines in GitHub-style `.diff-file` blocks (`diff-line--add` / `--del` / `--ctx`) — see [HTML-REPORT.md](HTML-REPORT.md).
+- Escape HTML in `<code class="diff-line__code">` cells.
 - Never paste secrets, tokens, or full env files.
 - Prefer path + line range references when the file is large.
+- Keep **dark mode** chrome from the template (`bg-zinc-950`, Mermaid `theme: "dark"`).
 
 ## Finish line
 

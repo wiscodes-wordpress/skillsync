@@ -6,41 +6,46 @@
 		<script src="https://cdn.tailwindcss.com"></script>
 		<script type="module">
 			import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-			mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+			mermaid.initialize({ startOnLoad: true, theme: "dark", securityLevel: "loose" });
 		</script>
 		<style>
 			html { scroll-behavior: smooth; }
 			section[id] { scroll-margin-top: 5rem; }
+			a { color: #93c5fd; }
+			a:hover { color: #bfdbfe; }
+			table { border-collapse: collapse; width: 100%; }
+			th, td { border: 1px solid #30363d; padding: 0.5rem 0.75rem; text-align: left; }
+			th { background: #161b22; color: #8b949e; font-size: 0.75rem; }
 		</style>
 	</head>
-	<body class="bg-stone-50 text-slate-900 font-sans">
-		<nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2 text-xs">
-			<span class="text-slate-500">{{product}}</span>
-			<a href="#phase">Phase</a>
-			<a href="#finish-line" class="font-medium text-sky-900">Start → finish</a>
-			<a href="#locks">At a glance</a>
-			<a href="#current">Current</a>
-			<a href="#target">Target</a>
-			<a href="#decisions">Decisions</a>
-			<a href="#stages">Stages</a>
-			<a href="#nongoals">Non-goals</a>
+	<body class="bg-zinc-950 text-zinc-100 font-sans">
+		<nav class="sticky top-0 z-20 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur px-4 py-2 text-xs text-zinc-300">
+			<span class="text-zinc-500">{{product}}</span>
+			<a href="#phase" class="hover:text-sky-300">Phase</a>
+			<a href="#finish-line" class="font-medium text-sky-400">Start → finish</a>
+			<a href="#locks" class="hover:text-sky-300">At a glance</a>
+			<a href="#current" class="hover:text-sky-300">Current</a>
+			<a href="#target" class="hover:text-sky-300">Target</a>
+			<a href="#decisions" class="hover:text-sky-300">Decisions</a>
+			<a href="#stages" class="hover:text-sky-300">Stages</a>
+			<a href="#nongoals" class="hover:text-sky-300">Non-goals</a>
 		</nav>
 		<main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
 			<header>
-				<p class="text-xs uppercase tracking-wider">{{product}}</p>
-				<h1 class="font-serif text-3xl">Architecture plan</h1>
-				<p class="text-sm">Status: draft · Updated {{updated}}</p>
-				<p>{{task}}</p>
+				<p class="text-xs uppercase tracking-wider text-zinc-500">{{product}}</p>
+				<h1 class="font-serif text-3xl text-zinc-50">Architecture plan</h1>
+				<p class="text-sm text-zinc-400">Status: draft · Updated {{updated}}</p>
+				<p class="text-zinc-200">{{task}}</p>
 			</header>
-			<section id="phase"><h2 class="font-serif text-2xl">Phase we are at</h2>…</section>
-			<section id="finish-line"><h2 class="font-serif text-2xl">Start → finish</h2>…</section>
-			<section id="locks"><h2 class="font-serif text-2xl">At a glance</h2>…</section>
-			<section id="current"><h2 class="font-serif text-2xl">Current</h2>…</section>
-			<section id="target"><h2 class="font-serif text-2xl">Target</h2>…</section>
-			<section id="decisions"><h2 class="font-serif text-2xl">Decisions</h2>…</section>
-			<section id="stages"><h2 class="font-serif text-2xl">Stages</h2>…</section>
-			<section id="nongoals"><h2 class="font-serif text-2xl">Non-goals</h2>…</section>
-			<footer class="text-sm text-slate-600">.harness/architecture-plan.html · next: /ss-arch-plan</footer>
+			<section id="phase"><h2 class="font-serif text-2xl text-zinc-50">Phase we are at</h2>…</section>
+			<section id="finish-line"><h2 class="font-serif text-2xl text-zinc-50">Start → finish</h2>…</section>
+			<section id="locks"><h2 class="font-serif text-2xl text-zinc-50">At a glance</h2>…</section>
+			<section id="current"><h2 class="font-serif text-2xl text-zinc-50">Current</h2>…</section>
+			<section id="target"><h2 class="font-serif text-2xl text-zinc-50">Target</h2>…</section>
+			<section id="decisions"><h2 class="font-serif text-2xl text-zinc-50">Decisions</h2>…</section>
+			<section id="stages"><h2 class="font-serif text-2xl text-zinc-50">Stages</h2>…</section>
+			<section id="nongoals"><h2 class="font-serif text-2xl text-zinc-50">Non-goals</h2>…</section>
+			<footer class="text-sm text-zinc-500">.harness/architecture-plan.html · next: /ss-arch-plan</footer>
 		</main>
 	</body>
 </html>

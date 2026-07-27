@@ -1,6 +1,6 @@
 # UX plan — living HTML
 
-Self-contained HTML briefing for **product UX** (flows + surfaces). This file is the **plan source of truth**. Same craft as [`arch-plan/HTML-REPORT.md`](../arch-plan/HTML-REPORT.md): sticky nav, stone/slate + emerald/sky/amber, Mermaid for journeys when helpful, sparse prose.
+Self-contained HTML briefing for **product UX** (flows + surfaces). This file is the **plan source of truth**. Same craft as [`arch-plan/HTML-REPORT.md`](../arch-plan/HTML-REPORT.md): sticky nav, **dark** zinc chrome + emerald/sky/amber (scaffold: `tools/templates/plan-ux.html`), Mermaid for journeys when helpful, sparse prose.
 
 **Not** delivery/TDD planning — that remains [`/ss-plan`](../../../commands/ss-plan.md). This HTML answers *how the user moves through surfaces*; `/ss-plan` turns journeys into Behavior & Test Contracts.
 
@@ -25,15 +25,16 @@ Self-contained HTML briefing for **product UX** (flows + surfaces). This file is
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-      mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+      mermaid.initialize({ startOnLoad: true, theme: "dark", securityLevel: "loose" });
     </script>
     <style>
       html { scroll-behavior: smooth; }
       section[id] { scroll-margin-top: 5rem; }
+      a { color: #93c5fd; }
     </style>
   </head>
-  <body class="bg-stone-50 text-slate-900 font-sans">
-    <nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2">
+  <body class="bg-zinc-950 text-zinc-100 font-sans">
+    <nav class="sticky top-0 z-20 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur px-4 py-2">
       <!-- Phase · Job · Locks · Journeys · Surfaces · States · Decisions · A11y · Open · Handoff -->
     </nav>
     <main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
@@ -158,7 +159,7 @@ One-liner: status + next action + HTML path.
 
 ## Style
 
-- Stone background, slate text, **serif headings**, generous `space-y-14`
+- Zinc dark background (`bg-zinc-950`), light text, **serif headings**, generous `space-y-14`
 - Emerald = locked/success; sky = handoff/current; amber = open/blocked; violet sparingly for secondary journeys
 - `text-xs uppercase tracking-wider` for section labels inside cards
 

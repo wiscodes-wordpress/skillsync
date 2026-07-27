@@ -1,6 +1,6 @@
 # Security posture — living HTML
 
-Self-contained HTML briefing for **security posture**. This file is the **posture source of truth**. Same craft as [`arch-plan/HTML-REPORT.md`](../arch-plan/HTML-REPORT.md): sticky nav, stone/slate + emerald/sky/amber, Mermaid when structure helps, sparse prose.
+Self-contained HTML briefing for **security posture**. This file is the **posture source of truth**. Same craft as [`arch-plan/HTML-REPORT.md`](../arch-plan/HTML-REPORT.md): sticky nav, **dark** zinc chrome + emerald/sky/amber (scaffold: `tools/templates/plan-security.html`), Mermaid when structure helps, sparse prose.
 
 **Not** the per-PR gate — that remains [`/ss-security-audit`](../../../commands/ss-security-audit.md). This HTML answers *how we intend to be secure* and (when assessed) *is the plugin healthy as a whole*; the audit answers *may this PR ship?*
 
@@ -26,15 +26,16 @@ Self-contained HTML briefing for **security posture**. This file is the **postur
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-      mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+      mermaid.initialize({ startOnLoad: true, theme: "dark", securityLevel: "loose" });
     </script>
     <style>
       html { scroll-behavior: smooth; }
       section[id] { scroll-margin-top: 5rem; }
+      a { color: #93c5fd; }
     </style>
   </head>
-  <body class="bg-stone-50 text-slate-900 font-sans">
-    <nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2">
+  <body class="bg-zinc-950 text-zinc-100 font-sans">
+    <nav class="sticky top-0 z-20 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur px-4 py-2">
       <!-- Phase · Locks · Surfaces · Assess · CVEs · Current · Target · Decisions · Stages · Non-goals · Gate -->
     </nav>
     <main class="max-w-5xl mx-auto px-6 py-10 space-y-14">

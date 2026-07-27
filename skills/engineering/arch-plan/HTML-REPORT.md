@@ -2,7 +2,7 @@
 
 Self-contained HTML briefing for **project/plugin direction**. This file is the **plan source of truth**. Prefer this over chat dumps or Cursor Canvas — the HTML must open in a browser, survive sessions, and accept Jira→HTML refresh.
 
-**Presentation reference:** match the Quick Builder style — sticky nav (highlight **Start → finish**), Phase, ordered **finish-line** story path, dual-track Epic A/B when needed, At a glance, Current|Target side by side, compact decisions, stages, optional sizing + epic portfolio. Editorial stone/slate + emerald/sky/violet accents; Mermaid for structure; sparse prose.
+**Presentation reference:** match the Quick Builder style — sticky nav (highlight **Start → finish**), Phase, ordered **finish-line** story path, dual-track Epic A/B when needed, At a glance, Current|Target side by side, compact decisions, stages, optional sizing + epic portfolio. **Dark mode** zinc chrome + emerald/sky/violet accents (scaffold: `tools/templates/plan-arch.html`); Mermaid `theme: "dark"`; sparse prose.
 
 **Lifecycle:** rewrite this **same file** after every material follow-up and after every Jira status refresh. Do not timestamp a new file per answer. Rejected explorations may live in a sibling archive HTML (e.g. `architecture-plan-archive-*.html`) linked from the nav — do not clutter the source of truth with discarded forks.
 
@@ -25,16 +25,17 @@ Self-contained HTML briefing for **project/plugin direction**. This file is the 
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-      mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+      mermaid.initialize({ startOnLoad: true, theme: "dark", securityLevel: "loose" });
     </script>
     <style>
-      .deep { background: linear-gradient(135deg, #0f172a, #1e293b); }
+      .deep { background: linear-gradient(135deg, #09090b, #18181b); }
       html { scroll-behavior: smooth; }
       section[id] { scroll-margin-top: 5rem; }
+      a { color: #93c5fd; }
     </style>
   </head>
-  <body class="bg-stone-50 text-slate-900 font-sans">
-    <nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2">
+  <body class="bg-zinc-950 text-zinc-100 font-sans">
+    <nav class="sticky top-0 z-20 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur px-4 py-2">
       <!-- Phase · Start → finish · Epic B? · Locks · Current · Target · … · Stages · Epic portfolio -->
     </nav>
     <main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
@@ -184,7 +185,7 @@ Handoff one-liner with next issue keys + path to the source of truth (+ archive 
 
 ## Style
 
-- Stone background, slate text, **serif headings**, generous `space-y-14`
+- Zinc dark background (`bg-zinc-950`), light text, **serif headings**, generous `space-y-14`
 - Emerald = locked/done/target/finish; sky = current phase/start-here/handoff; **violet = secondary epic track (Epic B)**; amber = open/blocked/park; red = leakage only
 - `text-xs uppercase tracking-wider` for section labels inside cards
 - Glossary terms from [`LANGUAGE.md`](../improve-codebase-architecture/LANGUAGE.md) for module/seam/depth language

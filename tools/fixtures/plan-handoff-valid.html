@@ -6,46 +6,110 @@
 		<script src="https://cdn.tailwindcss.com"></script>
 		<script type="module">
 			import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-			mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+			mermaid.initialize({ startOnLoad: true, theme: "dark", securityLevel: "loose" });
 		</script>
 		<style>
 			html { scroll-behavior: smooth; }
 			section[id] { scroll-margin-top: 5rem; }
-			pre.code { overflow-x: auto; font-size: 0.75rem; line-height: 1.4; }
+			a { color: #93c5fd; }
+			a:hover { color: #bfdbfe; }
+			.diff-file {
+				border: 1px solid #30363d;
+				border-radius: 6px;
+				overflow: hidden;
+				background: #0d1117;
+				margin-top: 0.75rem;
+			}
+			.diff-file__header {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				padding: 0.5rem 0.75rem;
+				background: #161b22;
+				border-bottom: 1px solid #30363d;
+				font-size: 0.75rem;
+				font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+				color: #c9d1d9;
+			}
+			.diff-file__badge {
+				font-size: 0.65rem;
+				text-transform: uppercase;
+				letter-spacing: 0.04em;
+				color: #8b949e;
+				border: 1px solid #30363d;
+				border-radius: 999px;
+				padding: 0.1rem 0.45rem;
+				background: #0d1117;
+			}
+			.diff-file__meta { color: #8b949e; margin-left: auto; font-size: 0.7rem; }
+			.diff-file__body {
+				overflow-x: auto;
+				margin: 0;
+				padding: 0.35rem 0;
+				font-size: 0.75rem;
+				line-height: 1.45;
+				font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+			}
+			.diff-line {
+				display: grid;
+				grid-template-columns: 3.25rem 1.25rem minmax(0, 1fr);
+				white-space: pre;
+				min-width: max-content;
+				width: 100%;
+			}
+			.diff-line__num {
+				text-align: right;
+				padding: 0 0.75rem 0 0.5rem;
+				color: #484f58;
+				user-select: none;
+			}
+			.diff-line__mark { text-align: center; user-select: none; }
+			.diff-line__code { padding-right: 1rem; color: #c9d1d9; }
+			.diff-line--add { background: rgba(46, 160, 67, 0.15); }
+			.diff-line--add .diff-line__mark,
+			.diff-line--add .diff-line__num { color: #3fb950; }
+			.diff-line--del { background: rgba(248, 81, 73, 0.15); }
+			.diff-line--del .diff-line__mark,
+			.diff-line--del .diff-line__num { color: #f85149; }
+			.diff-line--ctx .diff-line__mark { color: transparent; }
+			table { border-collapse: collapse; width: 100%; }
+			th, td { border: 1px solid #30363d; padding: 0.5rem 0.75rem; text-align: left; }
+			th { background: #161b22; color: #8b949e; font-size: 0.75rem; }
 		</style>
 	</head>
-	<body class="bg-stone-50 text-slate-900 font-sans">
-		<nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 px-4 py-2 text-xs">
-			<span class="text-slate-500">DEMO-310 · feature/bulk-edit</span>
-			<a href="#intent">Intent</a>
-			<a href="#decisions">Decisions</a>
-			<a href="#map">Map</a>
-			<a href="#hotspots">Hotspots</a>
-			<a href="#tests">Tests</a>
-			<a href="#verify" class="font-medium text-sky-900">Verify</a>
-			<a href="#out">Out of scope</a>
+	<body class="bg-zinc-950 text-zinc-100 font-sans">
+		<nav class="sticky top-0 z-20 border-b border-zinc-800 bg-zinc-950/95 px-4 py-2 text-xs text-zinc-300">
+			<span class="text-zinc-500">DEMO-310 · feature/bulk-edit</span>
+			<a href="#intent" class="hover:text-sky-300">Intent</a>
+			<a href="#decisions" class="hover:text-sky-300">Decisions</a>
+			<a href="#map" class="hover:text-sky-300">Map</a>
+			<a href="#hotspots" class="hover:text-sky-300">Hotspots</a>
+			<a href="#tests" class="hover:text-sky-300">Tests</a>
+			<a href="#verify" class="font-medium text-sky-400">Verify</a>
+			<a href="#out" class="hover:text-sky-300">Out of scope</a>
 		</nav>
 		<main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
 			<header>
-				<p class="text-xs uppercase tracking-wider">demo-plugin · DEMO-310</p>
-				<h1 class="font-serif text-3xl">Code handoff</h1>
-				<p class="text-sm">Branch: feature/bulk-edit · Base: main · Updated 2026-07-27</p>
-				<p>Editors can set one field across many posts from the list table without opening each post.</p>
-				<p class="border-l-4 border-sky-500 pl-3 text-sm">Next: complete <a href="#verify">#verify</a>, then /ss-submit-pr.</p>
+				<p class="text-xs uppercase tracking-wider text-zinc-500">demo-plugin · DEMO-310</p>
+				<h1 class="font-serif text-3xl text-zinc-50">Code handoff</h1>
+				<p class="text-sm text-zinc-400">Branch: feature/bulk-edit · Base: main · Updated 2026-07-27</p>
+				<p class="text-zinc-200">Editors can set one field across many posts from the list table without opening each post.</p>
+				<p class="border-l-4 border-sky-500 pl-3 text-sm text-zinc-300">Next: complete <a href="#verify">#verify</a>, then /ss-submit-pr.</p>
 			</header>
 			<section id="intent">
-				<h2 class="font-serif text-2xl">Intent</h2>
+				<h2 class="font-serif text-2xl text-zinc-50">Intent</h2>
 				<p>Ship the bulk field edit panel wired to the existing posts list selection, matching the locked UX journey J1.</p>
 			</section>
 			<section id="decisions">
-				<h2 class="font-serif text-2xl">Decisions used</h2>
+				<h2 class="font-serif text-2xl text-zinc-50">Decisions used</h2>
 				<ul>
-					<li><span class="text-emerald-700">D1</span> — edit happens in a side panel, not inline in the table</li>
-					<li><span class="text-emerald-700">D2</span> — REST batch update reuses the existing posts controller capability check</li>
+					<li><span class="text-emerald-400">D1</span> — edit happens in a side panel, not inline in the table</li>
+					<li><span class="text-emerald-400">D2</span> — REST batch update reuses the existing posts controller capability check</li>
 				</ul>
 			</section>
 			<section id="map">
-				<h2 class="font-serif text-2xl">Change map</h2>
+				<h2 class="font-serif text-2xl text-zinc-50">Change map</h2>
 				<pre class="mermaid">
 flowchart LR
   List[Posts list] --> Panel[Bulk edit panel]
@@ -54,33 +118,52 @@ flowchart LR
 				</pre>
 			</section>
 			<section id="hotspots">
-				<h2 class="font-serif text-2xl">Hotspots</h2>
-				<article class="border border-slate-200 p-3 space-y-2">
-					<p><strong>src/bulk-edit/Panel.tsx</strong> — mounts the panel when selection is non-empty</p>
-					<pre class="code bg-slate-900 text-slate-100 p-3 rounded">export function BulkEditPanel({ selectedIds }: Props) {
-  if (selectedIds.length === 0) return null;
-  return &lt;Panel ids={selectedIds} /&gt;;
-}</pre>
+				<h2 class="font-serif text-2xl text-zinc-50">Hotspots</h2>
+				<article>
+					<p class="text-sm text-zinc-400">Mounts the panel when selection is non-empty</p>
+					<div class="diff-file">
+						<div class="diff-file__header">
+							<span class="diff-file__badge">Code changes</span>
+							<span>src/bulk-edit/Panel.tsx</span>
+							<span class="diff-file__meta">+3 −1</span>
+						</div>
+						<div class="diff-file__body">
+							<div class="diff-line diff-line--ctx"><span class="diff-line__num">10</span><span class="diff-line__mark"> </span><code class="diff-line__code">export function BulkEditPanel({ selectedIds }: Props) {</code></div>
+							<div class="diff-line diff-line--del"><span class="diff-line__num">11</span><span class="diff-line__mark">-</span><code class="diff-line__code">  return &lt;Panel ids={selectedIds} /&gt;;</code></div>
+							<div class="diff-line diff-line--add"><span class="diff-line__num">11</span><span class="diff-line__mark">+</span><code class="diff-line__code">  if (selectedIds.length === 0) return null;</code></div>
+							<div class="diff-line diff-line--add"><span class="diff-line__num">12</span><span class="diff-line__mark">+</span><code class="diff-line__code">  return &lt;Panel ids={selectedIds} /&gt;;</code></div>
+							<div class="diff-line diff-line--add"><span class="diff-line__num">13</span><span class="diff-line__mark">+</span><code class="diff-line__code">}</code></div>
+						</div>
+					</div>
 				</article>
-				<article class="border border-slate-200 p-3 space-y-2">
-					<p><strong>includes/Rest/Batch_Posts_Controller.php</strong> — permission_callback reuses edit_posts</p>
-					<pre class="code bg-slate-900 text-slate-100 p-3 rounded">'permission_callback' =&gt; function () {
-  return current_user_can( 'edit_posts' );
-},</pre>
+				<article class="mt-6">
+					<p class="text-sm text-zinc-400">permission_callback reuses edit_posts</p>
+					<div class="diff-file">
+						<div class="diff-file__header">
+							<span class="diff-file__badge">Code changes</span>
+							<span>includes/Rest/Batch_Posts_Controller.php</span>
+							<span class="diff-file__meta">+3 −0</span>
+						</div>
+						<div class="diff-file__body">
+							<div class="diff-line diff-line--add"><span class="diff-line__num">44</span><span class="diff-line__mark">+</span><code class="diff-line__code">'permission_callback' =&gt; function () {</code></div>
+							<div class="diff-line diff-line--add"><span class="diff-line__num">45</span><span class="diff-line__mark">+</span><code class="diff-line__code">  return current_user_can( 'edit_posts' );</code></div>
+							<div class="diff-line diff-line--add"><span class="diff-line__num">46</span><span class="diff-line__mark">+</span><code class="diff-line__code">},</code></div>
+						</div>
+					</div>
 				</article>
 			</section>
 			<section id="tests">
-				<h2 class="font-serif text-2xl">Tests and evidence</h2>
+				<h2 class="font-serif text-2xl text-zinc-50">Tests and evidence</h2>
 				<table>
 					<tr><th>Behavior</th><th>Evidence</th></tr>
 					<tr><td>Panel hidden with empty selection</td><td>Panel.test.tsx · TDD Evidence cycle 1 PASS</td></tr>
 					<tr><td>Batch update rejects without capability</td><td>test-batch-posts.php · Verification Plan</td></tr>
 				</table>
-				<p class="text-sm">Verification Plan: <code>yarn test</code>, <code>composer test</code></p>
+				<p class="text-sm text-zinc-400 mt-3">Verification Plan: <code class="text-zinc-300">yarn test</code>, <code class="text-zinc-300">composer test</code></p>
 			</section>
 			<section id="verify">
-				<h2 class="font-serif text-2xl">What to verify (human)</h2>
-				<div class="border-l-4 border-sky-500 pl-3 mb-3 text-sm">Do this before /ss-submit-pr.</div>
+				<h2 class="font-serif text-2xl text-zinc-50">What to verify (human)</h2>
+				<div class="border-l-4 border-sky-500 pl-3 mb-3 text-sm text-zinc-300">Do this before /ss-submit-pr.</div>
 				<ul>
 					<li>Select two posts → open bulk panel → set a field → confirm → both show the new value</li>
 					<li>As a subscriber, REST batch returns 403</li>
@@ -88,13 +171,13 @@ flowchart LR
 				</ul>
 			</section>
 			<section id="out">
-				<h2 class="font-serif text-2xl">Out of scope / follow-ups</h2>
+				<h2 class="font-serif text-2xl text-zinc-50">Out of scope / follow-ups</h2>
 				<ul>
 					<li>Inline table editing (parked in UX non-goals)</li>
 					<li>Undo stack for bulk edits (follow-up story)</li>
 				</ul>
 			</section>
-			<footer class="text-sm text-slate-600">
+			<footer class="text-sm text-zinc-500">
 				.harness/code-handoff.html · .harness/state.md · next: /ss-submit-pr
 			</footer>
 		</main>
