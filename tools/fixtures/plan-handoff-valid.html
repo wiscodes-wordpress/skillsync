@@ -85,6 +85,8 @@
 			<a href="#decisions" class="hover:text-sky-300">Decisions</a>
 			<a href="#map" class="hover:text-sky-300">Map</a>
 			<a href="#hotspots" class="hover:text-sky-300">Hotspots</a>
+			<a href="#frontend" class="hover:text-sky-300">Frontend</a>
+			<a href="#backend" class="hover:text-sky-300">Backend</a>
 			<a href="#tests" class="hover:text-sky-300">Tests</a>
 			<a href="#verify" class="font-medium text-sky-400">Verify</a>
 			<a href="#out" class="hover:text-sky-300">Out of scope</a>
@@ -152,6 +154,38 @@ flowchart LR
 					</div>
 				</article>
 			</section>
+			<section id="frontend">
+				<h2 class="font-serif text-2xl text-zinc-50">Frontend</h2>
+				<ul class="space-y-2 text-sm">
+					<li><strong>Flow:</strong> select posts → open panel → set field → confirm → list refreshes</li>
+					<li><strong>Render triggers:</strong> <code class="text-zinc-300">selectedIds</code> from the list store; panel returns null when empty (no mount)</li>
+					<li><strong>Mount / unmount:</strong> panel mounts only when selection is non-empty; no long-lived subscriptions</li>
+					<li><strong>Timing:</strong> batch save on confirm only (not on each keystroke)</li>
+					<li><strong>State:</strong> selection owned by list store; draft field value local to the panel</li>
+					<li><strong>Async UI:</strong> saving / success / error inline in the panel</li>
+					<li><strong>A11y:</strong> focus moves into the panel on open; Escape returns focus to the bulk action control</li>
+				</ul>
+				<pre class="mermaid mt-4">
+sequenceDiagram
+  participant U as Editor
+  participant L as Posts list
+  participant P as Bulk panel
+  U->>L: Select posts
+  L->>P: selectedIds
+  U->>P: Confirm
+  P->>L: Refresh rows
+				</pre>
+			</section>
+			<section id="backend">
+				<h2 class="font-serif text-2xl text-zinc-50">Backend</h2>
+				<ul class="space-y-2 text-sm">
+					<li><strong>Flow:</strong> REST batch route → capability check → update post meta → 200/403</li>
+					<li><strong>Authz:</strong> <code class="text-zinc-300">permission_callback</code> uses <code class="text-zinc-300">edit_posts</code></li>
+					<li><strong>Data writes:</strong> post meta only; value sanitized in the controller</li>
+					<li><strong>Queries:</strong> one update per id in the batch (no new list query)</li>
+					<li><strong>Lifecycle:</strong> route registered on <code class="text-zinc-300">rest_api_init</code>; no cron</li>
+				</ul>
+			</section>
 			<section id="tests">
 				<h2 class="font-serif text-2xl text-zinc-50">Tests and evidence</h2>
 				<table>
@@ -167,7 +201,8 @@ flowchart LR
 				<ul>
 					<li>Select two posts → open bulk panel → set a field → confirm → both show the new value</li>
 					<li>As a subscriber, REST batch returns 403</li>
-					<li>Empty selection never shows the panel</li>
+					<li>Empty selection never shows the panel (no mount)</li>
+					<li>Open panel, Escape — focus returns to the bulk action control</li>
 				</ul>
 			</section>
 			<section id="out">

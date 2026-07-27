@@ -15,7 +15,7 @@ node .cursor/vendor/skillsync/tools/init-plan-html.cjs . --kind handoff --task "
 Use `--force` only when deliberately resetting chrome (overwrites content).
 
 2. Read **`.harness/state.md`** and `git` base…HEAD (commits + diff).
-3. Rewrite **`.harness/code-handoff.html`** (fill Intent, decisions, Mermaid/change map, hotspots, tests, `#verify` checklist) — same path every time.
+3. Rewrite **`.harness/code-handoff.html`** (fill Intent, decisions, Mermaid/change map, hotspots, **`#frontend` / `#backend`** from the diff or N/A, tests, `#verify` checklist) — same path every time.
 4. **Validate** (when vendored):
 
 ```bash

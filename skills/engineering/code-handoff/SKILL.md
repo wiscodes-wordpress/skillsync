@@ -19,12 +19,13 @@ description: >
 
 Invoke via **`/ss-handoff`**. Typical order: after `/ss-review` PASS (and ideally `/ss-security-audit`), **before** `/ss-submit-pr`.
 
-**Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — sticky nav, Intent, Decisions, Map, Hotspots, Tests, Verify. That browser HTML is the deliverable; do **not** substitute Markdown-only or Canvas for the brief.
+**Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — sticky nav, Intent, Decisions, Map, Hotspots, **Frontend / Backend** (surface notes), Tests, Verify. That browser HTML is the deliverable; do **not** substitute Markdown-only or Canvas for the brief.
 
 ## Principles
 
 - **State is the contract** — ground the story in Behavior & Test Contracts, RED→GREEN / TDD Evidence, locked decisions, and Security Evidence when present. Do not invent architecture that is not in state or the diff.
 - **Diff is the evidence** — every claim about behavior should point at a path or a short snippet from the change set.
+- **Surface notes** — fill `#frontend` and/or `#backend` from changed paths (UI vs PHP/WordPress); otherwise one-line N/A. Product-neutral — not Lifeway-only.
 - **Human first** — open-in-browser experience; scannable sections; Mermaid when structure helps.
 - **Offload context** — the HTML must stand alone in a fresh session (open the file + PR/diff; do not require replaying implement history).
 - **Prose** — apply [`anti-slop`](../../productivity/anti-slop/SKILL.md): expand abbreviations on first use; no hype; cite paths instead of restating whole files.
@@ -50,9 +51,9 @@ If `state.md` is missing or empty, still write a diff-based walkthrough and note
 3. Resolve base branch; collect:
    - `git log --oneline <base>..HEAD`
    - `git diff --stat <base>...HEAD`
-   - `git diff --name-only <base>...HEAD`
+   - `git diff --name-only <base>...HEAD` — decide `#frontend` / `#backend` fill vs N/A
    - Targeted `git diff <base>...HEAD -- <path>` for hotspots (not the entire dump in the brief).
-4. Rewrite **`.harness/code-handoff.html`** (same path every time — overwrite) per HTML-REPORT scaffold and sections. Keep Tailwind + Mermaid script tags from the template.
+4. Rewrite **`.harness/code-handoff.html`** (same path every time — overwrite) per HTML-REPORT scaffold and sections. Keep Tailwind + Mermaid script tags from the template. Always include `#frontend` and `#backend` (filled or N/A).
 5. Validate (when vendored):
 
    ```bash
@@ -66,11 +67,13 @@ In **Ask** mode: print the outline and commands; do not write the file unless th
 
 ## Output: `.harness/code-handoff.html`
 
-Required sections (omit only when N/A with one-line why): **Intent**, **Decisions used**, **Change map**, **Hotspots**, **Tests and evidence**, **What to verify (human)**, **Out of scope / follow-ups**. Details and scaffold: [HTML-REPORT.md](HTML-REPORT.md).
+Required: **Intent**, **Decisions**, **Map**, **Hotspots**, **Tests**, **Verify**, **Out of scope**.  
+Expected (warn if missing): **Frontend**, **Backend** — fill from diff or one-line N/A.  
+Details: [HTML-REPORT.md](HTML-REPORT.md).
 
 ### Mermaid
 
-Use when it clarifies structure (module edges, request flow, before→after). Skip decorative diagrams. Prefer `flowchart` / `sequenceDiagram`. Keep node labels short. Render via `<pre class="mermaid">` as in HTML-REPORT.
+Use when it clarifies structure (module edges, FE sequence, REST/hook flow). Skip decorative diagrams. Prefer `flowchart` / `sequenceDiagram`. Keep node labels short. Render via `<pre class="mermaid">` as in HTML-REPORT.
 
 ### Snippets
 
@@ -86,7 +89,8 @@ Use when it clarifies structure (module edges, request flow, before→after). Sk
 - [ ] `validate-plan-html.cjs --kind handoff` exits 0 (when vendored)
 - [ ] Intent and decisions tied to `state.md` (or explicit “no state”)
 - [ ] Hotspots cite real paths from the diff
-- [ ] `#verify` checklist is actionable
+- [ ] `#frontend` / `#backend` filled or explicit N/A from the diff surface
+- [ ] `#verify` checklist is actionable (includes FE/backend checks when those sections are filled)
 - [ ] Next step named: usually `/ss-submit-pr` (after security PASS) — not merge/close
 
 ## Related

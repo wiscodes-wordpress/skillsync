@@ -26,11 +26,13 @@ Copy chrome/CSS from `tools/templates/plan-handoff.html` (includes `.diff-file` 
 
 Start from the template (or keep its head/nav/CSS). Sections:
 
-`#intent` · `#decisions` · `#map` · `#hotspots` · `#tests` · `#verify` · `#out`
+`#intent` · `#decisions` · `#map` · `#hotspots` · `#frontend` · `#backend` · `#tests` · `#verify` · `#out`
+
+Surface sections are **always present**. Fill from the diff, or one line **N/A**.
 
 ## Sticky nav
 
-Compact top bar (`text-xs`): issue/branch label + in-page anchors. Emphasize **Verify** (`#verify`, `text-sky-400`). Keep scannable — no paragraphs.
+Compact top bar (`text-xs`): issue/branch label + in-page anchors. Include Frontend / Backend. Emphasize **Verify** (`#verify`, `text-sky-400`). Keep scannable — no paragraphs.
 
 ## Header
 
@@ -39,6 +41,17 @@ Compact top bar (`text-xs`): issue/branch label + in-page anchors. Emphasize **V
 - Meta row: **Branch** · **Base** · **Updated** (ISO date)
 - One strong sentence: what this slice delivers
 - Next-step callout (sky border): open `#verify` then `/ss-submit-pr`
+
+## Surface detection (agent)
+
+From `git diff --name-only` (product-neutral — not Lifeway vs Quickpress):
+
+| Paths suggest | Fill |
+|---------------|------|
+| `*.tsx` / `*.jsx` / `*.vue` / app `src/` UI / CSS modules that own interaction | **`#frontend`** checklist below |
+| `*.php` / `includes/` / REST / WP-CLI / cron / plugin bootstrap | **`#backend`** checklist below (WordPress flavor when stack is WP) |
+| Both | Both sections |
+| Neither | Both: one line each — `N/A — no UI` / `N/A — no PHP` |
 
 ## Sections (required unless N/A — one line why skipped)
 
@@ -103,13 +116,46 @@ Rules:
 - Badge text: **Code changes**. Meta: optional `+n −n` from the hunk.
 - Never secrets, tokens, or full env files.
 
+### Frontend (`#frontend`) — when UI is in the diff
+
+Path-tied notes for a frontend reviewer. Use a compact definition list or short bullets + optional Mermaid sequence. **Do not** paste a React encyclopedia.
+
+| Block | Cover |
+|-------|--------|
+| **Interaction / process flow** | User action → state update → UI result (+ failure). Mermaid `sequenceDiagram` when it helps |
+| **Render triggers** | What re-renders (props, store select, context, parent). Flag accidental wide subscriptions |
+| **Mount / unmount** | Effects, subscriptions, listeners, AbortController, timers — what cleans up |
+| **Timing** | Fetch on mount vs on interaction; races; debounce/throttle |
+| **State ownership** | Local vs data store vs URL — single writer |
+| **Async UI states** | Loading / empty / error / success |
+| **A11y focus** | Focus on open/close panel/dialog; keyboard path |
+| **Perf** | Only when real (hot list, expensive render) — skip empty “we memoized” |
+
+If no UI paths: `<p>N/A — no UI in this diff.</p>`
+
+### Backend (`#backend`) — when PHP / server is in the diff
+
+Path-tied notes for a backend / WordPress reviewer. Product-neutral name; use WP vocabulary when the stack is WordPress.
+
+| Block | Cover |
+|-------|--------|
+| **Request / hook flow** | Hook or REST → classes → response/side effect (Mermaid when helpful) |
+| **Capabilities & authz** | Who can hit it; `permission_callback` / `current_user_can` |
+| **Data writes** | Options, post meta, custom tables — sanitize / validate / escape touchpoints |
+| **Queries** | New SQL / `WP_Query`; N+1; cache (`wp_cache_*`, transients) when relevant |
+| **Lifecycle** | Activation, cron, shutdown, uninstall register/unregister |
+| **REST / WP-CLI** | Routes, args schema, idempotency |
+| **Multisite / roles** | Only when the change cares |
+
+If no PHP/server paths: `<p>N/A — no PHP in this diff.</p>`
+
 ### Tests and evidence (`#tests`)
 
 Table: Behavior / contract → test path or TDD Evidence row. Note Verification Plan commands from state.
 
 ### What to verify — human (`#verify`)
 
-Checklist of concrete checks (UI path, CLI, edge case). Not “looks good.” Prefer commands and acceptance from state. Sky border callout: **Do this before `/ss-submit-pr`**.
+Checklist of concrete checks. Pull FE and backend checks from `#frontend` / `#backend` (UI path, REST 403 as subscriber, double-submit, etc.). Not “looks good.” Sky border callout: **Do this before `/ss-submit-pr`**.
 
 ### Out of scope / follow-ups (`#out`)
 

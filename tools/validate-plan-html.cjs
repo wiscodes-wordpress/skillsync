@@ -75,7 +75,7 @@ const KINDS = {
 		file: 'code-handoff.html',
 		titlePrefix: 'Code handoff',
 		required: ['intent', 'decisions', 'map', 'hotspots', 'tests', 'verify'],
-		expected: ['out'],
+		expected: ['frontend', 'backend', 'out'],
 		wantsMermaid: false,
 	},
 };
