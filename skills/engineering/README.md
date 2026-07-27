@@ -20,7 +20,7 @@ Code work, delivery workflow, and technical review skills.
 
 - **[arch-plan](./arch-plan/SKILL.md)** — Architecture plan as living HTML source of truth (`/ss-arch-plan`); Quick-Builder-style briefing; epic/story keys; one-way Jira refresh on run.
 - **[security-plan](./security-plan/SKILL.md)** — Security posture as living HTML (`/ss-security-plan`); optional whole-plugin assess (Semgrep + Wordfence); does not replace `/ss-security-audit`.
-- **[code-handoff](./code-handoff/SKILL.md)** — Human walkthrough of branch changes → `.harness/code-handoff.md` (`/ss-handoff`); before `/ss-submit-pr`.
+- **[code-handoff](./code-handoff/SKILL.md)** — Human walkthrough of branch changes → `.harness/code-handoff.html` (`/ss-handoff`); before `/ss-submit-pr`.
 - **[dependabot-batch-merge](./dependabot-batch-merge/SKILL.md)** — Batch-merge Dependabot PRs safely.
 - **[frontend-react-best-practices](./frontend-react-best-practices/SKILL.md)** — React performance and composition patterns.
 - **[jest-react-testing](./jest-react-testing/SKILL.md)** — Jest + React Testing Library (link when consumer uses React; not default ss-flow load).

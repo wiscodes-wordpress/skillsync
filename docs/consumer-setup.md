@@ -148,7 +148,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential |
 | `/ss-review` | Critic / quality gate |
 | `/ss-security-audit` | Security gate (scripts + agent) — after review, before PR |
-| `/ss-handoff` | Human code walkthrough → `.harness/code-handoff.md` (optional; before PR) |
+| `/ss-handoff` | Human code walkthrough → `.harness/code-handoff.html` (optional; before PR) |
 | `/ss-submit-pr` | Open GitHub PR (does not merge; requires Security Evidence PASS) |
 | `/ss-close-story` | Tracker Done + clear harness files |
 | `/ss-release` | Post-ship go-to-market — brief → demo proof → channel pack → anti-slop (optional; not a PR gate). **`anti-slop`** also applies to delivery-loop prose (plans, HTML, issues) per ss-flow rule 6. |
@@ -209,7 +209,8 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `init-release-brief.cjs` | `/ss-release*` | Scaffold `.harness/release-brief.md` (`--version`, `--force`) |
 | `validate-release-brief.cjs` | `/ss-release*` | Assert brief sections (`--mode structure\|ready`) |
 | `validate-release-pack.cjs` | `/ss-release*` | Assert channel pack files exist and are non-empty |
-| `validate-plan-html.cjs` | `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` | Structural lint for living HTML (`--kind arch\|ux\|security`; `--mode structure\|ready`) |
+| `validate-plan-html.cjs` | `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan`, `/ss-handoff` | Structural lint for living HTML (`--kind arch\|ux\|security\|handoff`; `--mode structure\|ready`) |
+| `init-plan-html.cjs` | same plan / handoff commands | Chrome-only scaffold under `.harness/` (`--kind`; `--force` to overwrite) |
 | `init-feature-pack.cjs` | `/ss-roadmap` | Scaffold initiative hub `.harness/initiatives/<slug>/index.html` (`--slug`, `--epics`, `--lenses`) |
 | `validate-feature-pack.cjs` | `/ss-roadmap` | Assert required lenses exist + hub/lens epic-key parity (`--slug`) |
 | `verify-tools.cjs` | skillsync CI | Smoke-test tools + fixtures |

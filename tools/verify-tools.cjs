@@ -35,6 +35,7 @@ const REQUIRED_TOOLS = [
 	'validate-release-brief.cjs',
 	'validate-release-pack.cjs',
 	'validate-plan-html.cjs',
+	'init-plan-html.cjs',
 	'init-feature-pack.cjs',
 	'validate-feature-pack.cjs',
 	'lib/ss-tools.cjs',
@@ -93,7 +94,8 @@ function main() {
 	const harnessReset = path.join(toolsDir, 'harness-reset.cjs');
 	runTool(harnessReset, [temp, '--dry-run']);
 	fs.writeFileSync(path.join(temp, '.harness', 'pr-body.md'), 'draft', 'utf8');
-	fs.writeFileSync(path.join(temp, '.harness', 'code-handoff.md'), 'walkthrough', 'utf8');
+	fs.writeFileSync(path.join(temp, '.harness', 'code-handoff.html'), 'walkthrough', 'utf8');
+	fs.writeFileSync(path.join(temp, '.harness', 'code-handoff.md'), 'legacy', 'utf8');
 	runTool(harnessReset, [temp]);
 
 	const stateFile = path.join(temp, '.harness', 'state.md');
@@ -105,8 +107,12 @@ function main() {
 		console.error('harness-reset: pr-body.md should be deleted');
 		failed = true;
 	}
+	if (fs.existsSync(path.join(temp, '.harness', 'code-handoff.html'))) {
+		console.error('harness-reset: code-handoff.html should be deleted');
+		failed = true;
+	}
 	if (fs.existsSync(path.join(temp, '.harness', 'code-handoff.md'))) {
-		console.error('harness-reset: code-handoff.md should be deleted');
+		console.error('harness-reset: legacy code-handoff.md should be deleted');
 		failed = true;
 	}
 	console.log('OK: harness-reset integration');
@@ -398,6 +404,7 @@ function main() {
 		['plan-arch-valid.html', 'architecture-plan.html'],
 		['plan-ux-valid.html', 'ux-plan.html'],
 		['plan-security-valid.html', 'security-posture.html'],
+		['plan-handoff-valid.html', 'code-handoff.html'],
 	];
 	for (const [fixture, target] of planFixtures) {
 		fs.copyFileSync(path.join(fixturesDir, fixture), path.join(planHarness, target));
@@ -419,10 +426,10 @@ function main() {
 		),
 		'utf8',
 	);
-	for (const kind of ['arch', 'ux', 'security']) {
+	for (const kind of ['arch', 'ux', 'security', 'handoff']) {
 		runTool(validatePlanHtmlTool, [planHtmlConsumer, '--kind', kind]);
 	}
-	console.log('OK: validate-plan-html arch/ux/security fixtures');
+	console.log('OK: validate-plan-html arch/ux/security/handoff fixtures');
 
 	const planHtmlLib = require(validatePlanHtmlTool);
 	const archHtml = fs.readFileSync(path.join(fixturesDir, 'plan-arch-valid.html'), 'utf8');
@@ -523,6 +530,23 @@ function main() {
 	if (negatives.every(Boolean)) {
 		console.log('OK: validate-plan-html hard gates (stubs, anchors, scripts, assess facts)');
 	}
+
+	const initPlanHtml = path.join(toolsDir, 'init-plan-html.cjs');
+	for (const kind of ['arch', 'ux', 'security', 'handoff']) {
+		const initConsumer = makeTempConsumer();
+		runTool(initPlanHtml, [
+			initConsumer,
+			'--kind',
+			kind,
+			'--product',
+			'Demo Plugin',
+			'--task',
+			'DEMO-1 scaffold',
+		]);
+		runTool(validatePlanHtmlTool, [initConsumer, '--kind', kind, '--mode', 'structure']);
+		runTool(initPlanHtml, [initConsumer, '--kind', kind], { expectFail: true });
+	}
+	console.log('OK: init-plan-html scaffold + structure validate + overwrite refuse');
 
 	const packConsumer = makeTempConsumer();
 	const initFeaturePack = path.join(toolsDir, 'init-feature-pack.cjs');

@@ -15,7 +15,7 @@ node .cursor/vendor/skillsync/tools/security-audit.cjs . --check-state
 If this fails, stop and run [`ss-security-audit`](./ss-security-audit.md) (or fix findings) before opening a PR.
 
 2. Prefer deterministic helpers when vendored: `node .cursor/vendor/skillsync/tools/render-pr-body.cjs .` then `node .cursor/vendor/skillsync/tools/open-pr.cjs .` (or `yarn ss:open-pr` if wired in consumer `package.json`). Use `--dry-run` / `--no-push` when checking only.
-3. For title/body prose the script cannot infer, follow [`submit-github-pr`](../skills/engineering/submit-github-pr/SKILL.md) — write narrative into `.harness/pr-body.md` before `open-pr.cjs`. When **`.harness/code-handoff.md`** exists, reuse its Intent and What to verify (do not paste the whole handoff into the PR).
+3. For title/body prose the script cannot infer, follow [`submit-github-pr`](../skills/engineering/submit-github-pr/SKILL.md) — write narrative into `.harness/pr-body.md` before `open-pr.cjs`. When **`.harness/code-handoff.html`** exists, reuse its Intent and What to verify (do not paste the whole handoff into the PR).
 
 In **Ask** mode, print the skill checklist and exact tool commands.
 

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>UX plan — {{task}}</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<style>
+			html { scroll-behavior: smooth; }
+			section[id] { scroll-margin-top: 5rem; }
+		</style>
+	</head>
+	<body class="bg-stone-50 text-slate-900 font-sans">
+		<nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2 text-xs">
+			<span class="text-slate-500">{{product}}</span>
+			<a href="#phase">Phase</a>
+			<a href="#job">Job</a>
+			<a href="#locks">At a glance</a>
+			<a href="#journeys">Journeys</a>
+			<a href="#surfaces">Surfaces</a>
+			<a href="#states">States</a>
+			<a href="#decisions">Decisions</a>
+			<a href="#a11y">Accessibility</a>
+			<a href="#open">Open</a>
+			<a href="#nongoals">Non-goals</a>
+			<a href="#handoff" class="font-medium text-sky-900">Handoff</a>
+		</nav>
+		<main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
+			<header>
+				<p class="text-xs uppercase tracking-wider">{{product}}</p>
+				<h1 class="font-serif text-3xl">UX plan</h1>
+				<p class="text-sm">Status: draft · Updated {{updated}}</p>
+				<p>{{task}}</p>
+			</header>
+			<section id="phase"><h2 class="font-serif text-2xl">Phase we are at</h2>…</section>
+			<section id="job"><h2 class="font-serif text-2xl">Job frame</h2>…</section>
+			<section id="locks"><h2 class="font-serif text-2xl">At a glance</h2>…</section>
+			<section id="journeys"><h2 class="font-serif text-2xl">Journeys</h2>…</section>
+			<section id="surfaces"><h2 class="font-serif text-2xl">Surfaces</h2>…</section>
+			<section id="states"><h2 class="font-serif text-2xl">States</h2>…</section>
+			<section id="decisions"><h2 class="font-serif text-2xl">Decisions</h2>…</section>
+			<section id="a11y"><h2 class="font-serif text-2xl">Accessibility</h2>…</section>
+			<section id="open"><h2 class="font-serif text-2xl">Open</h2>…</section>
+			<section id="nongoals"><h2 class="font-serif text-2xl">Non-goals</h2>…</section>
+			<section id="handoff"><h2 class="font-serif text-2xl">Handoff</h2>…</section>
+			<footer class="text-sm text-slate-600">.harness/ux-plan.html · next: /ss-ui-ux-plan</footer>
+		</main>
+	</body>
+</html>

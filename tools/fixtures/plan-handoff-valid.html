@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Code handoff — DEMO-310 bulk field edit</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script type="module">
+			import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+			mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+		</script>
+		<style>
+			html { scroll-behavior: smooth; }
+			section[id] { scroll-margin-top: 5rem; }
+			pre.code { overflow-x: auto; font-size: 0.75rem; line-height: 1.4; }
+		</style>
+	</head>
+	<body class="bg-stone-50 text-slate-900 font-sans">
+		<nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 px-4 py-2 text-xs">
+			<span class="text-slate-500">DEMO-310 · feature/bulk-edit</span>
+			<a href="#intent">Intent</a>
+			<a href="#decisions">Decisions</a>
+			<a href="#map">Map</a>
+			<a href="#hotspots">Hotspots</a>
+			<a href="#tests">Tests</a>
+			<a href="#verify" class="font-medium text-sky-900">Verify</a>
+			<a href="#out">Out of scope</a>
+		</nav>
+		<main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
+			<header>
+				<p class="text-xs uppercase tracking-wider">demo-plugin · DEMO-310</p>
+				<h1 class="font-serif text-3xl">Code handoff</h1>
+				<p class="text-sm">Branch: feature/bulk-edit · Base: main · Updated 2026-07-27</p>
+				<p>Editors can set one field across many posts from the list table without opening each post.</p>
+				<p class="border-l-4 border-sky-500 pl-3 text-sm">Next: complete <a href="#verify">#verify</a>, then /ss-submit-pr.</p>
+			</header>
+			<section id="intent">
+				<h2 class="font-serif text-2xl">Intent</h2>
+				<p>Ship the bulk field edit panel wired to the existing posts list selection, matching the locked UX journey J1.</p>
+			</section>
+			<section id="decisions">
+				<h2 class="font-serif text-2xl">Decisions used</h2>
+				<ul>
+					<li><span class="text-emerald-700">D1</span> — edit happens in a side panel, not inline in the table</li>
+					<li><span class="text-emerald-700">D2</span> — REST batch update reuses the existing posts controller capability check</li>
+				</ul>
+			</section>
+			<section id="map">
+				<h2 class="font-serif text-2xl">Change map</h2>
+				<pre class="mermaid">
+flowchart LR
+  List[Posts list] --> Panel[Bulk edit panel]
+  Panel --> REST[Batch REST]
+  REST --> Store[Post meta]
+				</pre>
+			</section>
+			<section id="hotspots">
+				<h2 class="font-serif text-2xl">Hotspots</h2>
+				<article class="border border-slate-200 p-3 space-y-2">
+					<p><strong>src/bulk-edit/Panel.tsx</strong> — mounts the panel when selection is non-empty</p>
+					<pre class="code bg-slate-900 text-slate-100 p-3 rounded">export function BulkEditPanel({ selectedIds }: Props) {
+  if (selectedIds.length === 0) return null;
+  return &lt;Panel ids={selectedIds} /&gt;;
+}</pre>
+				</article>
+				<article class="border border-slate-200 p-3 space-y-2">
+					<p><strong>includes/Rest/Batch_Posts_Controller.php</strong> — permission_callback reuses edit_posts</p>
+					<pre class="code bg-slate-900 text-slate-100 p-3 rounded">'permission_callback' =&gt; function () {
+  return current_user_can( 'edit_posts' );
+},</pre>
+				</article>
+			</section>
+			<section id="tests">
+				<h2 class="font-serif text-2xl">Tests and evidence</h2>
+				<table>
+					<tr><th>Behavior</th><th>Evidence</th></tr>
+					<tr><td>Panel hidden with empty selection</td><td>Panel.test.tsx · TDD Evidence cycle 1 PASS</td></tr>
+					<tr><td>Batch update rejects without capability</td><td>test-batch-posts.php · Verification Plan</td></tr>
+				</table>
+				<p class="text-sm">Verification Plan: <code>yarn test</code>, <code>composer test</code></p>
+			</section>
+			<section id="verify">
+				<h2 class="font-serif text-2xl">What to verify (human)</h2>
+				<div class="border-l-4 border-sky-500 pl-3 mb-3 text-sm">Do this before /ss-submit-pr.</div>
+				<ul>
+					<li>Select two posts → open bulk panel → set a field → confirm → both show the new value</li>
+					<li>As a subscriber, REST batch returns 403</li>
+					<li>Empty selection never shows the panel</li>
+				</ul>
+			</section>
+			<section id="out">
+				<h2 class="font-serif text-2xl">Out of scope / follow-ups</h2>
+				<ul>
+					<li>Inline table editing (parked in UX non-goals)</li>
+					<li>Undo stack for bulk edits (follow-up story)</li>
+				</ul>
+			</section>
+			<footer class="text-sm text-slate-600">
+				.harness/code-handoff.html · .harness/state.md · next: /ss-submit-pr
+			</footer>
+		</main>
+	</body>
+</html>

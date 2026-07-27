@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Security posture — {{product}}</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<style>
+			html { scroll-behavior: smooth; }
+			section[id] { scroll-margin-top: 5rem; }
+		</style>
+	</head>
+	<body class="bg-stone-50 text-slate-900 font-sans">
+		<nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2 text-xs">
+			<span class="text-slate-500">{{product}}</span>
+			<a href="#phase">Phase</a>
+			<a href="#locks">At a glance</a>
+			<a href="#surfaces">Surfaces</a>
+			<a href="#cves">CVEs</a>
+			<a href="#current">Current</a>
+			<a href="#target">Target</a>
+			<a href="#decisions">Decisions</a>
+			<a href="#stages">Stages</a>
+			<a href="#nongoals">Non-goals</a>
+			<a href="#gate" class="font-medium text-sky-900">Gate</a>
+		</nav>
+		<main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
+			<header>
+				<p class="text-xs uppercase tracking-wider">{{product}}</p>
+				<h1 class="font-serif text-3xl">Security posture</h1>
+				<p class="text-sm">Status: draft · Updated {{updated}}</p>
+				<p>{{task}}</p>
+			</header>
+			<section id="phase"><h2 class="font-serif text-2xl">Phase we are at</h2>…</section>
+			<section id="locks"><h2 class="font-serif text-2xl">At a glance</h2>…</section>
+			<section id="surfaces"><h2 class="font-serif text-2xl">Surfaces</h2>…</section>
+			<section id="cves"><h2 class="font-serif text-2xl">CVEs</h2>…</section>
+			<section id="current"><h2 class="font-serif text-2xl">Current</h2>…</section>
+			<section id="target"><h2 class="font-serif text-2xl">Target</h2>…</section>
+			<section id="decisions"><h2 class="font-serif text-2xl">Decisions</h2>…</section>
+			<section id="stages"><h2 class="font-serif text-2xl">Stages</h2>…</section>
+			<section id="nongoals"><h2 class="font-serif text-2xl">Non-goals</h2>…</section>
+			<section id="gate"><h2 class="font-serif text-2xl">PR gate</h2>…</section>
+			<footer class="text-sm text-slate-600">.harness/security-posture.html · next: /ss-security-plan</footer>
+		</main>
+	</body>
+</html>

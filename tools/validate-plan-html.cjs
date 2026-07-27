@@ -4,7 +4,7 @@
  *
  * Usage:
  *   node path/to/skillsync/tools/validate-plan-html.cjs [/path/to/consumer-repo] \
- *     [--kind arch|ux|security] [--file .harness/architecture-plan.html] \
+ *     [--kind arch|ux|security|handoff] [--file .harness/architecture-plan.html] \
  *     [--mode structure|ready] [--strict-warn]
  *
  * --mode structure: chrome only (post-scaffold) — stubs and {{tokens}} allowed
@@ -15,7 +15,7 @@
  *   1 — hard fail
  *   2 — warnings only, with --strict-warn
  *
- * Contract source: skills/engineering/{arch-plan,ui-ux-planner,security-plan}/HTML-REPORT.md.
+ * Contract source: skills/engineering/{arch-plan,ui-ux-planner,security-plan,code-handoff}/HTML-REPORT.md.
  * Regex-based structural lint, not an HTML parser: it checks the section/anchor/script
  * contract and cross-checks security facts against .harness/security-assess.json.
  */
@@ -69,6 +69,13 @@ const KINDS = {
 			'gate',
 		],
 		expected: ['locks', 'phase'],
+		wantsMermaid: false,
+	},
+	handoff: {
+		file: 'code-handoff.html',
+		titlePrefix: 'Code handoff',
+		required: ['intent', 'decisions', 'map', 'hotspots', 'tests', 'verify'],
+		expected: ['out'],
 		wantsMermaid: false,
 	},
 };
@@ -397,6 +404,9 @@ function validatePlanHtml({ html, kind, mode = 'ready', assessReport = null }) {
 	if (spec.wantsMermaid && !/class="mermaid"/i.test(html)) {
 		warnings.push('No Mermaid diagram found — Current | Target usually needs one');
 	}
+	if (kind === 'handoff' && ready && !/class="mermaid"/i.test(html)) {
+		warnings.push('No Mermaid in #map — fine when a bullet map is clearer');
+	}
 
 	if (!ready) {
 		return { errors, warnings };
@@ -413,7 +423,8 @@ function validatePlanHtml({ html, kind, mode = 'ready', assessReport = null }) {
 	}
 
 	const keyed = hasIssueKeys(html);
-	if (keyed && !bodies.has('phase')) {
+	// Code handoff is a per-story brief — issue keys in the header are normal; no #phase.
+	if (kind !== 'handoff' && keyed && !bodies.has('phase')) {
 		errors.push('Issue keys present, so #phase is required');
 	}
 	if (kind === 'arch' && keyed && !bodies.has('finish-line')) {
@@ -489,6 +500,7 @@ function kindFromFilename(file) {
 	if (base.includes('architecture')) return 'arch';
 	if (base.includes('ux')) return 'ux';
 	if (base.includes('security')) return 'security';
+	if (base.includes('code-handoff') || base.includes('handoff')) return 'handoff';
 	return null;
 }
 
@@ -544,14 +556,14 @@ function main() {
 		assertOrExit(
 			present.length === 1,
 			present.length === 0
-				? 'No living plan HTML found. Pass --kind arch|ux|security or --file <path>.'
+				? 'No living plan HTML found. Pass --kind arch|ux|security|handoff or --file <path>.'
 				: `Multiple plan files found (${present.join(', ')}). Pass --kind to choose one.`,
 		);
 		kind = present[0];
 	}
 	assertOrExit(
 		Object.prototype.hasOwnProperty.call(KINDS, kind),
-		`Invalid --kind "${kind}". Use arch, ux, or security.`,
+		`Invalid --kind "${kind}". Use arch, ux, security, or handoff.`,
 	);
 
 	if (!file) {

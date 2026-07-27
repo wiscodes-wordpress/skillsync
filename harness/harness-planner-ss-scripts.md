@@ -38,7 +38,7 @@ See [ss-flow.md](./ss-flow.md) for phase context. This file is **not** loaded by
 | `/ss-submit-pr` | Summary prose, risk narrative | push, duplicate PR check, title from branch, body skeleton, `gh pr create` |
 | `/ss-close-story` | Ambiguous workflow / missing Jira fields | Harness reset; Jira child→parent transitions (REST/CLI) |
 | `/ss-release*` | Brief content, copy, anti-slop, seed quality | Init/validate brief structure; validate pack file set |
-| `/ss-arch-plan` · `/ss-ui-ux-plan` · `/ss-security-plan` | Decision prose, Mermaid, journey/trust wording | Structure: `validate-plan-html.cjs`; later: scaffold + data-first render + Jira status refresh |
+| `/ss-arch-plan` · `/ss-ui-ux-plan` · `/ss-security-plan` · `/ss-handoff` | Decision prose, Mermaid, journey/trust wording, code walkthrough | Structure: `validate-plan-html.cjs`; scaffold: `init-plan-html.cjs`; later: data-first render + Jira status refresh |
 | `/ss-roadmap` | Roadmap content, lens-gate judgment, lens plan prose | Pack hub scaffold + join validation: `init-feature-pack.cjs`, `validate-feature-pack.cjs` |
 
 **Already scripted in skillsync:** `link-*.cjs`, `verify-*.cjs`, `resolve-skill-dir.cjs` — no change required unless extending config.
@@ -65,7 +65,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 - Ensure `.harness/` exists at consumer repo root.
 - Write **empty** `.harness/state.md` and `.harness/qa-current.md`.
 - Delete `.harness/pr-body.md` if present (do not truncate to empty).
-- Delete `.harness/code-handoff.md` if present (do not truncate to empty).
+- Delete `.harness/code-handoff.html` if present (do not truncate to empty). Also delete legacy `.harness/code-handoff.md` if present.
 - Exit `0` on success; non-zero on filesystem error.
 - `--dry-run` prints actions without writing.
 
@@ -220,7 +220,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 
 **Behavior:**
 
-- Lint living HTML for `--kind arch|ux|security` (`architecture-plan.html` / `ux-plan.html` / `security-posture.html`).
+- Lint living HTML for `--kind arch|ux|security|handoff` (`architecture-plan.html` / `ux-plan.html` / `security-posture.html` / `code-handoff.html`).
 - Hard fail: missing doctype/title/nav, required sections, duplicate ids, nav→id drift, disallowed scripts, stubs / `{{tokens}}` in ready mode, keyed docs without `#phase` (arch also needs `#finish-line`), invented security scores.
 - Security: cross-check `#assess` ERROR counts and `#status` traffic light vs `.harness/security-assess.json`.
 - `--mode structure|ready`, `--strict-warn`, lifecycle warn on timestamped siblings.
@@ -229,17 +229,18 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 
 ---
 
-### Slice 12 — `init-plan-html` scaffold (P1)
+### Slice 12 — `init-plan-html` scaffold (P1) — **shipped**
 
 **Deliverable:** `tools/init-plan-html.cjs` + templates under `tools/templates/plan-*.html`
 
 **Behavior:**
 
-- Write chrome-only living HTML for `--kind arch|ux|security` (nav, empty sections, Tailwind + Mermaid).
-- Placeholders only — no AI prose. `--task` / `--product` fill title + eyebrow.
+- Write chrome-only living HTML for `--kind arch|ux|security|handoff` (nav, empty sections, Tailwind + Mermaid when needed).
+- Placeholders only — no AI prose. `--task` / `--product` fill title + eyebrow; handoff also accepts `--branch` / `--base`.
 - Refuse overwrite unless `--force`. After write, `validate-plan-html --mode structure` must pass.
+- Handoff file: `.harness/code-handoff.html` (validated as `--kind handoff`).
 
-**Used by:** first run of plan commands when HTML is missing.
+**Used by:** first run of plan commands / `/ss-handoff` when HTML is missing.
 
 ---
 
@@ -276,7 +277,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 ### Slice 1 — harness-reset
 
 - [ ] Running twice is idempotent (empty files stay empty).
-- [ ] `pr-body.md` and `code-handoff.md` removed when present; absent files do not error.
+- [ ] `pr-body.md` and `code-handoff.html` (and legacy `code-handoff.md`) removed when present; absent files do not error.
 - [ ] `--dry-run` makes no filesystem changes.
 - [ ] Documented in consumer-setup.md.
 
@@ -337,7 +338,9 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 
 ### Slice 12 — init-plan-html
 
-- [ ] Scaffold passes `validate-plan-html --mode structure` for all three kinds.
+- [x] Scaffold passes `validate-plan-html --mode structure` for arch, ux, security, and handoff.
+- [x] Refuses overwrite without `--force`.
+- [x] `/ss-handoff` documents init → fill → validate.
 - [ ] Without `--force`, refuses to clobber existing non-empty HTML.
 
 ### Slice 13 — render + refresh

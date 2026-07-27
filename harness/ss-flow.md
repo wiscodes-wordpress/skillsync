@@ -18,7 +18,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 | Implement | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
 | Review | `/ss-review` | [`harness-critic.md`](./harness-critic.md) | auto: [`critic-tdd-testing.md`](./critic-tdd-testing.md) when state has TDD contracts |
 | Security | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
-| Human walkthrough (optional) | `/ss-handoff` | — | [`code-handoff`](../skills/engineering/code-handoff/SKILL.md) — `.harness/code-handoff.md` for human review; after review (ideally after security), before `/ss-submit-pr` |
+| Human walkthrough (optional) | `/ss-handoff` | — | [`code-handoff`](../skills/engineering/code-handoff/SKILL.md) — `.harness/code-handoff.html` for human review; after review (ideally after security), before `/ss-submit-pr` |
 | PR / close | `/ss-submit-pr`, `/ss-close-story` | — | linked PR/Jira skills per consumer |
 | Release / GTM (optional) | `/ss-release`, `/ss-release-distribution`, `/ss-release-marketing` | — | [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) · [`release-distribution`](../skills/productivity/release-distribution/SKILL.md) · [`release-marketing`](../skills/productivity/release-marketing/SKILL.md) — post-ship; not a PR gate |
 
@@ -34,7 +34,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 
 **Release / go-to-market order:** after merge or tag (or on user request) → `/ss-release` (brief → demo seed / end-to-end (E2E) proof → channel pack → anti-slop). Partial: `/ss-release-distribution` or `/ss-release-marketing`. Does **not** block `/ss-submit-pr`.
 
-**Human walkthrough order:** after `/ss-review` PASS (and ideally `/ss-security-audit`) → `/ss-handoff` → human reads `.harness/code-handoff.md` → `/ss-submit-pr`. Optional; does **not** replace critic or security. Skip when the human already understands the diff.
+**Human walkthrough order:** after `/ss-review` PASS (and ideally `/ss-security-audit`) → `/ss-handoff` → human opens `.harness/code-handoff.html` in a browser → `/ss-submit-pr`. Optional; does **not** replace critic or security. Skip when the human already understands the diff.
 ## Context budget rules
 
 1. **One harness file per command** — do not chain duplicate harnesses.
@@ -60,7 +60,7 @@ Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-
 
 | Phase | Tool |
 |-------|------|
-| Arch / UX / Security plan (post-write) | `validate-plan-html.cjs --kind arch\|ux\|security` |
+| Arch / UX / Security / Handoff HTML | `validate-plan-html.cjs --kind arch\|ux\|security\|handoff`; scaffold: `init-plan-html.cjs --kind …` |
 | Initiative pack (`/ss-roadmap`) | `init-feature-pack.cjs --slug … --lenses …`, `validate-feature-pack.cjs --slug …` |
 | Plan (post-write) | `validate-state.cjs --mode plan` |
 | New story | `init-state.cjs --task "KEY title"` |
@@ -68,7 +68,7 @@ Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-
 | Security (PR gate) | `security-audit.cjs` (`--write-state`, `--set-phase-b`, `--check-state`) |
 | Security (whole plugin) | `security-assess.cjs` (`--write-state` → `#assess` / `security-assess.json`) |
 | Submit PR | `render-pr-body.cjs`, `open-pr.cjs` (requires Security Evidence PASS) |
-| Human walkthrough | — (agent writes `.harness/code-handoff.md` per `code-handoff` skill) |
+| Human walkthrough | `init-plan-html.cjs --kind handoff` (if missing) → agent fill → `validate-plan-html.cjs --kind handoff` |
 | To issues (post-approve) | `publish-slices-from-state.cjs` |
 | Close story | `harness-reset.cjs`, optional `jira-close.cjs` |
 | Release / GTM | `init-release-brief.cjs`, `validate-release-brief.cjs`, `validate-release-pack.cjs` |

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Code handoff — {{task}}</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script type="module">
+			import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+			mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+		</script>
+		<style>
+			html { scroll-behavior: smooth; }
+			section[id] { scroll-margin-top: 5rem; }
+			pre.code { overflow-x: auto; font-size: 0.75rem; line-height: 1.4; }
+		</style>
+	</head>
+	<body class="bg-stone-50 text-slate-900 font-sans">
+		<nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2 text-xs">
+			<span class="text-slate-500">{{product}}</span>
+			<a href="#intent">Intent</a>
+			<a href="#decisions">Decisions</a>
+			<a href="#map">Map</a>
+			<a href="#hotspots">Hotspots</a>
+			<a href="#tests">Tests</a>
+			<a href="#verify" class="font-medium text-sky-900">Verify</a>
+			<a href="#out">Out of scope</a>
+		</nav>
+		<main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
+			<header>
+				<p class="text-xs uppercase tracking-wider">{{product}}</p>
+				<h1 class="font-serif text-3xl">Code handoff</h1>
+				<p class="text-sm">Branch: {{branch}} · Base: {{base}} · Updated {{updated}}</p>
+				<p>{{task}}</p>
+				<p class="border-l-4 border-sky-500 pl-3 text-sm">Scaffold — fill sections via /ss-handoff, then open #verify.</p>
+			</header>
+			<section id="intent">
+				<h2 class="font-serif text-2xl">Intent</h2>
+				…
+			</section>
+			<section id="decisions">
+				<h2 class="font-serif text-2xl">Decisions used</h2>
+				…
+			</section>
+			<section id="map">
+				<h2 class="font-serif text-2xl">Change map</h2>
+				…
+			</section>
+			<section id="hotspots">
+				<h2 class="font-serif text-2xl">Hotspots</h2>
+				…
+			</section>
+			<section id="tests">
+				<h2 class="font-serif text-2xl">Tests and evidence</h2>
+				…
+			</section>
+			<section id="verify">
+				<h2 class="font-serif text-2xl">What to verify (human)</h2>
+				…
+			</section>
+			<section id="out">
+				<h2 class="font-serif text-2xl">Out of scope / follow-ups</h2>
+				…
+			</section>
+			<footer class="text-sm text-slate-600">
+				.harness/code-handoff.html · next: /ss-submit-pr
+			</footer>
+		</main>
+	</body>
+</html>
