@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Architecture plan — Demo Plugin</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script type="module">
+			import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+			mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+		</script>
+		<style>
+			html { scroll-behavior: smooth; }
+			section[id] { scroll-margin-top: 5rem; }
+		</style>
+	</head>
+	<body class="bg-stone-50 text-slate-900 font-sans">
+		<nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 px-4 py-2 text-xs">
+			<a href="#phase">Phase</a>
+			<a href="#finish-line" class="font-medium text-sky-900">Start → finish</a>
+			<a href="#locks">At a glance</a>
+			<a href="#current">Current</a>
+			<a href="#target">Target</a>
+			<a href="#decisions">Decisions</a>
+			<a href="#stages">Stages</a>
+			<a href="#nongoals">Non-goals</a>
+		</nav>
+		<main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
+			<header>
+				<p class="text-xs uppercase tracking-wider">demo-plugin · DEMO</p>
+				<h1 class="font-serif text-3xl">Architecture plan</h1>
+				<p class="text-sm">Status: decisions locked · Updated 2026-07-25 · Last Jira refreshed 2026-07-25</p>
+				<p>Primary job: split the settings module from the render pipeline so both can ship independently.</p>
+			</header>
+			<section id="phase">
+				<h2 class="font-serif text-2xl">Phase we are at</h2>
+				<ol>
+					<li>Roadmap agreed</li>
+					<li><strong>/ss-arch-plan — current</strong></li>
+					<li>/ss-to-issues</li>
+				</ol>
+				<table>
+					<tr><th>Lock</th><th>Jira home</th><th>Status</th></tr>
+					<tr><td>D0 module split</td><td>DEMO-245</td><td>In Progress</td></tr>
+				</table>
+				<p class="border-l-4 border-emerald-500 pl-3">Read this as: the split is agreed; next slice is the Design domain interface.</p>
+			</section>
+			<section id="finish-line">
+				<h2 class="font-serif text-2xl">Start → finish</h2>
+				<div class="border border-sky-300 p-3">
+					<p>Start here now: DEMO-271 — To Do — epic DEMO-245 — blocks S2.</p>
+				</div>
+				<table>
+					<tr><th>#</th><th>Story</th><th>Epic</th><th>Jira</th><th>Depends on</th></tr>
+					<tr class="bg-sky-50"><td>1</td><td>Define Design domain interface</td><td>DEMO-245</td><td>DEMO-271</td><td>—</td></tr>
+					<tr><td>2</td><td>Move render pipeline behind the seam</td><td>DEMO-245</td><td>DEMO-272</td><td>DEMO-271</td></tr>
+					<tr><td>🏁</td><td>Platform stages complete</td><td>DEMO-245</td><td>—</td><td>DEMO-272</td></tr>
+				</table>
+			</section>
+			<section id="locks">
+				<h2 class="font-serif text-2xl">At a glance</h2>
+				<div class="grid md:grid-cols-2 gap-4">
+					<div class="border border-emerald-400 p-3">
+						<p class="text-xs uppercase tracking-wider">Locked</p>
+						<ul><li>D0 — settings and render become separate modules</li></ul>
+					</div>
+					<div class="border border-sky-400 p-3">
+						<p class="text-xs uppercase tracking-wider">Handoff</p>
+						<ol><li>Close DEMO-271, then run /ss-plan for S2</li></ol>
+					</div>
+				</div>
+			</section>
+			<section id="current">
+				<h2 class="font-serif text-2xl">Current</h2>
+				<pre class="mermaid">flowchart LR
+  settings --> render
+  render --> settings</pre>
+				<p>Settings and render call each other directly, so neither ships alone.</p>
+			</section>
+			<section id="target">
+				<h2 class="font-serif text-2xl">Target</h2>
+				<pre class="mermaid">flowchart LR
+  settings --> port
+  port --> render</pre>
+				<p>One interface owns the seam; render depends on the port only.</p>
+			</section>
+			<section id="decisions">
+				<h2 class="font-serif text-2xl">Decisions</h2>
+				<article id="d0" class="border border-emerald-400 p-3">
+					<strong>D0 — module boundary</strong>
+					<span class="rounded bg-emerald-100 px-2 py-0.5 text-xs">resolved · port interface</span>
+					<p>Chosen because it keeps WordPress hooks out of the render path.</p>
+				</article>
+			</section>
+			<section id="stages">
+				<h2 class="font-serif text-2xl">Stages</h2>
+				<p>Home epic: DEMO-245.</p>
+				<article id="stage-S1" data-epic="DEMO-245" data-story="DEMO-271" class="border border-slate-200 p-3">
+					<span class="font-mono">S1</span>
+					<strong>Define Design domain interface</strong>
+					<a class="font-mono underline" href="https://example.atlassian.net/browse/DEMO-271">DEMO-271</a>
+					<span class="rounded bg-slate-100 px-2 py-0.5 text-xs uppercase">To Do</span>
+					<p>Acceptance: render compiles against the port with no settings import.</p>
+				</article>
+			</section>
+			<section id="nongoals">
+				<h2 class="font-serif text-2xl">Non-goals</h2>
+				<ul><li>No block editor rewrite in this plan.</li></ul>
+			</section>
+			<footer>
+				<p>Next: DEMO-271 · source of truth: .harness/architecture-plan.html</p>
+			</footer>
+		</main>
+	</body>
+</html>

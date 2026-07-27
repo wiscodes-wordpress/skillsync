@@ -9,7 +9,7 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 | Phase | Command | Harness (read one) | Skills (only when applicable) |
 |-------|---------|-------------------|-------------------------------|
 | Branch | consumer wrapper | — | — |
-| Initiative (optional) | `/ss-major-feature-roadmap` | — | [`major-feature-roadmap`](../skills/engineering/major-feature-roadmap/SKILL.md) |
+| Initiative (optional) | `/ss-roadmap` | — | [`major-feature-roadmap`](../skills/engineering/major-feature-roadmap/SKILL.md) (draft step); lens gates → feature pack (`.harness/initiatives/<slug>/`) → publish |
 | Architecture (optional) | `/ss-arch-plan` | — | [`arch-plan`](../skills/engineering/arch-plan/SKILL.md) — living HTML plan (source of truth); Jira epic keys join stages; refresh status on run |
 | Security posture (optional) | `/ss-security-plan` | [`harness-security-assess.md`](./harness-security-assess.md) when whole-plugin health | [`security-plan`](../skills/engineering/security-plan/SKILL.md) — living HTML posture; optional Stage 2 assess (Semgrep + deps + Wordfence); does not replace `/ss-security-audit` |
 | UI/UX plan (optional) | `/ss-ui-ux-plan` | — | [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md) — living HTML UX (source of truth); before `/ss-plan` when UI-heavy |
@@ -27,6 +27,8 @@ Consumers document **branch**, **verification commands**, and **stack skills** i
 **UI-heavy story order:** `/ss-ui-ux-plan` (living HTML → lock journeys/surfaces) → `/ss-plan` (journeys seed Behavior & Test Contracts). Skip UI/UX plan for non-UI work.
 
 **Structure-in-flux order:** `/ss-arch-plan` (living HTML → lock stages) → optional `/ss-ui-ux-plan` → `/ss-plan` per stage. Skip arch-plan when module shape is already agreed.
+
+**Initiative order (major feature, e.g. AI chatbot):** `/ss-roadmap` → draft initiative markdown (**no Jira create**) → lens gates → feature pack under `.harness/initiatives/<slug>/` → lock required lens HTML → **then** publish Jira epics + v1 stories and stamp keys into the pack → `/ss-plan` per v1 story. Early steps may **read** existing Jira for context only. Global plan HTML stays plugin-wide; pack files are initiative-scoped.
 
 **Security posture order:** `/ss-security-plan` (living HTML → hardening stages; optional whole-plugin **assess**) when trust model is unclear or health is requested; **every PR** still runs `/ss-security-audit` after review. Do not fold the PR audit into the posture HTML. Do not run Wordfence/full Semgrep on every PR.
 
@@ -58,6 +60,8 @@ Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-
 
 | Phase | Tool |
 |-------|------|
+| Arch / UX / Security plan (post-write) | `validate-plan-html.cjs --kind arch\|ux\|security` |
+| Initiative pack (`/ss-roadmap`) | `init-feature-pack.cjs --slug … --lenses …`, `validate-feature-pack.cjs --slug …` |
 | Plan (post-write) | `validate-state.cjs --mode plan` |
 | New story | `init-state.cjs --task "KEY title"` |
 | Implement / review | `run-verification.cjs`, `tdd-audit.cjs`, `re-break.cjs` |

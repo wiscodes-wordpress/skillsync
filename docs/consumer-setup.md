@@ -45,7 +45,7 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
 ```json
 "linkedCommands": [
   "ss-workflow.md",
-  "ss-major-feature-roadmap.md",
+  "ss-roadmap.md",
   "ss-arch-plan.md",
   "ss-security-plan.md",
   "ss-ui-ux-plan.md",
@@ -139,7 +139,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | Command | Phase |
 |---------|--------|
 | `/ss-workflow` | Orientation — phase index |
-| `/ss-major-feature-roadmap` | Multi-epic initiative → story map, spec, tracker publish (consumer) |
+| `/ss-roadmap` | Initiative orchestrator — draft roadmap (story map + spec) → lens pack (arch / UX / security) → **then** publish Jira epics/stories → `/ss-plan` |
 | `/ss-arch-plan` | Architecture plan source of truth (living HTML); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
 | `/ss-security-plan` | Security posture source of truth (living HTML); optional whole-plugin **assess** (Semgrep + deps + Wordfence) — does **not** replace `/ss-security-audit` |
 | `/ss-ui-ux-plan` | UX plan source of truth (living HTML; flows + surfaces) — before `/ss-plan` when UI-heavy |
@@ -183,6 +183,8 @@ branch (consumer) → /ss-arch-plan? → /ss-security-plan? → /ss-ui-ux-plan? 
   → /ss-release? (or /ss-release-distribution / /ss-release-marketing)
 ```
 
+Major feature (initiative) entry: `/ss-roadmap` → roadmap + lens gates → feature pack lenses → the same per-story loop above.
+
 
 Document **branch scripts**, **verification commands**, and **stack skills** in the consumer root **`AGENTS.md`**.
 
@@ -207,6 +209,9 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `init-release-brief.cjs` | `/ss-release*` | Scaffold `.harness/release-brief.md` (`--version`, `--force`) |
 | `validate-release-brief.cjs` | `/ss-release*` | Assert brief sections (`--mode structure\|ready`) |
 | `validate-release-pack.cjs` | `/ss-release*` | Assert channel pack files exist and are non-empty |
+| `validate-plan-html.cjs` | `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` | Structural lint for living HTML (`--kind arch\|ux\|security`; `--mode structure\|ready`) |
+| `init-feature-pack.cjs` | `/ss-roadmap` | Scaffold initiative hub `.harness/initiatives/<slug>/index.html` (`--slug`, `--epics`, `--lenses`) |
+| `validate-feature-pack.cjs` | `/ss-roadmap` | Assert required lenses exist + hub/lens epic-key parity (`--slug`) |
 | `verify-tools.cjs` | skillsync CI | Smoke-test tools + fixtures |
 
 Optional **`skillsync.config.json`** keys for tools / journal handoff:

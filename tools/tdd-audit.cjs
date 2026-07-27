@@ -21,7 +21,9 @@ const {
 	parseMarkdownSections,
 } = require('./lib/ss-tools.cjs');
 
-const TEST_GLOB = '*.test.* *.spec.* __tests__/* e2e/* tests/*';
+// Monorepo-safe: include nested plugin test trees (e.g. quickpress/tests/), not only repo-root tests/.
+const TEST_GLOB =
+	'*.test.* *.spec.* __tests__/* e2e/* tests/* ":(glob)**/tests/**" ":(glob)**/*Test.php"';
 
 const PROD_SKIP = [
 	/\.test\./,

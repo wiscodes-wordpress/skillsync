@@ -34,6 +34,9 @@ const REQUIRED_TOOLS = [
 	'init-release-brief.cjs',
 	'validate-release-brief.cjs',
 	'validate-release-pack.cjs',
+	'validate-plan-html.cjs',
+	'init-feature-pack.cjs',
+	'validate-feature-pack.cjs',
 	'lib/ss-tools.cjs',
 ];
 
@@ -386,6 +389,189 @@ function main() {
 	]);
 	console.log('OK: release-brief init/validate + release-pack validate');
 
+	const planHtmlConsumer = makeTempConsumer();
+	const planHarness = path.join(planHtmlConsumer, '.harness');
+	fs.mkdirSync(planHarness, { recursive: true });
+	const validatePlanHtmlTool = path.join(toolsDir, 'validate-plan-html.cjs');
+	/** @type {[string, string][]} */
+	const planFixtures = [
+		['plan-arch-valid.html', 'architecture-plan.html'],
+		['plan-ux-valid.html', 'ux-plan.html'],
+		['plan-security-valid.html', 'security-posture.html'],
+	];
+	for (const [fixture, target] of planFixtures) {
+		fs.copyFileSync(path.join(fixturesDir, fixture), path.join(planHarness, target));
+	}
+	fs.writeFileSync(
+		path.join(planHarness, 'security-assess.json'),
+		JSON.stringify(
+			{
+				kind: 'security-assess',
+				completeness: 'complete',
+				reasons: [],
+				ranAt: '2026-07-25T00:00:00.000Z',
+				probes: [],
+				errors: [],
+				warnings: [],
+			},
+			null,
+			2,
+		),
+		'utf8',
+	);
+	for (const kind of ['arch', 'ux', 'security']) {
+		runTool(validatePlanHtmlTool, [planHtmlConsumer, '--kind', kind]);
+	}
+	console.log('OK: validate-plan-html arch/ux/security fixtures');
+
+	const planHtmlLib = require(validatePlanHtmlTool);
+	const archHtml = fs.readFileSync(path.join(fixturesDir, 'plan-arch-valid.html'), 'utf8');
+	const securityHtml = fs.readFileSync(
+		path.join(fixturesDir, 'plan-security-valid.html'),
+		'utf8',
+	);
+
+	/**
+	 * @param {string} label
+	 * @param {{ html: string; kind: string; assessReport?: object | null }} opts
+	 * @param {string} needle
+	 */
+	function expectPlanError(label, opts, needle) {
+		const { errors } = planHtmlLib.validatePlanHtml(opts);
+		if (!errors.some((e) => e.includes(needle))) {
+			console.error(`validate-plan-html: ${label} — expected error containing "${needle}"`);
+			console.error(`  got: ${errors.join('; ') || '(none)'}`);
+			failed = true;
+			return false;
+		}
+		return true;
+	}
+
+	const negatives = [
+		expectPlanError(
+			'stub section',
+			{
+				html: archHtml.replace(
+					/<section id="nongoals">[\s\S]*?<\/section>/,
+					'<section id="nongoals">…</section>',
+				),
+				kind: 'arch',
+			},
+			'still a stub',
+		),
+		expectPlanError(
+			'missing required section',
+			{
+				html: archHtml.replace(/<section id="stages">[\s\S]*?<\/section>/, ''),
+				kind: 'arch',
+			},
+			'Missing required section: #stages',
+		),
+		expectPlanError(
+			'dangling nav anchor',
+			{ html: archHtml.replace('href="#locks"', 'href="#glossary"'), kind: 'arch' },
+			'no element carries that id',
+		),
+		expectPlanError(
+			'third-party script',
+			{
+				html: archHtml.replace(
+					'https://cdn.tailwindcss.com',
+					'https://analytics.example.com/track.js',
+				),
+				kind: 'arch',
+			},
+			'Disallowed script src',
+		),
+		expectPlanError(
+			'green status with incomplete assess',
+			{
+				html: securityHtml,
+				kind: 'security',
+				assessReport: {
+					completeness: 'incomplete',
+					reasons: ['semgrep: missing'],
+					errors: [],
+					warnings: [],
+				},
+			},
+			'spec requires Red',
+		),
+		expectPlanError(
+			'stale ERROR count',
+			{
+				html: securityHtml,
+				kind: 'security',
+				assessReport: {
+					completeness: 'complete',
+					reasons: [],
+					errors: [{ id: 'a' }, { id: 'b' }],
+					warnings: [],
+				},
+			},
+			'ERROR findings but security-assess.json reports 2',
+		),
+		expectPlanError(
+			'invented posture grade',
+			{
+				html: securityHtml.replace('Green', 'Green — security grade 4 / 5'),
+				kind: 'security',
+			},
+			'Invented metric',
+		),
+	];
+	if (negatives.every(Boolean)) {
+		console.log('OK: validate-plan-html hard gates (stubs, anchors, scripts, assess facts)');
+	}
+
+	const packConsumer = makeTempConsumer();
+	const initFeaturePack = path.join(toolsDir, 'init-feature-pack.cjs');
+	const validateFeaturePackTool = path.join(toolsDir, 'validate-feature-pack.cjs');
+	runTool(initFeaturePack, [
+		packConsumer,
+		'--slug',
+		'ai-chatbot',
+		'--title',
+		'AI chatbot',
+		'--epics',
+		'DEMO-245,DEMO-400',
+		'--lenses',
+		'arch,security',
+	]);
+	runTool(initFeaturePack, [packConsumer, '--slug', 'ai-chatbot'], { expectFail: true });
+	// Required lenses (arch, security) have no files yet → hard fail.
+	runTool(validateFeaturePackTool, [packConsumer, '--slug', 'ai-chatbot'], {
+		expectFail: true,
+	});
+	const packDirPath = path.join(packConsumer, '.harness', 'initiatives', 'ai-chatbot');
+	fs.copyFileSync(
+		path.join(fixturesDir, 'plan-arch-valid.html'),
+		path.join(packDirPath, 'architecture.html'),
+	);
+	fs.copyFileSync(
+		path.join(fixturesDir, 'plan-security-valid.html'),
+		path.join(packDirPath, 'security.html'),
+	);
+	runTool(validateFeaturePackTool, [packConsumer, '--slug', 'ai-chatbot']);
+	console.log('OK: feature-pack init + required-lens gate + key parity pass');
+
+	const featurePackLib = require(validateFeaturePackTool);
+	const hubHtml = fs.readFileSync(path.join(packDirPath, 'index.html'), 'utf8');
+	const parityCheck = featurePackLib.validateFeaturePack({
+		hubHtml: hubHtml.replace('data-epic="DEMO-400"', 'data-epic="DEMO-999"'),
+		lensFiles: new Map([
+			['arch', { exists: true, html: archHtml }],
+			['ux', { exists: false, html: '' }],
+			['security', { exists: true, html: securityHtml }],
+		]),
+	});
+	if (!parityCheck.errors.some((e) => e.includes('data-epic="DEMO-400"'))) {
+		console.error('validate-feature-pack: expected key-parity error for unlisted DEMO-400');
+		failed = true;
+	} else {
+		console.log('OK: feature-pack epic key parity gate');
+	}
+
 	fs.rmSync(temp, { recursive: true, force: true });
 	fs.rmSync(planConsumer, { recursive: true, force: true });
 	fs.rmSync(implementConsumer, { recursive: true, force: true });
@@ -396,6 +582,8 @@ function main() {
 	fs.rmSync(cleanConsumer, { recursive: true, force: true });
 	fs.rmSync(assessConsumer, { recursive: true, force: true });
 	fs.rmSync(releaseConsumer, { recursive: true, force: true });
+	fs.rmSync(planHtmlConsumer, { recursive: true, force: true });
+	fs.rmSync(packConsumer, { recursive: true, force: true });
 
 	if (failed) {
 		console.error('');

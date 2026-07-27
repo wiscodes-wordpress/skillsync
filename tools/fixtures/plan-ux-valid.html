@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>UX plan — bulk field edit</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<style>
+			html { scroll-behavior: smooth; }
+			section[id] { scroll-margin-top: 5rem; }
+		</style>
+	</head>
+	<body class="bg-stone-50 text-slate-900 font-sans">
+		<nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 px-4 py-2 text-xs">
+			<a href="#phase">Phase</a>
+			<a href="#job">Job</a>
+			<a href="#locks">At a glance</a>
+			<a href="#journeys" class="font-medium">Journeys</a>
+			<a href="#surfaces">Surfaces</a>
+			<a href="#states">States</a>
+			<a href="#decisions">Decisions</a>
+			<a href="#a11y">Accessibility</a>
+			<a href="#open">Open</a>
+			<a href="#nongoals">Non-goals</a>
+			<a href="#handoff" class="font-medium">Handoff</a>
+		</nav>
+		<main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
+			<header>
+				<p class="text-xs uppercase tracking-wider">demo-plugin · bulk-field-edit · DEMO-310</p>
+				<h1 class="font-serif text-3xl">UX plan</h1>
+				<p class="text-sm">Status: agreed · Updated 2026-07-25</p>
+				<p>Primary job: an editor updates one field across many posts without opening each post.</p>
+			</header>
+			<section id="phase">
+				<h2 class="font-serif text-2xl">Phase we are at</h2>
+				<ol>
+					<li>Architecture locked</li>
+					<li><strong>/ss-ui-ux-plan — current</strong></li>
+					<li>/ss-plan</li>
+				</ol>
+				<table>
+					<tr><th>Journey / surface</th><th>Jira home</th><th>Status</th></tr>
+					<tr><td>J1 bulk edit one field</td><td>DEMO-310</td><td>To Do</td></tr>
+				</table>
+				<p class="border-l-4 border-emerald-500 pl-3">Read this as: journeys are agreed; answer the blank-value question, then run /ss-plan.</p>
+			</section>
+			<section id="job">
+				<h2 class="font-serif text-2xl">Job frame</h2>
+				<ul>
+					<li><strong>Actors:</strong> site editor, administrator</li>
+					<li><strong>Success looks like:</strong> selected posts show the new value after one confirm</li>
+					<li><strong>Constraints:</strong> WordPress list table density, existing components, keyboard reachable</li>
+				</ul>
+			</section>
+			<section id="locks">
+				<h2 class="font-serif text-2xl">At a glance</h2>
+				<div class="grid md:grid-cols-2 gap-4">
+					<div class="border border-emerald-400 p-3">
+						<p class="text-xs uppercase tracking-wider">Locked</p>
+						<ul><li>D1 — edit happens in a panel, not inline in the table</li></ul>
+					</div>
+					<div class="border border-sky-400 p-3">
+						<p class="text-xs uppercase tracking-wider">Handoff</p>
+						<ol><li>Answer the blank-value question, then run /ss-plan</li></ol>
+					</div>
+				</div>
+			</section>
+			<section id="journeys">
+				<h2 class="font-serif text-2xl">Journeys</h2>
+				<article id="j1" class="border border-slate-200 p-3">
+					<strong>Bulk edit one field</strong>
+					<p><strong>expectation:</strong> select posts &gt; open panel &gt; set value &gt; confirm &gt; see updated count</p>
+					<p>Efficiency: no per-post confirm; the panel defaults to the last used field.</p>
+					<p>Failure: a rejected value keeps the panel open with an inline error.</p>
+				</article>
+			</section>
+			<section id="surfaces">
+				<h2 class="font-serif text-2xl">Surfaces</h2>
+				<table>
+					<tr><th>ID</th><th>Surface</th><th>Purpose</th><th>Primary action</th></tr>
+					<tr><td>S1</td><td>Posts list table</td><td>Choose posts</td><td>Open bulk panel</td></tr>
+					<tr><td>S2</td><td>Bulk edit panel</td><td>Set one value</td><td>Confirm update</td></tr>
+				</table>
+			</section>
+			<section id="states">
+				<h2 class="font-serif text-2xl">States matrix</h2>
+				<table>
+					<tr><th>Surface</th><th>Empty</th><th>Loading</th><th>Error</th><th>Success</th></tr>
+					<tr><td>S2</td><td>No posts selected</td><td>Saving spinner on confirm</td><td>Inline field error</td><td>Updated count with undo hint</td></tr>
+				</table>
+			</section>
+			<section id="decisions">
+				<h2 class="font-serif text-2xl">Decisions</h2>
+				<article id="d1" class="border border-emerald-400 p-3">
+					<strong>D1 — panel over inline edit</strong>
+					<span class="rounded bg-emerald-100 px-2 py-0.5 text-xs">resolved · side panel</span>
+					<p>The list table has no room for a field control per row.</p>
+				</article>
+			</section>
+			<section id="a11y">
+				<h2 class="font-serif text-2xl">Accessibility</h2>
+				<ul>
+					<li>Confirm button is labelled with the field name and selected count.</li>
+					<li>Panel traps focus and returns it to the bulk action trigger on close.</li>
+					<li>Errors are announced in text, never by color alone.</li>
+				</ul>
+			</section>
+			<section id="open">
+				<h2 class="font-serif text-2xl">Open questions</h2>
+				<table>
+					<tr><th>Question</th><th>Blocks</th><th>Notes</th></tr>
+					<tr><td>Does a blank value clear the field or skip it?</td><td>ss-plan</td><td>Editors expect skip.</td></tr>
+				</table>
+			</section>
+			<section id="nongoals">
+				<h2 class="font-serif text-2xl">Non-goals</h2>
+				<ul><li>No multi-field edit in one pass.</li></ul>
+			</section>
+			<section id="handoff">
+				<h2 class="font-serif text-2xl">Handoff</h2>
+				<ol>
+					<li>Next command: /ss-plan</li>
+					<li>Seed J1 into a Behavior &amp; Test Contract using its name and expectation.</li>
+					<li>Source of truth: .harness/ux-plan.html</li>
+				</ol>
+			</section>
+			<footer>
+				<p>Status agreed · next /ss-plan · .harness/ux-plan.html</p>
+			</footer>
+		</main>
+	</body>
+</html>

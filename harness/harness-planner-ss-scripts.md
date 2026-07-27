@@ -38,6 +38,8 @@ See [ss-flow.md](./ss-flow.md) for phase context. This file is **not** loaded by
 | `/ss-submit-pr` | Summary prose, risk narrative | push, duplicate PR check, title from branch, body skeleton, `gh pr create` |
 | `/ss-close-story` | Ambiguous workflow / missing Jira fields | Harness reset; Jira child→parent transitions (REST/CLI) |
 | `/ss-release*` | Brief content, copy, anti-slop, seed quality | Init/validate brief structure; validate pack file set |
+| `/ss-arch-plan` · `/ss-ui-ux-plan` · `/ss-security-plan` | Decision prose, Mermaid, journey/trust wording | Structure: `validate-plan-html.cjs`; later: scaffold + data-first render + Jira status refresh |
+| `/ss-roadmap` | Roadmap content, lens-gate judgment, lens plan prose | Pack hub scaffold + join validation: `init-feature-pack.cjs`, `validate-feature-pack.cjs` |
 
 **Already scripted in skillsync:** `link-*.cjs`, `verify-*.cjs`, `resolve-skill-dir.cjs` — no change required unless extending config.
 
@@ -212,6 +214,63 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 
 ---
 
+### Slice 11 — `validate-plan-html` (P0) — **shipped**
+
+**Deliverable:** `tools/validate-plan-html.cjs` + fixtures
+
+**Behavior:**
+
+- Lint living HTML for `--kind arch|ux|security` (`architecture-plan.html` / `ux-plan.html` / `security-posture.html`).
+- Hard fail: missing doctype/title/nav, required sections, duplicate ids, nav→id drift, disallowed scripts, stubs / `{{tokens}}` in ready mode, keyed docs without `#phase` (arch also needs `#finish-line`), invented security scores.
+- Security: cross-check `#assess` ERROR counts and `#status` traffic light vs `.harness/security-assess.json`.
+- `--mode structure|ready`, `--strict-warn`, lifecycle warn on timestamped siblings.
+
+**Used by:** `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` post-write.
+
+---
+
+### Slice 12 — `init-plan-html` scaffold (P1)
+
+**Deliverable:** `tools/init-plan-html.cjs` + templates under `tools/templates/plan-*.html`
+
+**Behavior:**
+
+- Write chrome-only living HTML for `--kind arch|ux|security` (nav, empty sections, Tailwind + Mermaid).
+- Placeholders only — no AI prose. `--task` / `--product` fill title + eyebrow.
+- Refuse overwrite unless `--force`. After write, `validate-plan-html --mode structure` must pass.
+
+**Used by:** first run of plan commands when HTML is missing.
+
+---
+
+### Slice 13 — data-first render + status refresh (P2)
+
+**Deliverable:** `tools/render-plan-html.cjs`, optional `tools/refresh-plan-status.cjs`, `.harness/*-plan.json` schemas
+
+**Behavior:**
+
+- Agent (or human) owns JSON: decisions, stages, journeys, keys — judgment fields stay free text.
+- Renderer emits mechanical sections: nav, phase mapping, finish-line spine, stage cards, assess/CVE/status from `security-assess.json`.
+- Free-form slots for Mermaid + primary-job prose (pass-through from JSON or sibling HTML fragments).
+- `refresh-plan-status.cjs`: read `data-epic` / `data-story` keys → Jira/GitHub status → rewrite badges only (never invent keys).
+
+**Used by:** plan commands after Slice 12; reduces agent layout drift.
+
+---
+
+### Slice 14 — feature pack (`/ss-roadmap` join) (P1) — **shipped**
+
+**Deliverable:** `tools/init-feature-pack.cjs`, `tools/validate-feature-pack.cjs`, [`commands/ss-roadmap.md`](../commands/ss-roadmap.md)
+
+**Behavior:**
+
+- `/ss-roadmap` orchestrates: draft major-feature-roadmap (**markdown only, no Jira create**) → lens gates → pack hub → lock lens plans → **then** publish Jira epics/stories and stamp keys → `/ss-plan`.
+- `init-feature-pack.cjs --slug <slug> [--epics …] [--lenses …]` writes `.harness/initiatives/<slug>/index.html` (lens table with `data-lens` / `data-required` / `data-status`, epic key table with `data-epic`). Refuses overwrite without `--force`.
+- `validate-feature-pack.cjs --slug <slug>`: required lens files must exist; every `data-epic` in a lens file must be listed in the hub; warn on stale hub status.
+- Plan commands write into the pack (`architecture.html` / `ux.html` / `security.html`) when the initiative pack exists.
+
+---
+
 ## Acceptance criteria (per slice)
 
 ### Slice 1 — harness-reset
@@ -269,6 +328,29 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 - [ ] `node tools/verify-tools.cjs .` passes from skillsync root.
 - [ ] AGENTS.md contributing note: run verify-tools after adding tools.
 
+### Slice 11 — validate-plan-html
+
+- [x] Ready mode fails on missing required sections, dangling nav anchors, disallowed scripts.
+- [x] Security mode fails when `#status` is green but assess is incomplete / ERROR counts mismatch.
+- [x] UX requires `#phase` once issue keys exist (parity with arch/security).
+- [x] Wired into plan commands + ss-flow + consumer-setup; fixtures in verify-tools.
+
+### Slice 12 — init-plan-html
+
+- [ ] Scaffold passes `validate-plan-html --mode structure` for all three kinds.
+- [ ] Without `--force`, refuses to clobber existing non-empty HTML.
+
+### Slice 13 — render + refresh
+
+- [ ] Renderer output passes ready mode when JSON is complete.
+- [ ] Status refresh updates badges only; dry-run prints table without writing.
+
+### Slice 14 — feature pack
+
+- [x] Hub refuses overwrite without `--force`; slug validated as kebab-case.
+- [x] Validate fails when a required lens file is missing and when lens `data-epic` keys are absent from the hub.
+- [x] `/ss-roadmap` documents lens gates from roadmap signals; wired into ss-flow + consumer-setup.
+
 ## Risk register
 
 | Risk | Mitigation |
@@ -317,7 +399,7 @@ consumer/scripts/ or      → thin wrappers: PROJECT key, Jira assignee, qp-* de
 AI commands (/ss-*)       → call tools when present; fall back to skill checklists
 ```
 
-**Priority order for implementation:** 1 → 2 → 4 → 10 → 3 → 5 → 6 → 8 → 7 → 9.
+**Priority order for implementation:** 1 → 2 → 4 → 10 → 3 → 5 → 6 → 8 → 7 → 9 → **11 (done) → 14 (done) → 12 → 13**.
 
 ## Next Action contract
 

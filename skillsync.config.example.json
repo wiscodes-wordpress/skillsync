@@ -41,7 +41,7 @@
 	],
 	"linkedCommands": [
 		"ss-workflow.md",
-		"ss-major-feature-roadmap.md",
+		"ss-roadmap.md",
 		"ss-arch-plan.md",
 		"ss-security-plan.md",
 		"ss-ui-ux-plan.md",

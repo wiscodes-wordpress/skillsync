@@ -12,7 +12,7 @@ description: >
 
 # Major feature roadmap
 
-Plan a **major feature** (multi-epic, multi-release) before slice-level delivery. Invoke via **`/ss-major-feature-roadmap`** ([`commands/ss-major-feature-roadmap.md`](../../../commands/ss-major-feature-roadmap.md)). Produces a **markdown initiative spec**, a **required story map**, and **Jira epics** (plus **v1 stories only**) when Atlassian MCP is available.
+Plan a **major feature** (multi-epic, multi-release) before slice-level delivery. Invoke via **`/ss-roadmap`** ([`commands/ss-roadmap.md`](../../../commands/ss-roadmap.md)), which runs this skill as its draft step, gates the plan lenses (arch / UX / security), and defers Jira publish until those lock. Produces a **markdown initiative spec**, a **required story map**, and **Jira epics** (plus **v1 stories only**) when Atlassian MCP is available.
 
 **Prose:** apply [`anti-slop`](../productivity/anti-slop/SKILL.md) to the initiative spec, story map, and Jira descriptions — expand abbreviations on first use; concrete scope, no roadmap buzzwords.
 

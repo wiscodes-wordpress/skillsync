@@ -34,10 +34,11 @@ Self-contained HTML briefing for **product UX** (flows + surfaces). This file is
   </head>
   <body class="bg-stone-50 text-slate-900 font-sans">
     <nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 backdrop-blur px-4 py-2">
-      <!-- Job · Locks · Journeys · Surfaces · States · Decisions · A11y · Open · Handoff -->
+      <!-- Phase · Job · Locks · Journeys · Surfaces · States · Decisions · A11y · Open · Handoff -->
     </nav>
     <main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
       <header>…</header>
+      <section id="phase">…</section>          <!-- once story/epic keys exist -->
       <section id="job">…</section>
       <section id="locks">…</section>
       <section id="journeys">…</section>
@@ -58,7 +59,7 @@ Only scripts: Tailwind CDN + Mermaid ESM. Otherwise static.
 
 ## Sticky nav
 
-Compact top bar (`text-xs`): product/slug label + in-page anchors. Emphasize **Journeys** (`#journeys`) and **Handoff** (`#handoff`) — those seed `/ss-plan`. Keep nav scannable — no paragraphs.
+Compact top bar (`text-xs`): product/slug label + in-page anchors. Emphasize **Journeys** (`#journeys`) and **Handoff** (`#handoff`) — those seed `/ss-plan`. Include **Phase** (`#phase`) when that section exists. Keep nav scannable — no paragraphs.
 
 ## Header
 
@@ -67,6 +68,17 @@ Compact top bar (`text-xs`): product/slug label + in-page anchors. Emphasize **J
 - Meta row: **Status** (`draft` | `agreed`), **Updated**, optional related key
 - **Primary job** — one strong sentence (user/caller outcome)
 - Source-of-truth one-liner: living HTML; journeys seed `/ss-plan` Behavior & Test Contracts
+
+## Phase (`#phase`) — required once story/epic keys exist
+
+Same pattern as arch-plan / security-plan: where this UX work sits in the delivery loop vs tracker.
+
+1. **Delivery loop** — ordered list: optional `/ss-arch-plan` → `/ss-ui-ux-plan` (current) → `/ss-plan` → implement. Grey completed steps; bold the current one.
+2. **Jira posture** — epic/story homes for this UX plan (white card).
+3. **Mapping table** — journey or surface → story/epic key → status (one row per join).
+4. **Read this as** — emerald callout: one paragraph of current truth + next action (usually “agree open blockers → `/ss-plan`”).
+
+Skip on the **first draft** before any tracker join; add as soon as keys exist (eyebrow key, journey story links, or decision tickets).
 
 ## Job frame (`#job`) — required
 
