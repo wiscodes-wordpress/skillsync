@@ -118,18 +118,147 @@ Rules:
 
 ### Frontend (`#frontend`) — when UI is in the diff
 
-Path-tied notes for a frontend reviewer. Use a compact definition list or short bullets + optional Mermaid sequence. **Do not** paste a React encyclopedia.
+Path-tied notes for a frontend reviewer (React web and/or React Native). Short bullets **plus Mermaid for state** (and effects only when they exist). **Do not** paste a React encyclopedia.
+
+#### Platform (always when `#frontend` is filled)
+
+One line so web and RN rules are not mixed:
+
+```html
+<p class="text-sm"><span class="text-zinc-500">Platform:</span> Web · Shared <!-- or: React Native · Shared --></p>
+```
+
+Use `Web`, `React Native`, and/or `Shared` for code used on both.
+
+#### What to diagram (recommended order)
+
+Prefer **state first**, not `useEffect` first. Effects are how we sync *after* state changes — they are not the story by themselves.
+
+| Priority | Diagram | When |
+|----------|---------|------|
+| **1 — required if UI state changes** | **State transitions** (`stateDiagram-v2` or `flowchart`) | Any new/changed local state, reducer, store slice, URL/query state, derived UI mode |
+| **2 — add when present** | **Effects / sync** (`flowchart`) | `useEffect` / `useLayoutEffect` / subscriptions / AbortController / timers / RN AppState listeners that react to those states |
+| **3 — optional** | **Interaction** (`sequenceDiagram`) | Multi-step user path (open → edit → confirm) |
+| **4 — when structure changed** | **Boundaries** (`flowchart`) | Provider → screen/route → list → row/modal mounts |
+
+Skip all Mermaid only for pure markup/CSS with **no** state/effect/store churn — say so in one line.
+
+#### State diagram (primary)
+
+Show **modes** and **what flips them**. Label with real identifiers from the code (`previewStatus`, `selectedIds`, `isSaving`).
+
+```html
+<h3 class="text-sm uppercase tracking-wider text-zinc-500">State</h3>
+<pre class="mermaid">
+stateDiagram-v2
+  [*] --> Idle: mount / selection empty
+  Idle --> LoadingPreview: selectedIds set
+  LoadingPreview --> Ready: setPreview
+  LoadingPreview --> Error: setError
+  Ready --> Saving: confirm
+  Saving --> Ready: success
+  Saving --> Error: fail
+  Ready --> Idle: selection cleared
+  Error --> Idle: selection cleared
+</pre>
+```
+
+Also note in bullets: **who owns each state** (local vs store vs URL) and **what re-renders** when it changes.
+
+#### Effects / sync diagram (when effects exist)
+
+Only if the diff adds/changes effects or subscriptions. Tie each effect to the **state it reads** and the **state it writes** (or external I/O).
+
+```html
+<h3 class="text-sm uppercase tracking-wider text-zinc-500">Effects / sync</h3>
+<pre class="mermaid">
+flowchart TD
+  Ids[selectedIds changes] --> Eff["useEffect([selectedIds])"]
+  Eff -->|empty| Skip[no fetch]
+  Eff -->|set| Fetch[GET preview]
+  Fetch --> SetPreview[setPreview / setError]
+  SetPreview --> ReRender[re-render]
+  Eff -->|deps change / unmount| Abort[AbortController.abort]
+</pre>
+```
+
+#### Boundaries (when tree / providers / screens changed)
+
+Small mount map — catches “provider remount wiped state” and RN screen vs web mount differences.
+
+```html
+<h3 class="text-sm uppercase tracking-wider text-zinc-500">Boundaries</h3>
+<pre class="mermaid">
+flowchart TD
+  Prov[ListStoreProvider] --> Screen[Posts screen]
+  Screen --> List[Posts list]
+  List --> Panel[BulkEditPanel]
+  Panel --> Modal[Confirm modal]
+</pre>
+```
+
+#### Risks / cons (recommended when state or effects exist)
+
+Keep the state diagram **clean** (modes + events only). Put tradeoffs in a short **Risks / cons** list that **points at diagram nodes or transitions**.
+
+Use amber text/border. Only real risks from *this* diff — no generic “React can re-render” filler.
+
+| Risk type (examples) | Tie to |
+|----------------------|--------|
+| Extra re-renders / wide subscription | Which state or store select |
+| Slow path / waterfall fetch | Which transition (e.g. `Idle → LoadingPreview`) |
+| Stale close / missing abort | Which effect cleanup |
+| Double-submit / race | Which state (`Saving`) |
+| Layout thrash / focus loss | Mount/unmount or dialog open |
+| List remount thrash | Unstable keys / `keyExtractor` / inline `renderItem` |
+| RN JS-thread jank | Heavy work in render; non-worklet animation |
+| RN keyboard / SafeArea jump | TextInput focus transition |
+| RN AppState | Polling not paused on background |
+| Gesture vs scroll fight | RN gesture handler vs `ScrollView` |
+
+```html
+<div class="border-l-4 border-amber-500 pl-3 text-sm space-y-1">
+  <p class="text-xs uppercase tracking-wider text-amber-400">Risks / cons</p>
+  <ul>
+    <li><strong>LoadingPreview:</strong> preview fetch on every <code>selectedIds</code> change — rapid multi-select can spam requests (mitigated by AbortController).</li>
+    <li><strong>Ready → Saving:</strong> no disable on Confirm yet — double-click can fire two batch saves.</li>
+  </ul>
+</div>
+```
+
+Optional: mark risky nodes in the **effects** flowchart with an amber label suffix `(risk)` — do **not** clutter the state diagram with cons text.
+
+#### Checklist blocks
 
 | Block | Cover |
 |-------|--------|
-| **Interaction / process flow** | User action → state update → UI result (+ failure). Mermaid `sequenceDiagram` when it helps |
-| **Render triggers** | What re-renders (props, store select, context, parent). Flag accidental wide subscriptions |
-| **Mount / unmount** | Effects, subscriptions, listeners, AbortController, timers — what cleans up |
-| **Timing** | Fetch on mount vs on interaction; races; debounce/throttle |
-| **State ownership** | Local vs data store vs URL — single writer |
-| **Async UI states** | Loading / empty / error / success |
-| **A11y focus** | Focus on open/close panel/dialog; keyboard path |
-| **Perf** | Only when real (hot list, expensive render) — skip empty “we memoized” |
+| **Platform** | `Web` / `React Native` / `Shared` |
+| **State (Mermaid)** | Modes + events; ownership; what re-renders |
+| **Effects / sync (Mermaid)** | When effects/subscriptions exist — deps → I/O → setState → cleanup |
+| **Boundaries (Mermaid)** | When provider/screen/list/modal tree changed |
+| **Risks / cons** | Amber callout mapped to nodes — re-renders, slowness, races, RN jank (only if real) |
+| **Lists & identity** | When lists change — keys / `keyExtractor`, stable IDs, virtualization (`FlatList`/`FlashList` vs web) |
+| **Nav / focus lifecycle** | When routed or RN screens — `focus`/`blur` vs mount-only fetch; back-stack restore |
+| **Concurrent / Suspense** | When used — `startTransition`, `useDeferredValue`, Suspense/lazy boundaries |
+| **Forms / inputs** | Controlled value owner; disable while `Saving`; RN keyboard dismiss |
+| **Error & empty** | Error boundary vs inline error; empty list — must match state diagram |
+| **Interaction (optional Mermaid)** | User action → state update → UI result (+ failure) |
+| **Render triggers** | Props, store select, context, parent — flag wide subscriptions |
+| **Mount / unmount** | What mounts with which state; cleanup |
+| **Timing** | Fetch on mount vs interaction vs screen focus; races; debounce |
+| **A11y / RN a11y** | Focus on open/close; keyboard path; RN accessibilityLabel when touched |
+| **Perf** | Only when real (hot list, expensive render, RN JS thread) |
+
+#### Verify hints (feed `#verify`)
+
+When `#frontend` is filled, pull concrete checks into `#verify`, for example:
+
+- Fast double-click / double-tap on primary action  
+- Change selection / deps mid-flight (abort / no stale setState)  
+- Screen blur→focus or navigate away/back (RN or routed web)  
+- Keyboard open/dismiss + SafeArea (RN)  
+- Background → foreground if polling/AppState touched (RN)  
+- List scroll + update (identity stable; no jump to top)  
 
 If no UI paths: `<p>N/A — no UI in this diff.</p>`
 

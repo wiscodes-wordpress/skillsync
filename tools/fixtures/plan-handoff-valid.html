@@ -156,23 +156,66 @@ flowchart LR
 			</section>
 			<section id="frontend">
 				<h2 class="font-serif text-2xl text-zinc-50">Frontend</h2>
-				<ul class="space-y-2 text-sm">
-					<li><strong>Flow:</strong> select posts → open panel → set field → confirm → list refreshes</li>
-					<li><strong>Render triggers:</strong> <code class="text-zinc-300">selectedIds</code> from the list store; panel returns null when empty (no mount)</li>
-					<li><strong>Mount / unmount:</strong> panel mounts only when selection is non-empty; no long-lived subscriptions</li>
-					<li><strong>Timing:</strong> batch save on confirm only (not on each keystroke)</li>
-					<li><strong>State:</strong> selection owned by list store; draft field value local to the panel</li>
-					<li><strong>Async UI:</strong> saving / success / error inline in the panel</li>
+				<p class="text-sm"><span class="text-zinc-500">Platform:</span> Web · Shared</p>
+				<ul class="space-y-2 text-sm mt-3">
+					<li><strong>Ownership:</strong> <code class="text-zinc-300">selectedIds</code> in list store; <code class="text-zinc-300">previewStatus</code> / draft field local to the panel</li>
+					<li><strong>Render triggers:</strong> store <code class="text-zinc-300">selectedIds</code>; local <code class="text-zinc-300">previewStatus</code>, <code class="text-zinc-300">draftValue</code>, <code class="text-zinc-300">isSaving</code></li>
+					<li><strong>Lists &amp; identity:</strong> row key = post id; panel is not virtualized (selection strip only)</li>
+					<li><strong>Nav / focus:</strong> N/A — panel mounts in-page (no route change)</li>
+					<li><strong>Forms:</strong> draft value controlled locally; Confirm should disable while <code class="text-zinc-300">Saving</code> (see risks)</li>
+					<li><strong>Error &amp; empty:</strong> inline Error state in panel; empty selection unmounts panel (Idle)</li>
+					<li><strong>Mount / unmount:</strong> panel mounts only when selection is non-empty; effect aborts in-flight preview on deps change</li>
 					<li><strong>A11y:</strong> focus moves into the panel on open; Escape returns focus to the bulk action control</li>
 				</ul>
-				<pre class="mermaid mt-4">
+				<h3 class="text-sm uppercase tracking-wider text-zinc-500 mt-6">State</h3>
+				<pre class="mermaid">
+stateDiagram-v2
+  [*] --> Idle: mount / selection empty
+  Idle --> LoadingPreview: selectedIds set
+  LoadingPreview --> Ready: setPreview
+  LoadingPreview --> Error: setError
+  Ready --> Saving: confirm
+  Saving --> Ready: success
+  Saving --> Error: fail
+  Ready --> Idle: selection cleared
+  Error --> Idle: selection cleared
+				</pre>
+				<h3 class="text-sm uppercase tracking-wider text-zinc-500 mt-6">Effects / sync</h3>
+				<pre class="mermaid">
+flowchart TD
+  Ids[selectedIds changes] --> Eff["useEffect([selectedIds])"]
+  Eff -->|empty| Skip[no fetch]
+  Eff -->|set| Fetch[GET preview]
+  Fetch --> SetPreview[setPreview / setError]
+  SetPreview --> ReRender[re-render]
+  Eff -->|deps change / unmount| Abort[AbortController.abort]
+				</pre>
+				<h3 class="text-sm uppercase tracking-wider text-zinc-500 mt-6">Boundaries</h3>
+				<pre class="mermaid">
+flowchart TD
+  Prov[ListStoreProvider] --> Screen[Posts screen]
+  Screen --> List[Posts list]
+  List --> Panel[BulkEditPanel]
+				</pre>
+				<div class="border-l-4 border-amber-500 pl-3 text-sm space-y-1 mt-6">
+					<p class="text-xs uppercase tracking-wider text-amber-400">Risks / cons</p>
+					<ul>
+						<li><strong>LoadingPreview:</strong> preview fetch on every <code class="text-zinc-300">selectedIds</code> change — rapid multi-select can spam requests (mitigated by AbortController).</li>
+						<li><strong>Ready → Saving:</strong> Confirm is not disabled while saving — double-click can fire two batch saves.</li>
+						<li><strong>Store select:</strong> list re-renders on any <code class="text-zinc-300">selectedIds</code> change; acceptable here (selection UX) but avoid selecting the whole posts map in this panel.</li>
+					</ul>
+				</div>
+				<h3 class="text-sm uppercase tracking-wider text-zinc-500 mt-6">Interaction</h3>
+				<pre class="mermaid">
 sequenceDiagram
   participant U as Editor
   participant L as Posts list
   participant P as Bulk panel
   U->>L: Select posts
   L->>P: selectedIds
+  Note over P: state Idle to LoadingPreview
   U->>P: Confirm
+  Note over P: state Ready to Saving
   P->>L: Refresh rows
 				</pre>
 			</section>
@@ -203,6 +246,8 @@ sequenceDiagram
 					<li>As a subscriber, REST batch returns 403</li>
 					<li>Empty selection never shows the panel (no mount)</li>
 					<li>Open panel, Escape — focus returns to the bulk action control</li>
+					<li>Change selection mid-preview — in-flight request aborts; no stale preview flash</li>
+					<li>Double-click Confirm while saving — expect single batch (or document current double-submit risk)</li>
 				</ul>
 			</section>
 			<section id="out">

@@ -25,7 +25,7 @@ Invoke via **`/ss-handoff`**. Typical order: after `/ss-review` PASS (and ideall
 
 - **State is the contract** — ground the story in Behavior & Test Contracts, RED→GREEN / TDD Evidence, locked decisions, and Security Evidence when present. Do not invent architecture that is not in state or the diff.
 - **Diff is the evidence** — every claim about behavior should point at a path or a short snippet from the change set.
-- **Surface notes** — fill `#frontend` and/or `#backend` from changed paths (UI vs PHP/WordPress); otherwise one-line N/A. Product-neutral — not Lifeway-only.
+- **Surface notes** — fill `#frontend` and/or `#backend` from changed paths (UI vs PHP/WordPress); otherwise one-line N/A. Product-neutral — not Lifeway-only. For UI, note **Platform** (`Web` / `React Native` / `Shared`) and prefer **state Mermaid → effects → risks/cons**; add boundaries/lists/nav-focus only when those changed.
 - **Human first** — open-in-browser experience; scannable sections; Mermaid when structure helps.
 - **Offload context** — the HTML must stand alone in a fresh session (open the file + PR/diff; do not require replaying implement history).
 - **Prose** — apply [`anti-slop`](../../productivity/anti-slop/SKILL.md): expand abbreviations on first use; no hype; cite paths instead of restating whole files.
@@ -73,7 +73,7 @@ Details: [HTML-REPORT.md](HTML-REPORT.md).
 
 ### Mermaid
 
-Use when it clarifies structure (module edges, FE sequence, REST/hook flow). Skip decorative diagrams. Prefer `flowchart` / `sequenceDiagram`. Keep node labels short. Render via `<pre class="mermaid">` as in HTML-REPORT.
+Use when it clarifies structure. For **`#frontend`**: **Platform** line first; **state transition** Mermaid when UI state/store changes; **effects/sync** when effects exist; **boundaries** when provider/screen/list tree changed; optional interaction sequence; amber **Risks / cons** mapped to nodes (re-renders, list thrash, RN jank, races). Feed concrete FE checks into `#verify` (double-tap, blur/focus, keyboard, list scroll). See [HTML-REPORT.md](HTML-REPORT.md).
 
 ### Snippets
 
@@ -90,6 +90,7 @@ Use when it clarifies structure (module edges, FE sequence, REST/hook flow). Ski
 - [ ] Intent and decisions tied to `state.md` (or explicit “no state”)
 - [ ] Hotspots cite real paths from the diff
 - [ ] `#frontend` / `#backend` filled or explicit N/A from the diff surface
+- [ ] `#frontend` has Platform; **state** Mermaid when state changes; **effects** when present; **Risks / cons** when tradeoffs are real; boundaries/lists/nav-focus when those changed; FE checks mirrored in `#verify`
 - [ ] `#verify` checklist is actionable (includes FE/backend checks when those sections are filled)
 - [ ] Next step named: usually `/ss-submit-pr` (after security PASS) — not merge/close
 
