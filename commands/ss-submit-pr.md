@@ -16,6 +16,7 @@ If this fails, stop and run [`ss-security-audit`](./ss-security-audit.md) (or fi
 
 2. Prefer deterministic helpers when vendored: `node .cursor/vendor/skillsync/tools/render-pr-body.cjs .` then `node .cursor/vendor/skillsync/tools/open-pr.cjs .` (or `yarn ss:open-pr` if wired in consumer `package.json`). Use `--dry-run` / `--no-push` when checking only.
 3. For title/body prose the script cannot infer, follow [`submit-github-pr`](../skills/engineering/submit-github-pr/SKILL.md) — write narrative into `.harness/pr-body.md` before `open-pr.cjs`. When **`.harness/code-handoff.html`** exists, reuse its Intent and What to verify (do not paste the whole handoff into the PR).
+4. **Optional GitNexus** (when MCP indexed — [`docs/gitnexus.md`](../docs/gitnexus.md)): `detect_changes` may inform risk notes in the PR body; it does **not** replace the security gate.
 
 In **Ask** mode, print the skill checklist and exact tool commands.
 

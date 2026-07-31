@@ -1,6 +1,6 @@
 # ss-security-audit
 
-**Phase: security gate** — follow [`ss-flow.md`](../harness/ss-flow.md).
+**Story — PR security gate.** Follow [`ss-flow.md`](../harness/ss-flow.md).
 
 Run **after** [`/ss-review`](./ss-review.md) PASS (and any review fixes), **before** [`/ss-submit-pr`](./ss-submit-pr.md).
 

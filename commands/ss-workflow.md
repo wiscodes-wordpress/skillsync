@@ -2,33 +2,50 @@
 
 **Canonical delivery loop** — see [`ss-flow.md`](../harness/ss-flow.md) for harness map and context rules.
 
-Consumer repos use **thin wrappers** (`qb-*`, etc.) for tracker-specific steps; they should still point here for phase order.
+Type **`ss`** in Cursor’s command palette to filter skillsync delivery commands (and not every linked skill).
 
-## Phase order
+Consumer repos use **thin wrappers** (`qb-*`, `qp-*`, etc.) for tracker-specific steps; they should still point here for belt order.
 
-| # | Phase | Command |
-|---|--------|---------|
-| 1 | Branch | consumer wrapper |
-| 2 | Architecture (structure in flux) | [`ss-arch-plan`](./ss-arch-plan.md) — optional; HTML plan source of truth; epic keys; Jira→HTML refresh on run |
-| 3 | Security posture (trust model) | [`ss-security-plan`](./ss-security-plan.md) — optional; HTML posture source of truth; not the PR gate |
-| 4 | UI/UX plan (UI-heavy) | [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) — optional; living HTML source of truth; **before** ss-plan |
-| 5 | Grill domain | step 1a of [`ss-plan`](./ss-plan.md) |
-| 6 | Grill TDD | step 1b of [`ss-plan`](./ss-plan.md) |
-| 7 | Plan | steps 2–3 of [`ss-plan`](./ss-plan.md) |
-| 8 | Slice to issues | [`ss-to-issues`](./ss-to-issues.md) (optional) |
-| 9 | Implement | [`ss-implement`](./ss-implement.md) — all Remaining cycles/slices |
-| 10 | Review | [`ss-review`](./ss-review.md) |
-| 11 | Security gate | [`ss-security-audit`](./ss-security-audit.md) — after review PASS, before PR |
-| 12 | Human walkthrough (optional) | [`ss-handoff`](./ss-handoff.md) — `.harness/code-handoff.html` before PR |
-| 13 | PR → merge → Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
-| 14 | Release / GTM (optional) | [`ss-release`](./ss-release.md) — or [`ss-release-distribution`](./ss-release-distribution.md) / [`ss-release-marketing`](./ss-release-marketing.md) |
+## Belts (not one flat checklist)
 
-Initiative-scale work may run [`ss-roadmap`](./ss-roadmap.md) before step 2 (draft roadmap → lens pack → Jira publish). Architecture (`/ss-arch-plan`) and security posture (`/ss-security-plan`) when shape or trust model is undecided — before UI/UX and story plan. **Every PR** still runs `/ss-security-audit`. Release/GTM is **after** ship — not a PR gate.
+Three altitudes. **Most days use Story only.** Initiative and Ship are enter-when-needed.
+
+### Story (default)
+
+| Step | Command |
+|------|---------|
+| Branch | consumer wrapper |
+| Plan | [`ss-plan`](./ss-plan.md) — domain grill + TDD grill + `.harness/state.md` |
+| Slice (optional) | [`ss-to-issues`](./ss-to-issues.md) — publish story slices from state; **not** initiative epic publish |
+| Implement | [`ss-implement`](./ss-implement.md) |
+| Review | [`ss-review`](./ss-review.md) |
+| PR security gate | [`ss-security-audit`](./ss-security-audit.md) — every PR; not the trust-posture plan |
+| Human walkthrough (optional) | [`ss-handoff`](./ss-handoff.md) — `.harness/code-handoff.html` before PR |
+| PR → Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
+
+### Initiative (major / foggy feature)
+
+**Entry:** [`ss-roadmap`](./ss-roadmap.md) — wayfind (local HTML) → draft initiative markdown → lens gates + pack → lock lenses → **publish Jira** → regenerate app map → hand off to `/ss-plan`.
+
+Lens commands are **sub-steps or resume/edit**, not daily Story steps:
+
+| Resume / edit | Command |
+|---------------|---------|
+| Architecture | [`ss-arch-plan`](./ss-arch-plan.md) |
+| UX | [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) |
+| Trust posture | [`ss-security-plan`](./ss-security-plan.md) — not the PR gate |
+
+**Posture vs audit:** `/ss-security-plan` = living trust posture. `/ss-security-audit` = Story PR gate. **to-issues vs roadmap publish:** `/ss-to-issues` slices a story plan; roadmap publish creates initiative epics/v1 stories after lenses lock.
+
+### Ship (after merge)
+
+Not a PR gate. [`ss-release`](./ss-release.md), or partial [`ss-release-distribution`](./ss-release-distribution.md) / [`ss-release-marketing`](./ss-release-marketing.md).
+
 ## Harness skeleton (skillsync)
 
 | File | Role |
 |------|------|
-| [`ss-flow.md`](../harness/ss-flow.md) | Phase map · context budget |
+| [`ss-flow.md`](../harness/ss-flow.md) | Belt map · context budget |
 | [`harness-planner-tdd.md`](../harness/harness-planner-tdd.md) | Default planner |
 | [`harness-planner.md`](../harness/harness-planner.md) | Legacy feature-first |
 | [`harness-generator.md`](../harness/harness-generator.md) | Implement |
@@ -39,8 +56,12 @@ Initiative-scale work may run [`ss-roadmap`](./ss-roadmap.md) before step 2 (dra
 
 Local addenda: **`.cursor/harness/`** per consumer.
 
+## Optional GitNexus
+
+Structural MCP (`impact`, `detect_changes`, …) during arch / implement / review — see [`docs/gitnexus.md`](../docs/gitnexus.md) and [`ss-flow.md`](../harness/ss-flow.md). Not required for the loop.
+
 ## `ss-*` prefix
 
-**s**kill**s**ync-hosted, product-neutral commands. Link via `link-commands.cjs` (`docs/consumer-setup.md`).
+**s**kill**s**ync-hosted, product-neutral commands. Link via `link-commands.cjs` (`docs/consumer-setup.md`). Linking a **skill** is not the same as a slash command — `ss-*` is the filterable command set.
 
 Available as `/ss-workflow` when linked into **`.cursor/commands/`**.

@@ -7,11 +7,20 @@ This repository is the **shared home** for portable Cursor **Agent Skills**, **p
 - **Generic** skills under **`skills/`** with a **`SKILL.md`** entry point. Workflow and stack skills live in category folders: **`skills/engineering/`** (includes WordPress `wordpress-*` / `wp-*` packs), **`skills/productivity/`**, **`skills/personal/`**.
 - **Shared rules** under **`rules/`** (TypeScript, React, frontend testing conventions).
 - **Product-neutral commands** under **`commands/`** using the **`ss-*`** prefix (**s**kill**s**ync). Consumers symlink these into **`.cursor/commands/`** so Cursor discovers **`/ss-plan`**, **`/ss-arch-plan`**, **`/ss-security-plan`**, **`/ss-ui-ux-plan`**, **`/ss-workflow`**, **`/ss-security-audit`**, **`/ss-handoff`**, **`/ss-submit-pr`**, **`/ss-close-story`**, **`/ss-release`**, etc.
-- **Harness skeletons** under **`harness/`** — start with **`harness/ss-flow.md`** (phase map + context budget); planner, generator, critic referenced by **`ss-*`** commands.
+- **Harness skeletons** under **`harness/`** — start with **`harness/ss-flow.md`** (Story / Initiative / Ship belts + context budget); planner, generator, critic referenced by **`ss-*`** commands.
 
 ## What does *not* belong here
 
 - Product-specific Jira keys, repo paths, or slash commands named for one product (**`qp-*`**, **`qb-*`**). Keep those as **thin wrappers** in each consumer repository.
+
+## Optional tooling
+
+- **GitNexus** (code knowledge graph + Cursor MCP) — optional beside `ss-*`; see **`docs/gitnexus.md`**. Commercial product use needs a commercial license from Akon Labs.
+- **App map** — `.harness/app-map.html` via `tools/render-app-map.cjs` (deterministic grand plan; Initiative belt).
+
+## Delivery belts
+
+Type **`ss`** in Cursor to filter delivery commands. Default path is **Story**; **Initiative** (`/ss-roadmap`) and **Ship** (`/ss-release*`) are enter-when-needed. See **`commands/ss-workflow.md`**.
 
 ## Consumer setup
 

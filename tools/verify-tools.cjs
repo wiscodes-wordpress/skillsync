@@ -38,6 +38,7 @@ const REQUIRED_TOOLS = [
 	'init-plan-html.cjs',
 	'init-feature-pack.cjs',
 	'validate-feature-pack.cjs',
+	'render-app-map.cjs',
 	'lib/ss-tools.cjs',
 ];
 
@@ -429,7 +430,19 @@ function main() {
 	for (const kind of ['arch', 'ux', 'security', 'handoff']) {
 		runTool(validatePlanHtmlTool, [planHtmlConsumer, '--kind', kind]);
 	}
-	console.log('OK: validate-plan-html arch/ux/security/handoff fixtures');
+	fs.mkdirSync(path.join(planHarness, 'wayfinder', 'demo-chat'), { recursive: true });
+	fs.copyFileSync(
+		path.join(fixturesDir, 'plan-wayfinder-valid.html'),
+		path.join(planHarness, 'wayfinder', 'demo-chat', 'map.html'),
+	);
+	runTool(validatePlanHtmlTool, [
+		planHtmlConsumer,
+		'--kind',
+		'wayfinder',
+		'--file',
+		'.harness/wayfinder/demo-chat/map.html',
+	]);
+	console.log('OK: validate-plan-html arch/ux/security/handoff/wayfinder fixtures');
 
 	const planHtmlLib = require(validatePlanHtmlTool);
 	const archHtml = fs.readFileSync(path.join(fixturesDir, 'plan-arch-valid.html'), 'utf8');
@@ -596,6 +609,31 @@ function main() {
 		console.log('OK: feature-pack epic key parity gate');
 	}
 
+	const renderAppMap = path.join(toolsDir, 'render-app-map.cjs');
+	const appMapConsumer = makeTempConsumer();
+	fs.mkdirSync(path.join(appMapConsumer, '.harness', 'initiatives', 'ai-chatbot'), {
+		recursive: true,
+	});
+	fs.copyFileSync(
+		path.join(packDirPath, 'index.html'),
+		path.join(appMapConsumer, '.harness', 'initiatives', 'ai-chatbot', 'index.html'),
+	);
+	fs.mkdirSync(path.join(appMapConsumer, '.harness', 'wayfinder', 'ai-chatbot'), {
+		recursive: true,
+	});
+	fs.copyFileSync(
+		path.join(fixturesDir, 'plan-wayfinder-valid.html'),
+		path.join(appMapConsumer, '.harness', 'wayfinder', 'ai-chatbot', 'map.html'),
+	);
+	fs.writeFileSync(
+		path.join(appMapConsumer, '.harness', 'state.md'),
+		'# Task: DEMO-1 First story\n\nPack: .harness/initiatives/ai-chatbot/index.html\n',
+		'utf8',
+	);
+	runTool(renderAppMap, [appMapConsumer, '--title', 'Demo Plugin']);
+	runTool(validatePlanHtmlTool, [appMapConsumer, '--kind', 'app-map']);
+	console.log('OK: render-app-map + validate app-map');
+
 	fs.rmSync(temp, { recursive: true, force: true });
 	fs.rmSync(planConsumer, { recursive: true, force: true });
 	fs.rmSync(implementConsumer, { recursive: true, force: true });
@@ -608,6 +646,7 @@ function main() {
 	fs.rmSync(releaseConsumer, { recursive: true, force: true });
 	fs.rmSync(planHtmlConsumer, { recursive: true, force: true });
 	fs.rmSync(packConsumer, { recursive: true, force: true });
+	fs.rmSync(appMapConsumer, { recursive: true, force: true });
 
 	if (failed) {
 		console.error('');

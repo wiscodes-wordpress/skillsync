@@ -98,6 +98,7 @@ function renderHub({ slug, title, spec, epics, requiredLenses }) {
 	<body class="bg-stone-50 text-slate-900 font-sans">
 		<nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 px-4 py-2 text-xs">
 			<a href="#phase">Phase</a>
+			<a href="#path">Path</a>
 			<a href="#lenses" class="font-medium">Lenses</a>
 			<a href="#keys">Epics</a>
 		</nav>
@@ -106,7 +107,7 @@ function renderHub({ slug, title, spec, epics, requiredLenses }) {
 				<p class="text-xs uppercase tracking-wider">${escapeHtml(slug)}</p>
 				<h1 class="font-serif text-3xl">Initiative — ${escapeHtml(title)}</h1>
 				<p class="text-sm">Roadmap source of truth: <span class="font-mono">${escapeHtml(spec)}</span></p>
-				<p>This hub joins the roadmap to its living plan lenses. Lens files are the plan sources of truth; this page carries status and keys only.</p>
+					<p>This hub joins the roadmap to its living plan lenses. Lens files are the plan sources of truth; this page carries status and keys only. Plugin grand plan: <a class="underline" href="../../app-map.html">app-map.html</a>.</p>
 			</header>
 			<section id="phase">
 				<h2 class="font-serif text-2xl">Phase we are at</h2>
@@ -115,6 +116,10 @@ function renderHub({ slug, title, spec, epics, requiredLenses }) {
 					<li><strong>Draft required lens plans — current</strong></li>
 					<li>/ss-plan per v1 story (reads this pack)</li>
 				</ol>
+			</section>
+			<section id="path">
+				<h2 class="font-serif text-2xl">Path</h2>
+				<p>Index only — journey and stage detail live in lens HTML. After lenses lock, regenerate the plugin mind map with <span class="font-mono">render-app-map.cjs</span>.</p>
 			</section>
 			<section id="lenses">
 				<h2 class="font-serif text-2xl">Lenses</h2>

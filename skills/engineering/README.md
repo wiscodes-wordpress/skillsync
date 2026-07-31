@@ -2,6 +2,16 @@
 
 Code work, delivery workflow, and technical review skills.
 
+## `ss-*` belts
+
+| Belt | Skills (typical) |
+|------|------------------|
+| **Story** | `grill-tdd`, `tdd`, `ponytail`, `to-issues`, `submit-github-pr`, `jira-close-story` |
+| **Initiative** | `wayfinder`, `major-feature-roadmap`, `arch-plan`, `ui-ux-planner`, `security-plan`, `app-map` |
+| **Ship** | (productivity) `anti-slop`, `release-distribution`, `release-marketing` |
+
+Commands: type **`ss`** in Cursor — see [`commands/ss-workflow.md`](../../commands/ss-workflow.md).
+
 ## From [Matt Pocock](https://github.com/mattpocock/skills) (upstream)
 
 - **[diagnose](./diagnose/SKILL.md)** — Disciplined diagnosis loop for hard bugs and performance regressions.
@@ -15,9 +25,11 @@ Code work, delivery workflow, and technical review skills.
 - **[to-prd](./to-prd/SKILL.md)** — Turn conversation context into a PRD on the issue tracker.
 - **[triage](./triage/SKILL.md)** — Triage issues through a state machine of triage roles.
 - **[zoom-out](./zoom-out/SKILL.md)** — Higher-level perspective on an unfamiliar section of code.
+- **[wayfinder](./wayfinder/SKILL.md)** — Foggy initiative decision map as local HTML (`/ss-roadmap` phase 0; no Jira). Adapted from upstream wayfinder.
 
 ## Skillsync shared
 
+- **[app-map](./app-map/SKILL.md)** — Plugin grand plan `.harness/app-map.html` via deterministic `render-app-map.cjs` (Mind-elixir).
 - **[arch-plan](./arch-plan/SKILL.md)** — Architecture plan as living HTML source of truth (`/ss-arch-plan`); Quick-Builder-style briefing; epic/story keys; one-way Jira refresh on run.
 - **[security-plan](./security-plan/SKILL.md)** — Security posture as living HTML (`/ss-security-plan`); optional whole-plugin assess (Semgrep + Wordfence); does not replace `/ss-security-audit`.
 - **[code-handoff](./code-handoff/SKILL.md)** — Human walkthrough of branch changes → `.harness/code-handoff.html` (`/ss-handoff`); before `/ss-submit-pr`.

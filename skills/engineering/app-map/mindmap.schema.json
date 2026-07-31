@@ -1,0 +1,28 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "skillsync-app-map-mindmap",
+	"title": "App map mind tree",
+	"type": "object",
+	"required": ["nodeData"],
+	"additionalProperties": false,
+	"properties": {
+		"nodeData": {
+			"type": "object",
+			"required": ["id", "topic"],
+			"properties": {
+				"id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+				"topic": { "type": "string", "minLength": 1 },
+				"href": { "type": "string" },
+				"status": {
+					"type": "string",
+					"enum": ["wayfinding", "lenses", "shipping", "done", "missing", "draft", "locked", "optional"]
+				},
+				"children": {
+					"type": "array",
+					"items": { "$ref": "#/properties/nodeData" }
+				}
+			},
+			"additionalProperties": false
+		}
+	}
+}

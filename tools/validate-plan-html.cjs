@@ -4,7 +4,7 @@
  *
  * Usage:
  *   node path/to/skillsync/tools/validate-plan-html.cjs [/path/to/consumer-repo] \
- *     [--kind arch|ux|security|handoff] [--file .harness/architecture-plan.html] \
+ *     [--kind arch|ux|security|wayfinder|app-map|handoff] [--file .harness/architecture-plan.html] \
  *     [--mode structure|ready] [--strict-warn]
  *
  * --mode structure: chrome only (post-scaffold) — stubs and {{tokens}} allowed
@@ -15,7 +15,7 @@
  *   1 — hard fail
  *   2 — warnings only, with --strict-warn
  *
- * Contract source: skills/engineering/{arch-plan,ui-ux-planner,security-plan,code-handoff}/HTML-REPORT.md.
+ * Contract source: skills/engineering/{arch-plan,ui-ux-planner,security-plan,code-handoff,wayfinder,app-map}/HTML-REPORT.md.
  * Regex-based structural lint, not an HTML parser: it checks the section/anchor/script
  * contract and cross-checks security facts against .harness/security-assess.json.
  */
@@ -78,9 +78,27 @@ const KINDS = {
 		expected: ['frontend', 'backend', 'out'],
 		wantsMermaid: false,
 	},
+	wayfinder: {
+		file: 'map.html',
+		titlePrefix: 'Wayfinder',
+		required: ['destination', 'decisions', 'fog', 'frontier'],
+		expected: ['notes', 'outofscope', 'graph'],
+		wantsMermaid: true,
+	},
+	'app-map': {
+		file: 'app-map.html',
+		titlePrefix: 'App map',
+		required: ['mindmap', 'initiatives', 'now'],
+		expected: ['spine', 'wayfinder', 'keys'],
+		wantsMermaid: false,
+	},
 };
 
-const ALLOWED_SCRIPT_SRC = [/cdn\.tailwindcss\.com/, /cdn\.jsdelivr\.net\/npm\/mermaid/];
+const ALLOWED_SCRIPT_SRC = [
+	/cdn\.tailwindcss\.com/,
+	/cdn\.jsdelivr\.net\/npm\/mermaid/,
+	/cdn\.jsdelivr\.net\/npm\/mind-elixir/,
+];
 
 /** Prefixes that look like issue keys but are not. */
 const NOT_ISSUE_KEYS = new Set([
@@ -256,9 +274,10 @@ function declaredStatus(statusBody) {
 
 /**
  * @param {string} html
+ * @param {string} [kind]
  * @returns {string[]}
  */
-function auditScripts(html) {
+function auditScripts(html, kind) {
 	/** @type {string[]} */
 	const errors = [];
 	const re = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
@@ -266,14 +285,22 @@ function auditScripts(html) {
 	while ((m = re.exec(html)) !== null) {
 		const attrs = m[1];
 		const body = m[2];
+		const typeAttr = attrs.match(/\btype="([^"]+)"/i);
+		if (typeAttr && /application\/json/i.test(typeAttr[1])) {
+			continue;
+		}
 		const src = attrs.match(/\bsrc="([^"]+)"/i);
 		if (src) {
 			if (!ALLOWED_SCRIPT_SRC.some((re2) => re2.test(src[1]))) {
 				errors.push(
-					`Disallowed script src "${src[1]}" — only Tailwind CDN and Mermaid ESM are allowed`,
+					`Disallowed script src "${src[1]}" — only Tailwind CDN, Mermaid ESM, and Mind-elixir CDN are allowed`,
 				);
 			}
-		} else if (!/mermaid/i.test(body)) {
+		} else if (/mermaid/i.test(body)) {
+			continue;
+		} else if (kind === 'app-map' && /MindElixir|mindmap-data/i.test(body)) {
+			continue;
+		} else {
 			errors.push(
 				'Inline <script> is not the Mermaid initializer — living plan HTML must stay static',
 			);
@@ -362,7 +389,7 @@ function validatePlanHtml({ html, kind, mode = 'ready', assessReport = null }) {
 		errors.push(`<title> should start with "${spec.titlePrefix}"`);
 	}
 
-	errors.push(...auditScripts(html));
+	errors.push(...auditScripts(html, kind));
 
 	if (!/<nav\b/i.test(html)) {
 		errors.push('Missing sticky <nav>');
@@ -375,6 +402,26 @@ function validatePlanHtml({ html, kind, mode = 'ready', assessReport = null }) {
 			errors.push(`Duplicate id="${id}"`);
 		}
 		seen.add(id);
+	}
+
+	if (kind === 'app-map') {
+		if (!seen.has('mindmap-data') && !/<script\b[^>]*\bid="mindmap-data"/i.test(html)) {
+			errors.push('Missing #mindmap-data JSON script');
+		} else {
+			const dataMatch = html.match(
+				/<script\b[^>]*\bid="mindmap-data"[^>]*>([\s\S]*?)<\/script>/i,
+			);
+			if (dataMatch) {
+				try {
+					const parsed = JSON.parse(dataMatch[1]);
+					if (!parsed.nodeData || typeof parsed.nodeData.topic !== 'string') {
+						errors.push('#mindmap-data must include nodeData.topic');
+					}
+				} catch {
+					errors.push('#mindmap-data is not valid JSON');
+				}
+			}
+		}
 	}
 
 	const bodies = sectionBodies(html);
@@ -424,7 +471,14 @@ function validatePlanHtml({ html, kind, mode = 'ready', assessReport = null }) {
 
 	const keyed = hasIssueKeys(html);
 	// Code handoff is a per-story brief — issue keys in the header are normal; no #phase.
-	if (kind !== 'handoff' && keyed && !bodies.has('phase')) {
+	// Wayfinder / app-map are initiative charts — keys may appear without a #phase section.
+	if (
+		kind !== 'handoff' &&
+		kind !== 'app-map' &&
+		kind !== 'wayfinder' &&
+		keyed &&
+		!bodies.has('phase')
+	) {
 		errors.push('Issue keys present, so #phase is required');
 	}
 	if (kind === 'arch' && keyed && !bodies.has('finish-line')) {
@@ -498,6 +552,8 @@ function kindFromFilename(file) {
 		}
 	}
 	if (base.includes('architecture')) return 'arch';
+	if (base === 'map.html' || base.includes('wayfinder')) return 'wayfinder';
+	if (base.includes('app-map')) return 'app-map';
 	if (base.includes('ux')) return 'ux';
 	if (base.includes('security')) return 'security';
 	if (base.includes('code-handoff') || base.includes('handoff')) return 'handoff';
@@ -556,14 +612,14 @@ function main() {
 		assertOrExit(
 			present.length === 1,
 			present.length === 0
-				? 'No living plan HTML found. Pass --kind arch|ux|security|handoff or --file <path>.'
+				? 'No living plan HTML found. Pass --kind arch|ux|security|wayfinder|app-map|handoff or --file <path>.'
 				: `Multiple plan files found (${present.join(', ')}). Pass --kind to choose one.`,
 		);
 		kind = present[0];
 	}
 	assertOrExit(
 		Object.prototype.hasOwnProperty.call(KINDS, kind),
-		`Invalid --kind "${kind}". Use arch, ux, security, or handoff.`,
+		`Invalid --kind "${kind}". Use arch, ux, security, wayfinder, app-map, or handoff.`,
 	);
 
 	if (!file) {

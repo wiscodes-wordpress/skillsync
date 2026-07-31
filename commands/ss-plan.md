@@ -5,7 +5,7 @@
 **Before:** story branch per consumer docs (see [`ss-workflow.md`](./ss-workflow.md) phase Branch). For **UI-heavy** work, run [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) first and pass the living UX HTML path (`.harness/ux-plan.html`) into this session.
 
 1. **1a — Domain grill** — [`grill-me`](../skills/productivity/grill-me/SKILL.md) or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) (per `AGENTS.md`). Honor any agreed **UX plan** (`.harness/ux-plan.html`, or legacy `docs/ux/…`) for journeys and surfaces.
-2. **1b — TDD grill** — [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) until **Behavior & Test Contracts** are agreed (per-behavior cards: **name**, **expectation** as `step > step > assertion`, **red**, **layer**, **path**). Prefer seeding **expectation** chains from UX journeys. No test files on disk yet.
+2. **1b — TDD grill** — [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) until **Behavior & Test Contracts** are agreed (per-behavior cards: **name**, **expectation** as `step > step > assertion`, **red**, **layer**, **path**). Prefer seeding **expectation** chains from UX journeys. **Optional GitNexus** (`context` on named symbols when MCP indexed — [`docs/gitnexus.md`](../docs/gitnexus.md)). No test files on disk yet.
 3. **Planner** — [`harness-planner-tdd.md`](../harness/harness-planner-tdd.md) → persist **`.harness/state.md`**.
 
 **Optional — journal handoff:** If consumer `skillsync.config.json` has `journal.enabled` (or `JOURNAL_HANDOFF=1` + vault), after `.harness/state.md` is written follow [`journal-handoff`](../skills/personal/journal-handoff/SKILL.md) with `mode: start-story`:

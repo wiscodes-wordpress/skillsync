@@ -6,6 +6,20 @@
 - Keep **product-specific** skills and commands as normal files under the consumer’s `.cursor/skills/` and `.cursor/commands/`.
 - Refresh by updating the vendored checkout (`git pull` / submodule bump) and re-running the link scripts.
 
+**Optional — GitNexus:** local code knowledge graph + Cursor MCP for blast-radius tools during `ss-*`. Setup, license (commercial products need a paid grant), and phase table: [`gitnexus.md`](./gitnexus.md).
+
+## Delivery belts (type `ss` to filter)
+
+Linking a **skill** is not the same as a slash command. **`ss-*`** is the filterable command set in Cursor.
+
+| Belt | When | Commands |
+|------|------|----------|
+| **Story** (default) | Most days | `/ss-plan` → `/ss-implement` → `/ss-review` → `/ss-security-audit` → `/ss-submit-pr` → `/ss-close-story` (+ optional `/ss-to-issues`) |
+| **Initiative** | Major / foggy feature | **`/ss-roadmap`** entry (wayfind → draft → lenses → publish Jira → `render-app-map.cjs`). Resume lenses via `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` |
+| **Ship** | After merge | `/ss-release` (+ distribution / marketing partials) |
+
+Fog lives in roadmap (local wayfinder HTML); **Jira only at publish**; grand plan `.harness/app-map.html` is **script-generated** (`render-app-map.cjs`).
+
 ## Submodule (recommended)
 
 From the **consumer** repository root:
@@ -26,29 +40,30 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 
 | Skill | Used by |
 |-------|---------|
-| `arch-plan` | `/ss-arch-plan` (optional; architecture plan source of truth + epic-keyed stages) |
-| `security-plan` | `/ss-security-plan` (optional; posture HTML + whole-plugin assess; not the PR gate) |
-| `improve-codebase-architecture` | Optional with `/ss-arch-plan` when deepening existing friction |
-| `ui-ux-planner` | `/ss-ui-ux-plan` (optional; living HTML UX source of truth before `/ss-plan`) |
 | `grill-tdd` | `/ss-plan` (step 1b) |
 | `tdd` | `/ss-implement` when state has RED→GREEN Plan |
 | `ponytail` | `/ss-implement` |
 | `submit-github-pr` | `/ss-submit-pr` |
 | `code-handoff` | `/ss-handoff` (optional; human walkthrough before PR) |
 | `jira-close-story` | `/ss-close-story` |
-| `to-issues` | `/ss-to-issues` (optional) |
+| `to-issues` | `/ss-to-issues` (optional Story slice publish) |
+| `major-feature-roadmap` | `/ss-roadmap` draft |
+| `wayfinder` | `/ss-roadmap` phase 0 (fog; local HTML; no Jira) |
+| `app-map` | `/ss-roadmap` + `render-app-map.cjs` (grand plan) |
+| `arch-plan` | `/ss-arch-plan` (resume under Initiative) |
+| `security-plan` | `/ss-security-plan` (trust posture; not PR gate) |
+| `ui-ux-planner` | `/ss-ui-ux-plan` |
+| `improve-codebase-architecture` | Optional with `/ss-arch-plan` |
 
 Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for `grill-me` in plan step 1a — productivity skill, link if desired). Add stack skills only when needed (e.g. `jest-react-testing`, `wordpress-testing-qa`) — not required for the generic loop. Do **not** link **`testing-expert`** for the loop; it is an optional encyclopedia.
 
-### Full `linkedCommands` (typical)
+### `linkedCommands` (typical — Story spine + Initiative + Ship)
+
+Prefer this order so the palette reads by belt. Lens commands are optional if the team always enters via `/ss-roadmap`:
 
 ```json
 "linkedCommands": [
   "ss-workflow.md",
-  "ss-roadmap.md",
-  "ss-arch-plan.md",
-  "ss-security-plan.md",
-  "ss-ui-ux-plan.md",
   "ss-plan.md",
   "ss-to-issues.md",
   "ss-implement.md",
@@ -57,6 +72,10 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
   "ss-handoff.md",
   "ss-submit-pr.md",
   "ss-close-story.md",
+  "ss-roadmap.md",
+  "ss-arch-plan.md",
+  "ss-security-plan.md",
+  "ss-ui-ux-plan.md",
   "ss-release.md",
   "ss-release-distribution.md",
   "ss-release-marketing.md"
@@ -177,13 +196,16 @@ Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/gen
 
 ### Typical phase order
 
+**Story (default):**
+
 ```text
-branch (consumer) → /ss-arch-plan? → /ss-security-plan? → /ss-ui-ux-plan? → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
+branch (consumer) → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
   → /ss-security-audit → /ss-handoff? → /ss-submit-pr → merge (consumer) → /ss-close-story
-  → /ss-release? (or /ss-release-distribution / /ss-release-marketing)
 ```
 
-Major feature (initiative) entry: `/ss-roadmap` → roadmap + lens gates → feature pack lenses → the same per-story loop above.
+**Initiative (when major / foggy):** `/ss-roadmap` (wayfind? → draft → lenses → publish → `render-app-map.cjs`) → then Story loop per v1 story.
+
+**Ship (after merge):** `/ss-release?` (or distribution / marketing partials).
 
 
 Document **branch scripts**, **verification commands**, and **stack skills** in the consumer root **`AGENTS.md`**.
@@ -209,10 +231,11 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `init-release-brief.cjs` | `/ss-release*` | Scaffold `.harness/release-brief.md` (`--version`, `--force`) |
 | `validate-release-brief.cjs` | `/ss-release*` | Assert brief sections (`--mode structure\|ready`) |
 | `validate-release-pack.cjs` | `/ss-release*` | Assert channel pack files exist and are non-empty |
-| `validate-plan-html.cjs` | `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan`, `/ss-handoff` | Structural lint for living HTML (`--kind arch\|ux\|security\|handoff`; `--mode structure\|ready`) |
+| `validate-plan-html.cjs` | lenses / wayfinder / app-map / handoff | Structural lint (`--kind arch\|ux\|security\|wayfinder\|app-map\|handoff`; `--mode structure\|ready`) |
 | `init-plan-html.cjs` | same plan / handoff commands | Chrome-only scaffold under `.harness/` (`--kind`; `--force` to overwrite) |
 | `init-feature-pack.cjs` | `/ss-roadmap` | Scaffold initiative hub `.harness/initiatives/<slug>/index.html` (`--slug`, `--epics`, `--lenses`) |
 | `validate-feature-pack.cjs` | `/ss-roadmap` | Assert required lenses exist + hub/lens epic-key parity (`--slug`) |
+| `render-app-map.cjs` | `/ss-roadmap` | Deterministic `.harness/app-map.html` (Mind-elixir; `--title`) |
 | `verify-tools.cjs` | skillsync CI | Smoke-test tools + fixtures |
 
 Optional **`skillsync.config.json`** keys for tools / journal handoff:
@@ -259,6 +282,7 @@ Example **`package.json`** scripts (consumer root):
 		"ss:harness-reset": "node ./.cursor/vendor/skillsync/tools/harness-reset.cjs .",
 		"ss:validate-state": "node ./.cursor/vendor/skillsync/tools/validate-state.cjs . --mode implement",
 		"ss:open-pr": "node ./.cursor/vendor/skillsync/tools/open-pr.cjs .",
+		"ss:app-map": "node ./.cursor/vendor/skillsync/tools/render-app-map.cjs . --title \"Product\"",
 		"ss:init-release-brief": "node ./.cursor/vendor/skillsync/tools/init-release-brief.cjs .",
 		"ss:validate-release-brief": "node ./.cursor/vendor/skillsync/tools/validate-release-brief.cjs . --mode ready",
 		"ss:validate-release-pack": "node ./.cursor/vendor/skillsync/tools/validate-release-pack.cjs ."

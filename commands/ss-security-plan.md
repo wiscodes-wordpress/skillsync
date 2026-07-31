@@ -1,8 +1,8 @@
 # ss-security-plan
 
-**Phase: security posture** — optional; above story delivery. See [`ss-flow.md`](../harness/ss-flow.md).
+**Initiative — trust posture (not PR gate).** Optional lens; resume/edit under `/ss-roadmap` or when trust model is unclear. See [`ss-flow.md`](../harness/ss-flow.md).
 
-Set **how we intend to be secure** as a living HTML briefing (`.harness/security-posture.html`). Does **not** implement code, does **not** replace the per-PR gate.
+Set **how we intend to be secure** as a living HTML briefing (`.harness/security-posture.html`). Does **not** implement code, does **not** replace the per-PR Story gate (`/ss-security-audit`).
 
 ## Two tracks
 

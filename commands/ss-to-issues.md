@@ -1,6 +1,6 @@
 # ss-to-issues
 
-**Phase: slice → tracker** (optional) — follow [`ss-flow.md`](../harness/ss-flow.md).
+**Story — optional slice publish.** Follow [`ss-flow.md`](../harness/ss-flow.md). Not initiative epic publish (that is `/ss-roadmap` publish-last).
 
 After **`/ss-plan`**, publish approved RED→GREEN cycles (or slices) as tracker issues before **`/ss-implement`**.
 

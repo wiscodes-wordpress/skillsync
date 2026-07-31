@@ -6,6 +6,10 @@
 # Local link/verify output when skillsync is used as its own consumer
 .cursor/
 
+# GitNexus local index + auto-installed agent skill copies
+.gitnexus/
+.claude/
+
 # OS / editor
 .DS_Store
 *.swp

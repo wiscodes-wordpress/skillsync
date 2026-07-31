@@ -1,40 +1,51 @@
 # ss-flow — canonical delivery loop
 
-**Product-neutral** harness workflow for consumer repos. Slash commands are thin entry points; this file is the single map of phases → harness → skills.
+**Product-neutral** harness workflow for consumer repos. Slash commands are thin entry points; this file is the single map of **belts** → harness → skills.
 
-Consumers document **branch**, **verification commands**, and **stack skills** in root **`AGENTS.md`** and **`skillsync.config.json`**.
+Type **`ss`** in Cursor’s command palette to filter delivery commands. Consumers document **branch**, **verification commands**, and **stack skills** in root **`AGENTS.md`** and **`skillsync.config.json`**.
 
-## Phase map
+## Belts
+
+### Story (default daily path)
 
 | Phase | Command | Harness (read one) | Skills (only when applicable) |
 |-------|---------|-------------------|-------------------------------|
 | Branch | consumer wrapper | — | — |
-| Initiative (optional) | `/ss-roadmap` | — | [`major-feature-roadmap`](../skills/engineering/major-feature-roadmap/SKILL.md) (draft step); lens gates → feature pack (`.harness/initiatives/<slug>/`) → publish |
-| Architecture (optional) | `/ss-arch-plan` | — | [`arch-plan`](../skills/engineering/arch-plan/SKILL.md) — living HTML plan (source of truth); Jira epic keys join stages; refresh status on run |
-| Security posture (optional) | `/ss-security-plan` | [`harness-security-assess.md`](./harness-security-assess.md) when whole-plugin health | [`security-plan`](../skills/engineering/security-plan/SKILL.md) — living HTML posture; optional Stage 2 assess (Semgrep + deps + Wordfence); does not replace `/ss-security-audit` |
-| UI/UX plan (optional) | `/ss-ui-ux-plan` | — | [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md) — living HTML UX (source of truth); before `/ss-plan` when UI-heavy |
 | Plan | `/ss-plan` | [`harness-planner-tdd.md`](./harness-planner-tdd.md) | 1a: [`grill-me`](../skills/productivity/grill-me/SKILL.md) or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) · 1b: [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) |
-| Slice to issues | `/ss-to-issues` | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
+| Slice to issues | `/ss-to-issues` (optional) | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
 | Implement | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
 | Review | `/ss-review` | [`harness-critic.md`](./harness-critic.md) | auto: [`critic-tdd-testing.md`](./critic-tdd-testing.md) when state has TDD contracts |
-| Security | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
+| Security gate | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
 | Human walkthrough (optional) | `/ss-handoff` | — | [`code-handoff`](../skills/engineering/code-handoff/SKILL.md) — `.harness/code-handoff.html` for human review; after review (ideally after security), before `/ss-submit-pr` |
 | PR / close | `/ss-submit-pr`, `/ss-close-story` | — | linked PR/Jira skills per consumer |
-| Release / GTM (optional) | `/ss-release`, `/ss-release-distribution`, `/ss-release-marketing` | — | [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) · [`release-distribution`](../skills/productivity/release-distribution/SKILL.md) · [`release-marketing`](../skills/productivity/release-marketing/SKILL.md) — post-ship; not a PR gate |
 
 **Legacy:** feature-first planning only → [`harness-planner.md`](./harness-planner.md) (skip grill-tdd).
 
-**UI-heavy story order:** `/ss-ui-ux-plan` (living HTML → lock journeys/surfaces) → `/ss-plan` (journeys seed Behavior & Test Contracts). Skip UI/UX plan for non-UI work.
+### Initiative (enter when major / foggy)
 
-**Structure-in-flux order:** `/ss-arch-plan` (living HTML → lock stages) → optional `/ss-ui-ux-plan` → `/ss-plan` per stage. Skip arch-plan when module shape is already agreed.
+| Phase | Command | Skills / tools |
+|-------|---------|----------------|
+| Initiative entry | `/ss-roadmap` | [`wayfinder`](../skills/engineering/wayfinder/SKILL.md) (phase 0, local HTML, **no Jira**) → [`major-feature-roadmap`](../skills/engineering/major-feature-roadmap/SKILL.md) draft → lens gates → feature pack → publish Jira → [`render-app-map.cjs`](../tools/render-app-map.cjs) |
+| Resume architecture | `/ss-arch-plan` | [`arch-plan`](../skills/engineering/arch-plan/SKILL.md) |
+| Resume UX | `/ss-ui-ux-plan` | [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md) |
+| Resume trust posture | `/ss-security-plan` | [`security-plan`](../skills/engineering/security-plan/SKILL.md); [`harness-security-assess.md`](./harness-security-assess.md) when whole-plugin health |
 
-**Initiative order (major feature, e.g. AI chatbot):** `/ss-roadmap` → draft initiative markdown (**no Jira create**) → lens gates → feature pack under `.harness/initiatives/<slug>/` → lock required lens HTML → **then** publish Jira epics + v1 stories and stamp keys into the pack → `/ss-plan` per v1 story. Early steps may **read** existing Jira for context only. Global plan HTML stays plugin-wide; pack files are initiative-scoped.
+**Enter Initiative when:** multi-epic feature, destination foggy, or structure/UX/trust still undecided before stories. **Skip** and stay on Story when the story is already clear.
 
-**Security posture order:** `/ss-security-plan` (living HTML → hardening stages; optional whole-plugin **assess**) when trust model is unclear or health is requested; **every PR** still runs `/ss-security-audit` after review. Do not fold the PR audit into the posture HTML. Do not run Wordfence/full Semgrep on every PR.
+**Roadmap cadence:** 0 wayfind (optional) → 1 draft markdown (**no Jira**) → 2 pack → 3 lock required lenses → 4 publish Jira → 5 `render-app-map.cjs` → 6 `/ss-plan` per v1 story. Global plan HTML stays plugin-wide; pack files are initiative-scoped. Grand plan: `.harness/app-map.html` ([`app-map`](../skills/engineering/app-map/SKILL.md)).
 
-**Release / go-to-market order:** after merge or tag (or on user request) → `/ss-release` (brief → demo seed / end-to-end (E2E) proof → channel pack → anti-slop). Partial: `/ss-release-distribution` or `/ss-release-marketing`. Does **not** block `/ss-submit-pr`.
+**Posture vs audit:** `/ss-security-plan` does not replace `/ss-security-audit` on every PR.
+
+### Ship (enter after merge)
+
+| Phase | Command | Skills |
+|-------|---------|--------|
+| Release / GTM | `/ss-release`, `/ss-release-distribution`, `/ss-release-marketing` | [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) · [`release-distribution`](../skills/productivity/release-distribution/SKILL.md) · [`release-marketing`](../skills/productivity/release-marketing/SKILL.md) |
+
+**Enter Ship when:** post-merge go-to-market. Does **not** block `/ss-submit-pr`.
 
 **Human walkthrough order:** after `/ss-review` PASS (and ideally `/ss-security-audit`) → `/ss-handoff` → human opens `.harness/code-handoff.html` in a browser → `/ss-submit-pr`. Optional; does **not** replace critic or security. Skip when the human already understands the diff.
+
 ## Context budget rules
 
 1. **One harness file per command** — do not chain duplicate harnesses.
@@ -54,14 +65,28 @@ Evidence table: **`## TDD Evidence`** in state.md. Review gates: `critic-tdd-tes
 
 Under **`.cursor/harness/`** when present: `critic-backend.md`, `critic-frontend.md`, `critic-e2e-testing.md`, generator/critic addenda.
 
+## Optional GitNexus (code knowledge graph)
+
+When the **gitnexus** MCP server is available and the repo is indexed, use it for **structural** context — not as a substitute for harness files or verification scripts. Full setup and license notes: [`docs/gitnexus.md`](../docs/gitnexus.md).
+
+| Phase | Prefer |
+|-------|--------|
+| `/ss-arch-plan`, `/ss-plan` | `query`, `context` |
+| `/ss-implement` | `impact` before shared-symbol edits |
+| `/ss-review`, `/ss-submit-pr` | `detect_changes` on the diff |
+| Missing MCP / stale index | Skip — continue the `ss-*` loop |
+
+Do not load GitNexus skills or dump large graph dumps on every turn (context budget). One targeted tool call beats a full schema dump.
+
 ## Optional deterministic tools
 
 Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-setup.md)). Agents use these for mechanical steps; skills/harness files stay authoritative for judgment.
 
 | Phase | Tool |
 |-------|------|
-| Arch / UX / Security / Handoff HTML | `validate-plan-html.cjs --kind arch\|ux\|security\|handoff`; scaffold: `init-plan-html.cjs --kind …` |
+| Arch / UX / Security / wayfinder / app-map / handoff | `validate-plan-html.cjs --kind arch\|ux\|security\|wayfinder\|app-map\|handoff`; scaffold: `init-plan-html.cjs --kind …` |
 | Initiative pack (`/ss-roadmap`) | `init-feature-pack.cjs --slug … --lenses …`, `validate-feature-pack.cjs --slug …` |
+| Grand plan / mind map | `render-app-map.cjs` (deterministic; do not freehand mind-map JSON) |
 | Plan (post-write) | `validate-state.cjs --mode plan` |
 | New story | `init-state.cjs --task "KEY title"` |
 | Implement / review | `run-verification.cjs`, `tdd-audit.cjs`, `re-break.cjs` |

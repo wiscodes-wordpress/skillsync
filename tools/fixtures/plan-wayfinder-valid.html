@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Wayfinder — Demo chatbot</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script type="module">
+			import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+			mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+		</script>
+		<style>
+			html { scroll-behavior: smooth; }
+			section[id] { scroll-margin-top: 5rem; }
+		</style>
+	</head>
+	<body class="bg-stone-50 text-slate-900 font-sans">
+		<nav class="sticky top-0 z-20 border-b border-stone-200 bg-stone-50/95 px-4 py-2 text-xs">
+			<a href="#destination">Destination</a>
+			<a href="#notes">Notes</a>
+			<a href="#decisions">Decisions</a>
+			<a href="#fog">Fog</a>
+			<a href="#outofscope">Out of scope</a>
+			<a href="#frontier">Frontier</a>
+			<a href="#graph">Graph</a>
+		</nav>
+		<main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
+			<header>
+				<p class="text-xs uppercase tracking-wider">Wayfinder · <span class="font-mono">demo-chat</span></p>
+				<h1 class="font-serif text-3xl">Wayfinder</h1>
+				<p class="text-sm">Local decisions only — no Jira until /ss-roadmap publish.</p>
+			</header>
+			<section id="destination">
+				<h2 class="font-serif text-2xl">Destination</h2>
+				<p>A clear v1 chatbot scope with agreed surfaces and trust boundaries ready for lens plans.</p>
+			</section>
+			<section id="notes">
+				<h2 class="font-serif text-2xl">Notes</h2>
+				<p>WordPress plugin; prefer grill-me for HITL tickets.</p>
+			</section>
+			<section id="decisions">
+				<h2 class="font-serif text-2xl">Decisions so far</h2>
+				<ul>
+					<li>Use block editor only for the composer — no classic metabox.</li>
+				</ul>
+			</section>
+			<section id="fog">
+				<h2 class="font-serif text-2xl">Not yet specified</h2>
+				<ul>
+					<li>Streaming vs request/response for model calls.</li>
+				</ul>
+			</section>
+			<section id="outofscope">
+				<h2 class="font-serif text-2xl">Out of scope</h2>
+				<ul>
+					<li>Mobile native apps.</li>
+				</ul>
+			</section>
+			<section id="frontier">
+				<h2 class="font-serif text-2xl">Frontier</h2>
+				<table>
+					<tr><th>Ticket</th><th>Type</th><th>Status</th><th>Blocked by</th></tr>
+					<tr>
+						<td>Pick model provider</td>
+						<td>grilling</td>
+						<td>open</td>
+						<td>none</td>
+					</tr>
+				</table>
+			</section>
+			<section id="graph">
+				<h2 class="font-serif text-2xl">Blocking graph</h2>
+				<pre class="mermaid">flowchart TD
+  t1[Pick model provider]
+  t2[Draft trust surfaces]
+  t1 --> t2
+</pre>
+			</section>
+		</main>
+	</body>
+</html>
