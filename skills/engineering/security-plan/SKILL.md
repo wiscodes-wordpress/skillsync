@@ -28,7 +28,7 @@ Stage 2 probes: surface census, **Semgrep**, npm/composer **deps**, **Wordfence 
 
 ## Source of truth
 
-The living HTML (`.harness/security-posture.html`) is **the** source of truth for security posture: surface inventory, open/resolved trust decisions, hardening stages, optional epic/story keys, machine **assess** / CVE snapshots, and **status as shown** after refresh.
+The living HTML (pack `security-posture.html` or legacy `.harness/security-posture.html`) is **the** source of truth for security posture: surface inventory, open/resolved trust decisions, hardening stages, optional epic/story keys, machine **assess** / CVE snapshots, and **status as shown** after refresh.
 
 **Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — same craft as [`arch-plan`](../arch-plan/SKILL.md) (sticky nav, Phase, At a glance, Current|Target, decisions, stages). Browser HTML is the deliverable — not a chat TODO dump or Cursor Canvas.
 
@@ -79,7 +79,7 @@ Optional — same altitude as arch-plan. Run when posture is unclear, hardening 
 
 ## On every `/ss-security-plan` run
 
-1. **Locate** `.harness/security-posture.html`.
+1. **Locate** the living HTML (resolve order below / `tools/lib/plan-paths.cjs`).
 2. **If stages/finish-line have keys** → refresh **Jira → HTML** only (same rules as arch-plan); rewrite; reopen.
 3. **If assess requested** → run `security-assess.cjs --write-state`; fold into `#assess` + bottom `#status`.
 4. Then continue draft / decision loop / publish / handoff.
@@ -87,7 +87,15 @@ Optional — same altitude as arch-plan. Run when posture is unclear, hardening 
 
 ## Living HTML path
 
-**Stable path:** `.harness/security-posture.html`  
+**Resolve order** (see `tools/lib/plan-paths.cjs`):
+
+1. Path from consumer **`docs/agents/domain.md`** when it documents the security SoT / `#gate`  
+2. Initiative pack: **`.harness/initiatives/<slug>/security-posture.html`** (`--slug`, or the only pack under `initiatives/`)  
+3. Legacy single-file: **`.harness/security-posture.html`**  
+4. Config override: `skillsync.config.json` → `planHtml.security`
+
+Initiative-scoped posture is preferred when the trust surface belongs to that train. `#gate` lives in whichever file `domain.md` (or the active pack) points at — still the PR audit pointer, not a second SoT.
+
 **Fallback:** `$TMPDIR` / `/tmp` → `security-posture-<repo-slug>.html`
 
 Optionally lock-copy to `docs/security/security-posture.html` when the user asks.
@@ -101,7 +109,7 @@ Scaffold: [HTML-REPORT.md](HTML-REPORT.md). Stages: [STAGES.md](STAGES.md). Chec
 1. **`AGENTS.md`**, **`docs/agents/issue-tracker.md`**, **`docs/agents/domain.md`**
 2. **`CONTEXT.md`**, **`docs/adr/`** (authz / data / public API decisions)
 3. Entrypoints: REST, ajax, admin_post, cron, uploads, remote fetch, FE bundles
-4. Existing **`.harness/security-posture.html`** and optionally **`.harness/architecture-plan.html`** (trust seams)
+4. Existing **security-posture.html** / **architecture-plan.html** (pack or harness root — check `domain.md` / pack first)
 5. **`skillsync.config.json` → `securityAssess`** (`wordpressRoot`, `wordfence`)
 6. Last **`.harness/security-assess.json`** / `## Security Assess` when present
 7. Stack skills **on demand** only (`wordpress-security-validation`, fallow) — not every run
@@ -154,7 +162,7 @@ Mirror into `.harness/state.md` when present:
 ```markdown
 ## Security Posture
 
-- **HTML:** `.harness/security-posture.html`  ← posture source of truth
+- **HTML:** resolved `security-posture.html` (pack or root)  ← posture source of truth
 - **Status:** draft | agreed
 - **Last assess:** <date or —> (`.harness/security-assess.json`)
 - **Last Jira refresh:** <date or —>

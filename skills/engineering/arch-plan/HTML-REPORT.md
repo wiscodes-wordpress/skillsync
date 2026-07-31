@@ -10,7 +10,7 @@ Self-contained HTML briefing for **project/plugin direction**. This file is the 
 
 | Format | Use |
 |--------|-----|
-| **`.harness/architecture-plan.html`** | plan source of truth — decisions, diagrams, stages, keys, refreshed status |
+| **`architecture-plan.html`** (`.harness/initiatives/<slug>/` or legacy `.harness/`) | plan source of truth — decisions, diagrams, stages, keys, refreshed status |
 | Markdown ADRs / `CONTEXT.md` | Narrow permanence for *why* / glossary |
 | Cursor Canvas | Optional chat-side scratch only — **never** replace the HTML source of truth |
 

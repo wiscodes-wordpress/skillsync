@@ -10,7 +10,7 @@ Self-contained HTML briefing for **security posture**. This file is the **postur
 
 | Format | Use |
 |--------|-----|
-| **`.harness/security-posture.html`** | posture source of truth |
+| **`security-posture.html`** (`.harness/initiatives/<slug>/` or legacy `.harness/`) | posture source of truth |
 | ADRs | Load-bearing *why* |
 | `/ss-security-audit` + state Evidence | Ship gate |
 | Chat TODO list / Canvas | Not a substitute for the HTML |

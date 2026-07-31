@@ -6,8 +6,8 @@ Plan flows and surfaces; living **HTML** is the **plan source of truth**. Does *
 
 In **Agent** mode, follow [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md):
 
-1. **Locate** `.harness/ux-plan.html` (or `.harness/ux-<slug>.html` / fallback path in the skill). **Initiative pack:** when working under `/ss-roadmap` (`.harness/initiatives/<slug>/` exists for this feature), read and rewrite `ux.html` **inside the pack** instead, then update the hub lens row.
-2. **If missing (global harness):** `node .cursor/vendor/skillsync/tools/init-plan-html.cjs . --kind ux --product "…" --task "…"`.
+1. **Locate** the living HTML via `docs/agents/domain.md`, then `.harness/initiatives/<slug>/ux-plan.html`, then legacy `.harness/ux-plan.html` — see [`ui-ux-planner`](../skills/engineering/ui-ux-planner/SKILL.md) / `tools/lib/plan-paths.cjs`. Do not create new flat `.harness/ux-<slug>.html` files.
+2. **If missing:** `node .cursor/vendor/skillsync/tools/init-plan-html.cjs . --kind ux [--slug <slug>] --product "…" --task "…"`.
 3. Frame the primary job, actors, success, non-goals, constraints.
 4. Map efficient journeys (`step > step > outcome`); cut unnecessary steps.
 5. Inventory surfaces (primary action + empty/loading/error/success).

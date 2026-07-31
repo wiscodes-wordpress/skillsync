@@ -16,7 +16,7 @@ Set **project or plugin architecture direction** as a visual **living HTML** bri
 
 ## Source of truth
 
-The living HTML (`.harness/architecture-plan.html`) is **the** source of truth for this architecture plan: target shape, diagrams, open/resolved decisions, phased rollout, epic/story keys, and **status as shown** after refresh.
+The living HTML (pack `architecture-plan.html` or legacy `.harness/architecture-plan.html`) is **the** source of truth for this architecture plan: target shape, diagrams, open/resolved decisions, phased rollout, epic/story keys, and **status as shown** after refresh.
 
 **Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — sticky nav, Phase + At a glance, Current|Target side by side, compact decisions, stages with keys. That browser HTML is the deliverable; do **not** substitute a Cursor Canvas or chat-only summary for the source of truth.
 
@@ -58,7 +58,7 @@ Use [`improve-codebase-architecture/LANGUAGE.md`](../improve-codebase-architectu
 
 ## On every `/ss-arch-plan` run
 
-1. **Locate** the living HTML (path below).
+1. **Locate** the living HTML (resolve order below / `tools/lib/plan-paths.cjs`).
 2. **If it exists and any stage has an epic key** → **Refresh status** (see below), rewrite HTML, reopen/tell user to refresh the browser.
 3. **Then** continue: draft (if missing), decision loop, lock/publish, or handoff — as the user needs.
 4. If HTML exists but **no** epic keys yet → skip Jira; resume planning.
@@ -81,8 +81,14 @@ Compare at **epic** for portfolio/home; at **story** for stage progress when sto
 
 ## Living HTML path
 
-**Stable path (prefer):** `.harness/architecture-plan.html`  
-Create `.harness/` if needed. One file — rewrite in place.
+**Resolve order** (see `tools/lib/plan-paths.cjs`):
+
+1. Path from consumer **`docs/agents/domain.md`** when it documents the arch SoT  
+2. Initiative pack: **`.harness/initiatives/<slug>/architecture-plan.html`** (`--slug`, or the only pack under `initiatives/`)  
+3. Legacy single-file: **`.harness/architecture-plan.html`**  
+4. Config override: `skillsync.config.json` → `planHtml.arch`
+
+Create the pack with `init-feature-pack.cjs` (or mkdir + rewrite). One file per train — **rewrite in place**; no timestamped copies.
 
 **Fallback:** `$TMPDIR` / `/tmp` / `%TEMP%` → `architecture-plan-<repo-slug>.html` (stable name, not timestamped).
 
@@ -100,7 +106,7 @@ Read when present:
 2. **`CONTEXT.md`** / **`CONTEXT-MAP.md`**, **`docs/adr/`**
 3. Entrypoints and package layout (plugin bootstrap, `src/`, public APIs)
 4. Parent initiative or capability brief from chat
-5. Existing **`.harness/architecture-plan.html`** (always check first)
+5. Existing **architecture-plan.html** (pack or harness root — always check `domain.md` / pack first)
 
 Stack skills **only when** the consumer is clearly that stack and the question needs them.
 
@@ -170,7 +176,7 @@ Mirror into state when `.harness/state.md` exists:
 ```markdown
 ## Architecture Plan
 
-- **HTML:** `.harness/architecture-plan.html`  ← plan source of truth
+- **HTML:** resolved `architecture-plan.html` (pack or root)  ← plan source of truth
 - **Status:** draft | agreed
 - **Locked:** <date or —>
 - **Last Jira refresh:** <date or —>

@@ -17,8 +17,8 @@ Set **how we intend to be secure** as a living HTML briefing (`.harness/security
 
 In **Agent** mode, follow [`security-plan`](../skills/engineering/security-plan/SKILL.md):
 
-1. **Locate** `.harness/security-posture.html`. **Initiative pack:** when working under `/ss-roadmap` (`.harness/initiatives/<slug>/` exists for this feature), read and rewrite `security.html` **inside the pack** instead, then update the hub lens row. The global posture file stays plugin-wide.
-2. **If missing (global harness):** `node .cursor/vendor/skillsync/tools/init-plan-html.cjs . --kind security --product "…" --task "…"`.
+1. **Locate** the living HTML via `docs/agents/domain.md`, then `.harness/initiatives/<slug>/security-posture.html`, then legacy `.harness/security-posture.html` — see [`security-plan`](../skills/engineering/security-plan/SKILL.md) / `tools/lib/plan-paths.cjs`. `#gate` lives in that same file.
+2. **If missing:** `node .cursor/vendor/skillsync/tools/init-plan-html.cjs . --kind security [--slug <slug>] --product "…" --task "…"`.
 3. **If stages/finish-line have keys** — refresh **Jira → HTML** only. Never push status back to Jira.
 4. **If the user asks for assess / deep / whole-plugin health** (or no recent `#assess` and they want health):
    - Read [`harness-security-assess.md`](../harness/harness-security-assess.md).

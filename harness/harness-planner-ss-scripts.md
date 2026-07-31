@@ -268,7 +268,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 - `/ss-roadmap` orchestrates: draft major-feature-roadmap (**markdown only, no Jira create**) → lens gates → pack hub → lock lens plans → **then** publish Jira epics/stories and stamp keys → `/ss-plan`.
 - `init-feature-pack.cjs --slug <slug> [--epics …] [--lenses …]` writes `.harness/initiatives/<slug>/index.html` (lens table with `data-lens` / `data-required` / `data-status`, epic key table with `data-epic`). Refuses overwrite without `--force`.
 - `validate-feature-pack.cjs --slug <slug>`: required lens files must exist; every `data-epic` in a lens file must be listed in the hub; warn on stale hub status.
-- Plan commands write into the pack (`architecture.html` / `ux.html` / `security.html`) when the initiative pack exists.
+- Plan commands write into the pack (`architecture-plan.html` / `ux-plan.html` / `security-posture.html`) when the initiative pack exists.
 
 ---
 
