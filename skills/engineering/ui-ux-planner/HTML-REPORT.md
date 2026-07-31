@@ -10,7 +10,7 @@ Self-contained HTML briefing for **product UX** (flows + surfaces). This file is
 
 | Format | Use |
 |--------|-----|
-| **`.harness/ux-plan.html`** | plan source of truth — journeys, surfaces, states, decisions, open questions |
+| **`ux-plan.html`** (`.harness/initiatives/<slug>/` or legacy `.harness/`) | plan source of truth — journeys, surfaces, states, decisions, open questions |
 | Optional `docs/ux/ux-<slug>.md` | Thin paste/export for tracker — **not** a second source of truth |
 | Cursor Canvas | Optional chat-side scratch only — **never** replace the HTML source of truth |
 

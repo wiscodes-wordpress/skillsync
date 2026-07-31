@@ -53,8 +53,10 @@ Read consumer docs before planning:
 **Initiative spec path** (pick first match):
 
 1. Path from `docs/agents/domain.md` or `docs/agents/initiative-specs.md`
-2. Existing convention in repo (e.g. `docs/**/spec-*-initiative-*.md`)
-3. Default: **`docs/initiatives/initiative-<slug>.md`**
+2. Existing convention in repo (e.g. `.harness/initiatives/<slug>/initiative.md`)
+3. Default: **`.harness/initiatives/<slug>/initiative.md`**
+
+Living plan HTML for the same train lives **beside** that file (`architecture-plan.html`, `ux-plan.html`, `security-posture.html`) — see `docs/consumer-setup.md` harness layout. Do not leave plan HTML at `.harness/` root when an initiative pack exists.
 
 Use the project's **domain glossary** throughout. Respect ADRs in the affected area.
 

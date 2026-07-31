@@ -17,7 +17,7 @@ Use as the `description` field for `jira_create_issue` (`issue_type: Epic`).
 
 ## Spec source
 
-`[path/to/docs/initiatives/initiative-<slug>.md]` — section "[Capability name]"
+`[path/to/.harness/initiatives/<slug>/initiative.md]` — section "[Capability name]"
 
 ## UX scope
 

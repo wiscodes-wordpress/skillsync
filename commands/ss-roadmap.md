@@ -28,7 +28,7 @@ In **Agent** mode:
    node .cursor/vendor/skillsync/tools/render-app-map.cjs . --title "<product>"
    ```
 
-1. **Draft roadmap (no Jira create)** — if a wayfinder map exists for this slug, read Destination + Decisions so far first. Follow [`major-feature-roadmap`](../skills/engineering/major-feature-roadmap/SKILL.md) through **synthesize → approval Q&A → write initiative spec markdown** only. Stop before “Create Jira epics / v1 stories”. Optionally **search/read** existing epics for context. Resolve or defer all `Blocks: v1` ambiguities. Note the slug from the spec path (`docs/initiatives/initiative-<slug>.md`).
+1. **Draft roadmap (no Jira create)** — if a wayfinder map exists for this slug, read Destination + Decisions so far first. Follow [`major-feature-roadmap`](../skills/engineering/major-feature-roadmap/SKILL.md) through **synthesize → approval Q&A → write initiative spec markdown** only. Stop before “Create Jira epics / v1 stories”. Optionally **search/read** existing epics for context. Resolve or defer all `Blocks: v1` ambiguities. Note the slug from the spec path (`.harness/initiatives/<slug>/initiative.md`).
 
 2. **Lens gates** — from the draft, decide which lenses this initiative requires. Recommend, then confirm with the user:
 
@@ -46,9 +46,9 @@ In **Agent** mode:
      --slug <slug> --lenses arch,ux,security
    ```
 
-   Omit `--epics` until publish (or pass draft titles only as comments in the hub). Writes `.harness/initiatives/<slug>/index.html`. Lens files stay missing until their commands run.
+   Omit `--epics` until publish (or pass draft titles only as comments in the hub). Writes `.harness/initiatives/<slug>/` (`initiative.md`, `index.html` hub, empty `assets/`). Lens HTML stays missing until their commands run.
 
-4. **Run required lens commands in order** — `/ss-arch-plan` → `/ss-ui-ux-plan` → `/ss-security-plan`, each writing **into the pack** (`architecture.html` / `ux.html` / `security.html`) instead of the global `.harness/*.html`, and validating with `validate-plan-html.cjs --file`. Stages / journeys / hardening may use **draft** titles until keys exist; `#phase` can say “keys pending publish”. After each lens lands, rewrite the hub lens row (`missing → draft → locked`). After lenses lock:
+4. **Run required lens commands in order** — `/ss-arch-plan` → `/ss-ui-ux-plan` → `/ss-security-plan`, each writing **into the pack** (`architecture-plan.html` / `ux-plan.html` / `security-posture.html`) instead of the global `.harness/*.html`, and validating with `validate-plan-html.cjs --file`. Stages / journeys / hardening may use **draft** titles until keys exist; `#phase` can say “keys pending publish”. After each lens lands, rewrite the hub lens row (`missing → draft → locked`). After lenses lock:
 
    ```bash
    node .cursor/vendor/skillsync/tools/render-app-map.cjs . --title "<product>"
@@ -69,6 +69,6 @@ In **Agent** mode:
 
 **One-pass roadmap (no lenses):** when step 2 gates require no lens, publish straight from the approved draft (step 5) — that is the whole flow; there is no separate roadmap command.
 
-**Global vs pack:** plugin-wide posture stays in the global `.harness/architecture-plan.html` / `security-posture.html`; pack files are **initiative-scoped**. When both exist, the pack wins for stories under this initiative. Grand plan: `.harness/app-map.html`.
+**Pack layout:** living plans live under `.harness/initiatives/<slug>/` (`architecture-plan.html`, `ux-plan.html`, `security-posture.html` beside `initiative.md`). Prefer the pack for that train; do not spawn flat `.harness/ux-<slug>.html`. Legacy root `.harness/*.html` is only for simple single-plan repos. Grand plan: `.harness/app-map.html`.
 
 Available as `/ss-roadmap` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

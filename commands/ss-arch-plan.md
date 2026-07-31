@@ -6,8 +6,8 @@ Set **project/plugin architecture direction**. The living HTML is the **plan sou
 
 In **Agent** mode, follow [`arch-plan`](../skills/engineering/arch-plan/SKILL.md):
 
-1. **Locate** `.harness/architecture-plan.html` (or fallback path in the skill). **Initiative pack:** when working under `/ss-roadmap` (`.harness/initiatives/<slug>/` exists for this feature), read and rewrite `architecture.html` **inside the pack** instead, then update the hub lens row.
-2. **If missing (global harness):** scaffold chrome with `node .cursor/vendor/skillsync/tools/init-plan-html.cjs . --kind arch --product "…" --task "…"` (refuse overwrite unless `--force`). Pack lenses still start from agent draft into the pack path.
+1. **Locate** the living HTML via `docs/agents/domain.md`, then `.harness/initiatives/<slug>/architecture-plan.html` (active pack / `--slug`), then legacy `.harness/architecture-plan.html` — see [`arch-plan`](../skills/engineering/arch-plan/SKILL.md) / `tools/lib/plan-paths.cjs`. Rewrite that file; update the pack hub lens row when present.
+2. **If missing:** scaffold with `node .cursor/vendor/skillsync/tools/init-plan-html.cjs . --kind arch [--slug <slug>] --product "…" --task "…"` (refuse overwrite unless `--force`).
 3. **If stages have epic/story keys** — refresh **Jira → HTML** only (fetch via Atlassian MCP; rewrite status on the same file). Never push status back to Jira.
 4. If no filled content yet — explore repo, `CONTEXT.md`, ADRs; **optional GitNexus** (`query` / `context` when MCP indexed — [`docs/gitnexus.md`](../docs/gitnexus.md)); draft per [`HTML-REPORT.md`](../skills/engineering/arch-plan/HTML-REPORT.md) (sticky nav, Phase, **Start → finish**, Current|Target, decisions, stages). Open the file; tell the user the path.
 5. **Follow-ups** — one decision at a time; after every material answer, **rewrite the same HTML**.

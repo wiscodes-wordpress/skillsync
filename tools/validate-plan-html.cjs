@@ -29,6 +29,7 @@ const {
 	readOptionalConfig,
 	assertOrExit,
 } = require('./lib/ss-tools.cjs');
+const { resolvePlanHtmlPath } = require('./lib/plan-paths.cjs');
 
 /**
  * @typedef {object} PlanKind
@@ -528,16 +529,20 @@ function validatePlanHtml({ html, kind, mode = 'ready', assessReport = null }) {
  * @param {string} consumerRoot
  * @param {string} kind
  * @param {import('./lib/ss-tools.cjs').SkillsyncConfig | null} config
+ * @param {string | undefined} [slug]
  * @returns {string}
  */
-function defaultPlanPath(consumerRoot, kind, config) {
-	const configured = /** @type {Record<string, string> | undefined} */ (
-		/** @type {any} */ (config)?.planHtml
-	)?.[kind];
-	if (configured) {
-		return path.resolve(consumerRoot, configured);
+function defaultPlanPath(consumerRoot, kind, config, slug) {
+	if (kind === 'wayfinder' || kind === 'app-map') {
+		const configured = /** @type {Record<string, string> | undefined} */ (
+			/** @type {any} */ (config)?.planHtml
+		)?.[kind];
+		if (configured) {
+			return path.resolve(consumerRoot, configured);
+		}
+		return path.join(harnessDir(consumerRoot), KINDS[kind].file);
 	}
-	return path.join(harnessDir(consumerRoot), KINDS[kind].file);
+	return resolvePlanHtmlPath(consumerRoot, kind, { config, slug });
 }
 
 /**
@@ -601,13 +606,14 @@ function main() {
 	let kind = typeof flags.kind === 'string' ? flags.kind : null;
 	/** @type {string | null} */
 	let file = typeof flags.file === 'string' ? path.resolve(consumerRoot, flags.file) : null;
+	const slug = typeof flags.slug === 'string' ? flags.slug : undefined;
 
 	if (!kind && file) {
 		kind = kindFromFilename(file);
 	}
 	if (!kind) {
 		const present = Object.keys(KINDS).filter((k) =>
-			fs.existsSync(defaultPlanPath(consumerRoot, k, config)),
+			fs.existsSync(defaultPlanPath(consumerRoot, k, config, slug)),
 		);
 		assertOrExit(
 			present.length === 1,
@@ -623,7 +629,7 @@ function main() {
 	);
 
 	if (!file) {
-		file = defaultPlanPath(consumerRoot, kind, config);
+		file = defaultPlanPath(consumerRoot, kind, config, slug);
 	}
 	if (!fs.existsSync(file)) {
 		console.error(`Missing ${file}`);

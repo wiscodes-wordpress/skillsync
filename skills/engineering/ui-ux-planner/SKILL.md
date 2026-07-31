@@ -18,7 +18,7 @@ The HTML is the **source of truth**. **`/ss-plan`** consumes journeys from it fo
 
 ## Source of truth
 
-The living HTML (`.harness/ux-plan.html`) is **the** source of truth for this UX plan: primary job, journeys, surfaces, states, design decisions, accessibility, and open questions.
+The living HTML (pack `ux-plan.html` or legacy `.harness/ux-plan.html`) is **the** source of truth for this UX plan: primary job, journeys, surfaces, states, design decisions, accessibility, and open questions.
 
 **Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — sticky nav, Job, Journeys, Surfaces, States, Decisions, Handoff. That browser HTML is the deliverable; do **not** substitute a Cursor Canvas or chat-only summary for the source of truth.
 
@@ -67,10 +67,16 @@ Foundations and decision rules: [foundations.md](foundations.md). HTML scaffold:
 
 ## Living HTML path
 
-**Stable path (prefer):** `.harness/ux-plan.html`  
-Create `.harness/` if needed. One active file — rewrite in place.
+**Resolve order** (see `tools/lib/plan-paths.cjs`):
 
-**Per-slug (when multiple UX plans coexist):** `.harness/ux-<slug>.html` — still rewrite that file in place; do not timestamp.
+1. Path from consumer **`docs/agents/domain.md`** when it documents the UX SoT  
+2. Initiative pack: **`.harness/initiatives/<slug>/ux-plan.html`** (`--slug`, or the only pack under `initiatives/`)  
+3. Legacy single-file: **`.harness/ux-plan.html`**  
+4. Config override: `skillsync.config.json` → `planHtml.ux`
+
+**Do not** use flat `.harness/ux-<slug>.html` for new plans — put multi-train UX inside `initiatives/<slug>/ux-plan.html`.
+
+Create the pack with `init-feature-pack.cjs`. One file per train — **rewrite in place**; no timestamped copies.
 
 **Fallback:** `$TMPDIR` / `/tmp` / `%TEMP%` → `ux-plan-<repo-slug>.html` (stable name, not timestamped).
 
@@ -86,7 +92,7 @@ Read when present:
 2. **`CONTEXT.md`**, **`docs/adr/`**
 3. Existing UI in the same product area (patterns to match — Jakob’s Law)
 4. Parent story or capability brief from chat (keys optional — tracker-agnostic)
-5. Existing **`.harness/ux-plan.html`** or `.harness/ux-*.html` (always check first)
+5. Existing **ux-plan.html** (pack or harness root — always check `domain.md` / pack first; migrate legacy `.harness/ux-*.html` into the pack when found)
 6. Legacy **`docs/ux/ux-*.md`** — migrate content into HTML if HTML is missing and markdown is the only artifact
 
 Also mirror a short pointer into **`.harness/state.md`** when that file already exists for the story:
@@ -94,7 +100,7 @@ Also mirror a short pointer into **`.harness/state.md`** when that file already 
 ```markdown
 ## UX Plan
 
-- **HTML:** `.harness/ux-plan.html`  ← plan source of truth
+- **HTML:** `.harness/initiatives/<slug>/ux-plan.html` (or resolved path)  ← plan source of truth
 - **Status:** agreed | draft
 - **Slug:** <slug>
 - **Export (optional):** `docs/ux/ux-<slug>.md`

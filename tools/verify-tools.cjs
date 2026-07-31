@@ -583,14 +583,51 @@ function main() {
 	const packDirPath = path.join(packConsumer, '.harness', 'initiatives', 'ai-chatbot');
 	fs.copyFileSync(
 		path.join(fixturesDir, 'plan-arch-valid.html'),
-		path.join(packDirPath, 'architecture.html'),
+		path.join(packDirPath, 'architecture-plan.html'),
 	);
 	fs.copyFileSync(
 		path.join(fixturesDir, 'plan-security-valid.html'),
-		path.join(packDirPath, 'security.html'),
+		path.join(packDirPath, 'security-posture.html'),
 	);
 	runTool(validateFeaturePackTool, [packConsumer, '--slug', 'ai-chatbot']);
 	console.log('OK: feature-pack init + required-lens gate + key parity pass');
+
+	// Pack-aware init-plan-html --slug writes into the initiative folder.
+	const packInitConsumer = makeTempConsumer();
+	runTool(initFeaturePack, [packInitConsumer, '--slug', 'demo-pack', '--lenses', 'arch']);
+	runTool(initPlanHtml, [
+		packInitConsumer,
+		'--kind',
+		'arch',
+		'--slug',
+		'demo-pack',
+		'--product',
+		'Demo',
+		'--task',
+		'DEMO-2',
+	]);
+	const packArch = path.join(
+		packInitConsumer,
+		'.harness',
+		'initiatives',
+		'demo-pack',
+		'architecture-plan.html',
+	);
+	if (!fs.existsSync(packArch)) {
+		console.error(`init-plan-html --slug: expected ${packArch}`);
+		failed = true;
+	} else {
+		runTool(validatePlanHtmlTool, [
+			packInitConsumer,
+			'--kind',
+			'arch',
+			'--slug',
+			'demo-pack',
+			'--mode',
+			'structure',
+		]);
+		console.log('OK: init-plan-html --slug writes into initiative pack');
+	}
 
 	const featurePackLib = require(validateFeaturePackTool);
 	const hubHtml = fs.readFileSync(path.join(packDirPath, 'index.html'), 'utf8');
@@ -646,6 +683,7 @@ function main() {
 	fs.rmSync(releaseConsumer, { recursive: true, force: true });
 	fs.rmSync(planHtmlConsumer, { recursive: true, force: true });
 	fs.rmSync(packConsumer, { recursive: true, force: true });
+	fs.rmSync(packInitConsumer, { recursive: true, force: true });
 	fs.rmSync(appMapConsumer, { recursive: true, force: true });
 
 	if (failed) {

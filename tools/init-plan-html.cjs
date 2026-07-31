@@ -5,9 +5,11 @@
  * Usage:
  *   node path/to/skillsync/tools/init-plan-html.cjs [/path/to/consumer-repo] \
  *     --kind arch|ux|security|handoff \
+ *     [--slug ai-chatbot] \
  *     [--product "Demo Plugin"] [--task "DEMO-310 title"] \
  *     [--branch feature/x] [--base main] [--force]
  *
+ * Path resolve: see tools/lib/plan-paths.cjs (initiative pack preferred; harness root fallback).
  * Placeholders only — no AI prose. Refuses overwrite unless --force.
  * After write, runs validate-plan-html --mode structure (must pass).
  *
@@ -20,10 +22,10 @@ const { spawnSync } = require('node:child_process');
 const {
 	parseArgs,
 	resolveConsumerRoot,
-	harnessDir,
 	readOptionalConfig,
 	assertOrExit,
 } = require('./lib/ss-tools.cjs');
+const { resolvePlanHtmlPath } = require('./lib/plan-paths.cjs');
 const { KINDS } = require('./validate-plan-html.cjs');
 
 const TEMPLATE_BY_KIND = {
@@ -37,16 +39,11 @@ const TEMPLATE_BY_KIND = {
  * @param {string} consumerRoot
  * @param {string} kind
  * @param {import('./lib/ss-tools.cjs').SkillsyncConfig | null} config
+ * @param {string | undefined} slug
  * @returns {string}
  */
-function defaultPlanPath(consumerRoot, kind, config) {
-	const configured = /** @type {Record<string, string> | undefined} */ (
-		/** @type {any} */ (config)?.planHtml
-	)?.[kind];
-	if (configured) {
-		return path.resolve(consumerRoot, configured);
-	}
-	return path.join(harnessDir(consumerRoot), KINDS[kind].file);
+function defaultPlanPath(consumerRoot, kind, config, slug) {
+	return resolvePlanHtmlPath(consumerRoot, kind, { config, slug });
 }
 
 /**
@@ -75,7 +72,8 @@ function main() {
 	const templatePath = path.join(__dirname, 'templates', templateName);
 	assertOrExit(fs.existsSync(templatePath), `Missing template ${templatePath}`);
 
-	const outPath = defaultPlanPath(consumerRoot, kind, config);
+	const slug = typeof flags.slug === 'string' ? flags.slug : undefined;
+	const outPath = defaultPlanPath(consumerRoot, kind, config, slug);
 	if (fs.existsSync(outPath) && !flags.force) {
 		console.error(`Refusing to overwrite ${outPath} (use --force).`);
 		process.exit(1);

@@ -20,6 +20,36 @@ Linking a **skill** is not the same as a slash command. **`ss-*`** is the filter
 
 Fog lives in roadmap (local wayfinder HTML); **Jira only at publish**; grand plan `.harness/app-map.html` is **script-generated** (`render-app-map.cjs`).
 
+## Harness layout (living plans)
+
+Living architecture / UX / security plans are **HTML** under **`.harness/`**. Prefer **one folder per initiative** — do not leave multi-train plans as flat root siblings with long suffixes.
+
+```text
+.harness/
+  README.md                         # optional consumer layout note
+  app-map.html                      # plugin grand plan (script-generated)
+  state.md / qa-current.md          # delivery-loop scratch (usually gitignored)
+  code-handoff.html                 # optional PR walkthrough (scratch)
+  specs/                            # epic / story AC markdown (optional)
+  release/                          # channel packs (optional / gitignored)
+  initiatives/<slug>/
+    initiative.md                   # product scope
+    architecture-plan.html          # Arch lens SoT
+    ux-plan.html                    # UX lens SoT
+    security-posture.html           # Security lens SoT (+ `#gate` when this train owns it)
+    assets/                         # optional mockups
+    index.html                      # optional lens status hub (from init-feature-pack)
+```
+
+**Path resolve** for `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` and `init-plan-html.cjs` / `validate-plan-html.cjs`:
+
+1. `docs/agents/domain.md` (consumer path table) when documented  
+2. `.harness/initiatives/<slug>/…` (`--slug`, or the only pack)  
+3. Legacy single-file `.harness/architecture-plan.html` (etc.) for simple one-plan repos  
+4. Optional `skillsync.config.json` → `planHtml.{arch,ux,security}`
+
+Scaffold a pack: `init-feature-pack.cjs --slug <slug> --lenses arch,ux,security`. Document consumer paths in **`docs/agents/domain.md`**.
+
 ## Submodule (recommended)
 
 From the **consumer** repository root:
@@ -231,9 +261,9 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `init-release-brief.cjs` | `/ss-release*` | Scaffold `.harness/release-brief.md` (`--version`, `--force`) |
 | `validate-release-brief.cjs` | `/ss-release*` | Assert brief sections (`--mode structure\|ready`) |
 | `validate-release-pack.cjs` | `/ss-release*` | Assert channel pack files exist and are non-empty |
-| `validate-plan-html.cjs` | lenses / wayfinder / app-map / handoff | Structural lint (`--kind arch\|ux\|security\|wayfinder\|app-map\|handoff`; `--mode structure\|ready`) |
-| `init-plan-html.cjs` | same plan / handoff commands | Chrome-only scaffold under `.harness/` (`--kind`; `--force` to overwrite) |
-| `init-feature-pack.cjs` | `/ss-roadmap` | Scaffold initiative hub `.harness/initiatives/<slug>/index.html` (`--slug`, `--epics`, `--lenses`) |
+| `validate-plan-html.cjs` | lenses / wayfinder / app-map / handoff | Structural lint (`--kind`; `--slug` / `--file`; `--mode structure\|ready`) |
+| `init-plan-html.cjs` | same plan / handoff commands | Chrome-only scaffold (`--kind`; `--slug` → pack; `--force`) |
+| `init-feature-pack.cjs` | `/ss-roadmap` | Scaffold `.harness/initiatives/<slug>/` (`initiative.md`, `index.html`, `assets/`; `--epics`, `--lenses`) |
 | `validate-feature-pack.cjs` | `/ss-roadmap` | Assert required lenses exist + hub/lens epic-key parity (`--slug`) |
 | `render-app-map.cjs` | `/ss-roadmap` | Deterministic `.harness/app-map.html` (Mind-elixir; `--title`) |
 | `verify-tools.cjs` | skillsync CI | Smoke-test tools + fixtures |

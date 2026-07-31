@@ -1,14 +1,19 @@
 #!/usr/bin/env node
 /**
- * Scaffold an initiative feature pack: .harness/initiatives/<slug>/index.html hub.
+ * Scaffold an initiative feature pack under `.harness/initiatives/<slug>/`.
  *
- * The hub joins one roadmap initiative to its living plan lenses (architecture / UX /
- * security posture). Lens HTML files are written later by /ss-arch-plan, /ss-ui-ux-plan,
- * and /ss-security-plan into the same pack directory; this tool writes chrome + data only.
+ * Layout (matches consumer harness architecture):
+ *   initiative.md              — product scope (default SoT path)
+ *   index.html                 — lens status hub (keys + gate table)
+ *   architecture-plan.html     — written later by /ss-arch-plan
+ *   ux-plan.html               — written later by /ss-ui-ux-plan
+ *   security-posture.html      — written later by /ss-security-plan
+ *   assets/                    — optional mockups
  *
  * Usage:
  *   node path/to/skillsync/tools/init-feature-pack.cjs [/path/to/consumer-repo] \
- *     --slug ai-chatbot [--title "AI chatbot"] [--spec docs/initiatives/initiative-ai-chatbot.md] \
+ *     --slug ai-chatbot [--title "AI chatbot"] \
+ *     [--spec .harness/initiatives/ai-chatbot/initiative.md] \
  *     [--epics DEMO-245,DEMO-400] [--lenses arch,ux,security] [--force]
  *
  * --lenses marks which lenses the roadmap gates require; omitted lenses stay optional.
@@ -20,14 +25,23 @@ const path = require('node:path');
 const {
 	parseArgs,
 	resolveConsumerRoot,
-	harnessDir,
 	assertOrExit,
 } = require('./lib/ss-tools.cjs');
+const {
+	PLAN_FILES,
+	initiativePackDir,
+	defaultInitiativeSpecPath,
+} = require('./lib/plan-paths.cjs');
 
 const LENSES = [
-	{ id: 'arch', label: 'Architecture', file: 'architecture.html', command: '/ss-arch-plan' },
-	{ id: 'ux', label: 'UX', file: 'ux.html', command: '/ss-ui-ux-plan' },
-	{ id: 'security', label: 'Security posture', file: 'security.html', command: '/ss-security-plan' },
+	{ id: 'arch', label: 'Architecture', file: PLAN_FILES.arch, command: '/ss-arch-plan' },
+	{ id: 'ux', label: 'UX', file: PLAN_FILES.ux, command: '/ss-ui-ux-plan' },
+	{
+		id: 'security',
+		label: 'Security posture',
+		file: PLAN_FILES.security,
+		command: '/ss-security-plan',
+	},
 ];
 
 /**
@@ -36,7 +50,7 @@ const LENSES = [
  * @returns {string}
  */
 function packDir(consumerRoot, slug) {
-	return path.join(harnessDir(consumerRoot), 'initiatives', slug);
+	return initiativePackDir(consumerRoot, slug);
 }
 
 /**
@@ -106,8 +120,8 @@ function renderHub({ slug, title, spec, epics, requiredLenses }) {
 			<header>
 				<p class="text-xs uppercase tracking-wider">${escapeHtml(slug)}</p>
 				<h1 class="font-serif text-3xl">Initiative — ${escapeHtml(title)}</h1>
-				<p class="text-sm">Roadmap source of truth: <span class="font-mono">${escapeHtml(spec)}</span></p>
-					<p>This hub joins the roadmap to its living plan lenses. Lens files are the plan sources of truth; this page carries status and keys only. Plugin grand plan: <a class="underline" href="../../app-map.html">app-map.html</a>.</p>
+				<p class="text-sm">Product scope: <span class="font-mono">${escapeHtml(spec)}</span></p>
+					<p>This hub joins the roadmap to its living plan lenses (<span class="font-mono">architecture-plan.html</span> / <span class="font-mono">ux-plan.html</span> / <span class="font-mono">security-posture.html</span>). Lens files are the plan sources of truth; this page carries status and keys only. Plugin grand plan: <a class="underline" href="../../app-map.html">app-map.html</a>.</p>
 			</header>
 			<section id="phase">
 				<h2 class="font-serif text-2xl">Phase we are at</h2>
@@ -158,7 +172,7 @@ function main() {
 			? flags.title
 			: slug.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase());
 	const spec =
-		typeof flags.spec === 'string' ? flags.spec : `docs/initiatives/initiative-${slug}.md`;
+		typeof flags.spec === 'string' ? flags.spec : defaultInitiativeSpecPath(slug);
 	const epics =
 		typeof flags.epics === 'string'
 			? flags.epics
@@ -182,14 +196,40 @@ function main() {
 
 	const dir = packDir(consumerRoot, slug);
 	const hubPath = path.join(dir, 'index.html');
+	const initiativePath = path.join(dir, 'initiative.md');
 	if (fs.existsSync(hubPath) && !flags.force) {
 		console.error(`Refusing to overwrite ${hubPath} (use --force).`);
 		process.exit(1);
 	}
 
 	fs.mkdirSync(dir, { recursive: true });
+	fs.mkdirSync(path.join(dir, 'assets'), { recursive: true });
 	fs.writeFileSync(hubPath, renderHub({ slug, title, spec, epics, requiredLenses }), 'utf8');
+
+	if (!fs.existsSync(initiativePath) || flags.force) {
+		const initiativeBody = [
+			`# Initiative: ${title}`,
+			'',
+			`> **Status:** Pack scaffolded — fill outcome, Jira home, and acceptance.`,
+			`>`,
+			`> **Slug:** \`${slug}\``,
+			'',
+			'This file holds **product scope, delivery Tasks, and acceptance**. Living architecture / UX / security plans live beside this file:',
+			'',
+			'| Plan | Path |',
+			'|------|------|',
+			'| Architecture | [`architecture-plan.html`](architecture-plan.html) |',
+			'| UX | [`ux-plan.html`](ux-plan.html) |',
+			'| Security posture | [`security-posture.html`](security-posture.html) |',
+			'',
+			'Mockups (optional): [`assets/`](assets/). Lens status hub: [`index.html`](index.html).',
+			'',
+		].join('\n');
+		fs.writeFileSync(initiativePath, initiativeBody, 'utf8');
+	}
+
 	console.log(hubPath);
+	console.log(initiativePath);
 }
 
 module.exports = { LENSES, packDir, renderHub };
