@@ -4,6 +4,8 @@
 
 **Default:** walk **all Remaining** RED→GREEN cycles (or legacy sprint slices) in one session — do not stop after Cycle 1 and wait for another `/ss-implement` unless blocked or the user scopes down.
 
+**AFK alternative:** [`ss-loop`](./ss-loop.md) — fresh Paseo Cursor agent per cycle ([`docs/ss-loop.md`](../docs/ss-loop.md)).
+
 1. [`ponytail`](../skills/engineering/ponytail/SKILL.md) — full session unless user opts out.
 2. [`harness-generator.md`](../harness/harness-generator.md) — sequential vertical cycles, TDD evidence, and state updates.
 3. **Evidence (Agent, when vendored):** `node .cursor/vendor/skillsync/tools/run-verification.cjs .` · `node .cursor/vendor/skillsync/tools/re-break.cjs . --cmd "…" --paths src/…` per completed cycle.

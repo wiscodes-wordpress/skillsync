@@ -28,6 +28,7 @@ const REQUIRED_TOOLS = [
 	'security-audit.cjs',
 	'security-assess.cjs',
 	'run-verification.cjs',
+	'ss-loop.cjs',
 	're-break.cjs',
 	'publish-slices-from-state.cjs',
 	'jira-close.cjs',
@@ -140,6 +141,60 @@ function main() {
 	]);
 	runTool(path.join(toolsDir, 'run-verification.cjs'), [implementConsumer]);
 	console.log('OK: validate-state implement + run-verification');
+
+	const loopConsumer = makeTempConsumer();
+	fs.mkdirSync(path.join(loopConsumer, '.harness'), { recursive: true });
+	fs.writeFileSync(
+		path.join(loopConsumer, '.harness', 'state.md'),
+		`# Harness state
+
+## Current Task
+
+LOOP-1 dry-run fixture
+
+## Status
+
+implementing
+
+## RED→GREEN Plan
+
+### Cycle 1 — B1
+
+| Field | Content |
+|-------|---------|
+| **Behavior ID** | B1 |
+| **name** | Dry run |
+| **expectation** | run > pass |
+
+## Verification Plan
+
+### Cycle 1
+
+1. \`node -e "process.exit(0)"\`
+
+## Next Action
+
+**Actor:** harness-loop  
+**Do:** AFK Cycle 1.
+
+## Completed / Remaining
+
+**Completed:** (none)  
+**Remaining:** Cycle 1
+`,
+		'utf8',
+	);
+	const loopDry = runTool(path.join(toolsDir, 'ss-loop.cjs'), [
+		loopConsumer,
+		'--dry-run',
+		'--json',
+	]);
+	if (!loopDry.includes('"dryRun": true') || !loopDry.includes('Cycle 1')) {
+		console.error('ss-loop: expected dry-run JSON mentioning Cycle 1');
+		failed = true;
+	} else {
+		console.log('OK: ss-loop dry-run');
+	}
 
 	const initConsumer = makeTempConsumer();
 	runTool(path.join(toolsDir, 'init-state.cjs'), [
@@ -674,6 +729,7 @@ function main() {
 	fs.rmSync(temp, { recursive: true, force: true });
 	fs.rmSync(planConsumer, { recursive: true, force: true });
 	fs.rmSync(implementConsumer, { recursive: true, force: true });
+	fs.rmSync(loopConsumer, { recursive: true, force: true });
 	fs.rmSync(initConsumer, { recursive: true, force: true });
 	fs.rmSync(renderConsumer, { recursive: true, force: true });
 	fs.rmSync(publishConsumer, { recursive: true, force: true });

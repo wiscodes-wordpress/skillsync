@@ -17,7 +17,7 @@ Three altitudes. **Most days use Story only.** Initiative and Ship are enter-whe
 | Branch | consumer wrapper |
 | Plan | [`ss-plan`](./ss-plan.md) — domain grill + TDD grill + `.harness/state.md` |
 | Slice (optional) | [`ss-to-issues`](./ss-to-issues.md) — publish story slices from state; **not** initiative epic publish |
-| Implement | [`ss-implement`](./ss-implement.md) |
+| Implement | [`ss-implement`](./ss-implement.md) (interactive) or [`ss-loop`](./ss-loop.md) (AFK via Paseo + Cursor) |
 | Review | [`ss-review`](./ss-review.md) |
 | PR security gate | [`ss-security-audit`](./ss-security-audit.md) — every PR; not the trust-posture plan |
 | Human walkthrough (optional) | [`ss-handoff`](./ss-handoff.md) — `.harness/code-handoff.html` before PR |
@@ -49,6 +49,7 @@ Not a PR gate. [`ss-release`](./ss-release.md), or partial [`ss-release-distribu
 | [`harness-planner-tdd.md`](../harness/harness-planner-tdd.md) | Default planner |
 | [`harness-planner.md`](../harness/harness-planner.md) | Legacy feature-first |
 | [`harness-generator.md`](../harness/harness-generator.md) | Implement |
+| [`harness-loop.md`](../harness/harness-loop.md) | AFK implement (`/ss-loop`) |
 | [`harness-critic.md`](../harness/harness-critic.md) | Review |
 | [`critic-tdd-testing.md`](../harness/critic-tdd-testing.md) | TDD audit (auto-loaded) |
 | [`harness-security-audit.md`](../harness/harness-security-audit.md) | Security gate (scripts + agent) |
@@ -59,6 +60,10 @@ Local addenda: **`.cursor/harness/`** per consumer.
 ## Optional GitNexus
 
 Structural MCP (`impact`, `detect_changes`, …) during arch / implement / review — see [`docs/gitnexus.md`](../docs/gitnexus.md) and [`ss-flow.md`](../harness/ss-flow.md). Not required for the loop.
+
+## Optional AFK loop (Paseo + Cursor)
+
+After `/ss-plan`, use [`/ss-loop`](./ss-loop.md) instead of interactive `/ss-implement` to walk Remaining cycles unattended. Setup: [`docs/ss-loop.md`](../docs/ss-loop.md).
 
 ## `ss-*` prefix
 

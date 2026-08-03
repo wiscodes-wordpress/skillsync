@@ -1,0 +1,26 @@
+{
+	"terminalAllowlist": [
+		"git status",
+		"git diff",
+		"git log",
+		"git show",
+		"git rev-parse",
+		"node",
+		"npm",
+		"yarn",
+		"pnpm",
+		"npx"
+	],
+	"autoRun": {
+		"allow_instructions": [
+			"Shell commands that only run the repo test suite, a single test file, lint, typecheck, format-check, or skillsync tools under .cursor/vendor/skillsync/tools/ (run-verification, re-break, validate-state, tdd-audit) may run without asking.",
+			"Read-only git commands (status, diff, log, show, rev-parse) may run without asking.",
+			"Editing source and test files under the project tree for the active RED→GREEN cycle may proceed without asking."
+		],
+		"block_instructions": [
+			"Any command that reads or writes .env, credentials, secrets, or SSH keys must ask for approval.",
+			"git push --force, git reset --hard, and production deploys must ask for approval.",
+			"Installing global packages or changing Cursor/Paseo user config outside the repo must ask for approval."
+		]
+	}
+}

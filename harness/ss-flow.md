@@ -14,6 +14,7 @@ Type **`ss`** in Cursor’s command palette to filter delivery commands. Consume
 | Plan | `/ss-plan` | [`harness-planner-tdd.md`](./harness-planner-tdd.md) | 1a: [`grill-me`](../skills/productivity/grill-me/SKILL.md) or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) · 1b: [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) |
 | Slice to issues | `/ss-to-issues` (optional) | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
 | Implement | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
+| Implement (AFK) | `/ss-loop` | [`harness-loop.md`](./harness-loop.md) | Same TDD skills; one fresh Paseo Cursor agent per Remaining cycle — [`docs/ss-loop.md`](../docs/ss-loop.md) |
 | Review | `/ss-review` | [`harness-critic.md`](./harness-critic.md) | auto: [`critic-tdd-testing.md`](./critic-tdd-testing.md) when state has TDD contracts |
 | Security gate | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
 | Human walkthrough (optional) | `/ss-handoff` | — | [`code-handoff`](../skills/engineering/code-handoff/SKILL.md) — `.harness/code-handoff.html` for human review; after review (ideally after security), before `/ss-submit-pr` |
@@ -59,6 +60,8 @@ Type **`ss`** in Cursor’s command palette to filter delivery commands. Consume
 
 One **`/ss-implement`** session walks **all Remaining** RED→GREEN cycles (or sprint slices) **in order** — each cycle still vertical (RED→GREEN→re-break before the next). Details: `harness-generator.md` + `tdd/SKILL.md`. Override with `only Cycle N` / `through Cycle N` when needed.
 
+**AFK alternative:** **`/ss-loop`** (`ss-loop.cjs`) spawns a **fresh Paseo Cursor agent per Remaining cycle** using `harness-loop.md`. Same evidence rules; hand off to `/ss-review` when Remaining is empty. Setup: [`docs/ss-loop.md`](../docs/ss-loop.md).
+
 Evidence table: **`## TDD Evidence`** in state.md. Review gates: `critic-tdd-testing.md`.
 
 ## Optional consumer modules
@@ -90,6 +93,7 @@ Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-
 | Plan (post-write) | `validate-state.cjs --mode plan` |
 | New story | `init-state.cjs --task "KEY title"` |
 | Implement / review | `run-verification.cjs`, `tdd-audit.cjs`, `re-break.cjs` |
+| AFK implement | `ss-loop.cjs` (Paseo + Cursor; see [`docs/ss-loop.md`](../docs/ss-loop.md)) |
 | Security (PR gate) | `security-audit.cjs` (`--write-state`, `--set-phase-b`, `--check-state`) |
 | Security (whole plugin) | `security-assess.cjs` (`--write-state` → `#assess` / `security-assess.json`) |
 | Submit PR | `render-pr-body.cjs`, `open-pr.cjs` (requires Security Evidence PASS) |
