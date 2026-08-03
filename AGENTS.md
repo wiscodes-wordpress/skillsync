@@ -16,6 +16,7 @@ This repository is the **shared home** for portable Cursor **Agent Skills**, **p
 ## Optional tooling
 
 - **GitNexus** (code knowledge graph + Cursor MCP) — optional beside `ss-*`; see **`docs/gitnexus.md`**. Commercial product use needs a commercial license from Akon Labs.
+- **`/ss-loop`** (AFK Remaining cycles via Paseo + Cursor) — optional beside interactive `/ss-implement`; see **`docs/ss-loop.md`**.
 - **App map** — `.harness/app-map.html` via `tools/render-app-map.cjs` (deterministic grand plan; Initiative belt).
 
 ## Delivery belts

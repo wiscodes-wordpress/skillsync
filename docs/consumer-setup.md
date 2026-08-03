@@ -8,13 +8,15 @@
 
 **Optional — GitNexus:** local code knowledge graph + Cursor MCP for blast-radius tools during `ss-*`. Setup, license (commercial products need a paid grant), and phase table: [`gitnexus.md`](./gitnexus.md).
 
+**Optional — `/ss-loop`:** AFK Remaining-cycle implement via Paseo + Cursor. Setup: [`ss-loop.md`](./ss-loop.md).
+
 ## Delivery belts (type `ss` to filter)
 
 Linking a **skill** is not the same as a slash command. **`ss-*`** is the filterable command set in Cursor.
 
 | Belt | When | Commands |
 |------|------|----------|
-| **Story** (default) | Most days | `/ss-plan` → `/ss-implement` → `/ss-review` → `/ss-security-audit` → `/ss-submit-pr` → `/ss-close-story` (+ optional `/ss-to-issues`) |
+| **Story** (default) | Most days | `/ss-plan` → `/ss-implement` or `/ss-loop` → `/ss-review` → `/ss-security-audit` → `/ss-submit-pr` → `/ss-close-story` (+ optional `/ss-to-issues`) |
 | **Initiative** | Major / foggy feature | **`/ss-roadmap`** entry (wayfind → draft → lenses → publish Jira → `render-app-map.cjs`). Resume lenses via `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` |
 | **Ship** | After merge | `/ss-release` (+ distribution / marketing partials) |
 
@@ -97,6 +99,7 @@ Prefer this order so the palette reads by belt. Lens commands are optional if th
   "ss-plan.md",
   "ss-to-issues.md",
   "ss-implement.md",
+  "ss-loop.md",
   "ss-review.md",
   "ss-security-audit.md",
   "ss-handoff.md",
@@ -194,7 +197,8 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-ui-ux-plan` | UX plan source of truth (living HTML; flows + surfaces) — before `/ss-plan` when UI-heavy |
 | `/ss-plan` | Grill + TDD plan → `.harness/state.md` |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
-| `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential |
+| `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential (interactive) |
+| `/ss-loop` | AFK Remaining walk — fresh Paseo Cursor agent per cycle ([`docs/ss-loop.md`](./ss-loop.md)) |
 | `/ss-review` | Critic / quality gate |
 | `/ss-security-audit` | Security gate (scripts + agent) — after review, before PR |
 | `/ss-handoff` | Human code walkthrough → `.harness/code-handoff.html` (optional; before PR) |
@@ -216,6 +220,7 @@ Product repos usually keep **thin wrappers** (e.g. `qb-*`, `qp-close-jira-story`
 | `harness/harness-planner-tdd.md` | Default planner (`/ss-plan`) |
 | `harness/harness-planner.md` | Legacy feature-first (local wrappers only) |
 | `harness/harness-generator.md` | `/ss-implement` |
+| `harness/harness-loop.md` | `/ss-loop` (AFK; Paseo + Cursor) |
 | `harness/harness-critic.md` | `/ss-review` |
 | `harness/critic-tdd-testing.md` | Auto-loaded when state has TDD contracts |
 | `harness/harness-security-audit.md` | `/ss-security-audit` (every PR) |
@@ -229,9 +234,11 @@ Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/gen
 **Story (default):**
 
 ```text
-branch (consumer) → /ss-plan → /ss-to-issues? → /ss-implement → /ss-review
+branch (consumer) → /ss-plan → /ss-to-issues? → /ss-implement | /ss-loop → /ss-review
   → /ss-security-audit → /ss-handoff? → /ss-submit-pr → merge (consumer) → /ss-close-story
 ```
+
+`/ss-loop` is the away-from-keyboard (AFK) alternative to `/ss-implement` — see [`ss-loop.md`](./ss-loop.md).
 
 **Initiative (when major / foggy):** `/ss-roadmap` (wayfind? → draft → lenses → publish → `render-app-map.cjs`) → then Story loop per v1 story.
 
@@ -254,7 +261,8 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `tdd-audit.cjs` | `/ss-review` | Hard TDD gates (contract cards, tampering, RED evidence, locators) |
 | `security-audit.cjs` | `/ss-security-audit`, `/ss-submit-pr` | Phase A inventory/patterns; `--set-phase-b`; `--check-state` before PR |
 | `security-assess.cjs` | `/ss-security-plan` (assess) | Whole-plugin Semgrep + deps + Wordfence; writes `security-assess.json` / `## Security Assess` |
-| `run-verification.cjs` | `/ss-implement`, `/ss-review` | Run Verification Plan commands from state |
+| `run-verification.cjs` | `/ss-implement`, `/ss-loop`, `/ss-review` | Run Verification Plan commands from state |
+| `ss-loop.cjs` | `/ss-loop` | AFK Remaining walker via Paseo + Cursor |
 | `re-break.cjs` | TDD evidence | Stash prod paths → test FAIL → restore → PASS |
 | `publish-slices-from-state.cjs` | `/ss-to-issues` | Dry-run or publish slices (`--publish --approved`) |
 | `jira-close.cjs` | `/ss-close-story` | Jira REST close + harness reset (env auth; MCP remains alternative) |
