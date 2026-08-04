@@ -34,6 +34,7 @@ Commands: type **`ss`** in Cursor — see [`commands/ss-workflow.md`](../../comm
 - **[security-plan](./security-plan/SKILL.md)** — Security posture as living HTML (`/ss-security-plan`); optional whole-plugin assess (Semgrep + Wordfence); does not replace `/ss-security-audit`.
 - **[code-handoff](./code-handoff/SKILL.md)** — Human walkthrough of branch changes → `.harness/code-handoff.html` (`/ss-handoff`); before `/ss-submit-pr`.
 - **[dependabot-batch-merge](./dependabot-batch-merge/SKILL.md)** — Batch-merge Dependabot PRs safely.
+- **[bulletproof-react](./bulletproof-react/SKILL.md)** — Feature-based React app architecture (shared → features → app); link when consumer has a React SPA/app.
 - **[frontend-react-best-practices](./frontend-react-best-practices/SKILL.md)** — React performance and composition patterns.
 - **[jest-react-testing](./jest-react-testing/SKILL.md)** — Jest + React Testing Library (link when consumer uses React; not default ss-flow load).
 - **[testing-expert](./testing-expert/SKILL.md)** — Optional reference encyclopedia; **not** in **`ss-*`** flow (`tdd` + stack skill instead).

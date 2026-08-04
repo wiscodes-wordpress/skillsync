@@ -50,7 +50,7 @@ Type **`ss`** in Cursor’s command palette to filter delivery commands. Consume
 ## Context budget rules
 
 1. **One harness file per command** — do not chain duplicate harnesses.
-2. **Stack skills on demand** — read `jest-react-testing`, `wordpress-testing-qa`, `postgresql-security-best-practices`, `supabase-security`, etc. only when `AGENTS.md` / diff surface says that stack; not on every implement/review.
+2. **Stack skills on demand** — read `jest-react-testing`, `bulletproof-react`, `wordpress-testing-qa`, `postgresql-security-best-practices`, `supabase-security`, etc. only when `AGENTS.md` / diff surface says that stack; not on every implement/review.
 3. **No `testing-expert` in this loop** — encyclopedic reference; use `tdd` + stack skill instead.
 4. **Locators** — [accessible-locator-priority.md](./accessible-locator-priority.md) when writing or reviewing **UI / end-to-end (E2E)** tests only.
 5. **State is the contract** — after plan, `Behavior & Test Contracts` and `RED→GREEN Plan` in **`.harness/state.md`** replace re-reading `grill-tdd` at review.
