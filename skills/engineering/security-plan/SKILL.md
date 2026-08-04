@@ -112,7 +112,7 @@ Scaffold: [HTML-REPORT.md](HTML-REPORT.md). Stages: [STAGES.md](STAGES.md). Chec
 4. Existing **security-posture.html** / **architecture-plan.html** (pack or harness root — check `domain.md` / pack first)
 5. **`skillsync.config.json` → `securityAssess`** (`wordpressRoot`, `wordfence`)
 6. Last **`.harness/security-assess.json`** / `## Security Assess` when present
-7. Stack skills **on demand** only (`wordpress-security-validation`, fallow) — not every run
+7. Stack skills **on demand** only (`wordpress-security-validation`, `postgresql-security-best-practices`, `supabase-security`, fallow) — not every run
 
 ## Workflow
 

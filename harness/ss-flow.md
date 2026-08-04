@@ -16,7 +16,7 @@ Type **`ss`** in Cursor’s command palette to filter delivery commands. Consume
 | Implement | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
 | Implement (AFK) | `/ss-loop` | [`harness-loop.md`](./harness-loop.md) | Same TDD skills; one fresh Paseo Cursor agent per Remaining cycle — [`docs/ss-loop.md`](../docs/ss-loop.md) |
 | Review | `/ss-review` | [`harness-critic.md`](./harness-critic.md) | auto: [`critic-tdd-testing.md`](./critic-tdd-testing.md) when state has TDD contracts |
-| Security gate | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
+| Security gate | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; DB: `postgresql-security-best-practices`, `supabase-security`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
 | Human walkthrough (optional) | `/ss-handoff` | — | [`code-handoff`](../skills/engineering/code-handoff/SKILL.md) — `.harness/code-handoff.html` for human review; after review (ideally after security), before `/ss-submit-pr` |
 | PR / close | `/ss-submit-pr`, `/ss-close-story` | — | linked PR/Jira skills per consumer |
 
@@ -50,7 +50,7 @@ Type **`ss`** in Cursor’s command palette to filter delivery commands. Consume
 ## Context budget rules
 
 1. **One harness file per command** — do not chain duplicate harnesses.
-2. **Stack skills on demand** — read `jest-react-testing`, `wordpress-testing-qa`, etc. only when `AGENTS.md` / diff surface says that stack; not on every implement/review.
+2. **Stack skills on demand** — read `jest-react-testing`, `wordpress-testing-qa`, `postgresql-security-best-practices`, `supabase-security`, etc. only when `AGENTS.md` / diff surface says that stack; not on every implement/review.
 3. **No `testing-expert` in this loop** — encyclopedic reference; use `tdd` + stack skill instead.
 4. **Locators** — [accessible-locator-priority.md](./accessible-locator-priority.md) when writing or reviewing **UI / end-to-end (E2E)** tests only.
 5. **State is the contract** — after plan, `Behavior & Test Contracts` and `RED→GREEN Plan` in **`.harness/state.md`** replace re-reading `grill-tdd` at review.

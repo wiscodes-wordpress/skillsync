@@ -11,6 +11,11 @@ Run **after** [`/ss-review`](./ss-review.md) PASS (and any review fixes), **befo
 
 **Lean every-PR gate only.** Whole-plugin Semgrep / Wordfence health is **`/ss-security-plan`** + [`harness-security-assess.md`](../harness/harness-security-assess.md) — do not run those here.
 
+If the project uses PostgreSQL or Supabase, load the linked stack skills before Phase B:
+
+- `postgresql-security-best-practices` for database roles, SQL safety, and migration review
+- `supabase-security` for RLS, auth boundaries, storage policies, and service-role safety
+
 In **Agent** mode, read and follow [`harness-security-audit.md`](../harness/harness-security-audit.md) end-to-end.
 
 **Pre-step / Phase A (when vendored):**

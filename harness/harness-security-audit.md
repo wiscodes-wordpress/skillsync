@@ -64,7 +64,7 @@ node .cursor/vendor/skillsync/tools/security-audit.cjs . --write-state --base ma
 - If exit **≠ 0**: report **Machine gates** failures from `.harness/state.md` → **## Security Evidence**. Fix code, re-run Phase A. **Do not** set Phase B PASS.
 - If exit **0**: Phase A is PASS; Phase B is PENDING. Continue.
 
-Load optional skills when linked: `wordpress-security-validation`, fallow agent skill if present.
+Load optional skills when linked: `wordpress-security-validation`, `postgresql-security-best-practices`, `supabase-security`, fallow agent skill if present.
 
 ### 2. Phase B — agent review (dismiss-by-default)
 
