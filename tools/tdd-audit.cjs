@@ -5,11 +5,16 @@
  * Usage:
  *   node path/to/skillsync/tools/tdd-audit.cjs [/path/to/consumer-repo] [--base main] [--strict-warn]
  *
+ * Diff scope: working tree vs merge-base with `--base` (includes uncommitted WIP).
+ * Triple-dot `…HEAD` alone is too narrow for mid-story `/ss-review`.
+ *
  * Contract cards under ## Behavior & Test Contracts (#### B1 + **name:** / **expectation:**)
  * are parsed; completed cycles must show matching **name** (and preferably **path**) in the
  * test diff. Incomplete card shape fails when a card looks filled-in.
  */
 
+const fs = require('node:fs');
+const path = require('node:path');
 const {
 	parseArgs,
 	resolveConsumerRoot,
@@ -564,20 +569,43 @@ function main() {
 	const strictWarn = Boolean(flags['strict-warn']);
 
 	const mergeBase = gitMergeBase(consumerRoot, base);
+	// Working tree vs merge-base (not triple-dot …HEAD): uncommitted implement/review
+	// work must be auditable. Committed branch changes are included too.
 	const nameOnly = runCommand(
 		consumerRoot,
-		`git diff --name-only ${mergeBase}...HEAD`,
+		`git diff --name-only ${mergeBase}`,
 	);
-	const changedPaths = nameOnly.stdout
-		.split('\n')
+	const untracked = runCommand(
+		consumerRoot,
+		'git ls-files --others --exclude-standard',
+	);
+	const changedPaths = [
+		...nameOnly.stdout.split('\n'),
+		...untracked.stdout.split('\n'),
+	]
 		.map((p) => p.trim())
 		.filter(Boolean);
 
 	const testDiff = runCommand(
 		consumerRoot,
-		`git diff ${mergeBase}...HEAD -- ${TEST_GLOB}`,
+		`git diff ${mergeBase} -- ${TEST_GLOB}`,
 	);
-	const fullDiff = testDiff.stdout;
+	/** @type {string[]} */
+	const untrackedTestChunks = [];
+	for (const rel of changedPaths.filter(isTestPath)) {
+		const tracked = runCommand(consumerRoot, `git ls-files --error-unmatch -- "${rel}"`);
+		if (tracked.status === 0) {
+			continue;
+		}
+		const abs = path.join(consumerRoot, rel);
+		try {
+			const body = fs.readFileSync(abs, 'utf8');
+			untrackedTestChunks.push(`--- /dev/null\n+++ b/${rel}\n${body}`);
+		} catch {
+			// skip unreadable
+		}
+	}
+	const fullDiff = [testDiff.stdout, ...untrackedTestChunks].filter(Boolean).join('\n');
 
 	/** @type {string[]} */
 	const errors = [];
