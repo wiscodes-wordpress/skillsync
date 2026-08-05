@@ -91,15 +91,17 @@ Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for
 
 ### `linkedCommands` (typical — Story spine + Initiative + Ship)
 
-Prefer this order so the palette reads by belt. Lens commands are optional if the team always enters via `/ss-roadmap`:
+Prefer this order so the palette reads by belt. Daily Story entry is **`/ss-flow`**; leaf Done commands stay linked for partial re-runs. Lens commands are optional if the team always enters via `/ss-roadmap`:
 
 ```json
 "linkedCommands": [
+  "ss-flow.md",
   "ss-workflow.md",
   "ss-plan.md",
   "ss-to-issues.md",
   "ss-implement.md",
   "ss-loop.md",
+  "ss-finish.md",
   "ss-review.md",
   "ss-security-audit.md",
   "ss-handoff.md",
@@ -117,7 +119,7 @@ Prefer this order so the palette reads by belt. Lens commands are optional if th
 
 For post-ship go-to-market, also link productivity skills **`anti-slop`**, **`release-distribution`**, and **`release-marketing`** (see [`skills/productivity/README.md`](../skills/productivity/README.md)).
 
-Link **`anti-slop`** even when you skip release marketing: the delivery loop uses it for plan / HTML / issue prose (see [`harness/ss-flow.md`](../harness/ss-flow.md) context budget rule 6).
+Link **`anti-slop`** even when you skip release marketing: the delivery loop uses it for plan / HTML / issue prose (see [`harness/ss-flow.md`](../harness/ss-flow.md) context budget rule 7).
 
 ### Personal journal handoff (optional)
 
@@ -190,21 +192,23 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 
 | Command | Phase |
 |---------|--------|
-| `/ss-workflow` | Orientation — phase index |
+| `/ss-flow` | **Story spine** — three fresh agents: Plan → Implement → Done |
+| `/ss-workflow` | Belt index — Initiative / Ship entry; points at `/ss-flow` for daily Story |
 | `/ss-roadmap` | Initiative orchestrator — draft roadmap (story map + spec) → lens pack (arch / UX / security) → **then** publish Jira epics/stories → `/ss-plan` |
 | `/ss-arch-plan` | Architecture plan source of truth (living HTML); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
 | `/ss-security-plan` | Security posture source of truth (living HTML); optional whole-plugin **assess** (Semgrep + deps + Wordfence) — does **not** replace `/ss-security-audit` |
 | `/ss-ui-ux-plan` | UX plan source of truth (living HTML; flows + surfaces) — before `/ss-plan` when UI-heavy |
-| `/ss-plan` | Grill + TDD plan → `.harness/state.md` |
+| `/ss-plan` | Grill + TDD plan → `.harness/state.md` (Story Plan agent) |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
 | `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential (interactive) |
 | `/ss-loop` | AFK Remaining walk — fresh Paseo Cursor agent per cycle ([`docs/ss-loop.md`](./ss-loop.md)) |
-| `/ss-review` | Critic / quality gate |
+| `/ss-finish` | **Done agent** — review → fix → security → handoff → submit; close after merge |
+| `/ss-review` | Critic / quality gate (leaf; usually via `/ss-finish`) |
 | `/ss-security-audit` | Security gate (scripts + agent) — after review, before PR |
 | `/ss-handoff` | Human code walkthrough → `.harness/code-handoff.html` (optional; before PR) |
 | `/ss-submit-pr` | Open GitHub PR (does not merge; requires Security Evidence PASS) |
-| `/ss-close-story` | Tracker Done + clear harness files |
-| `/ss-release` | Post-ship go-to-market — brief → demo proof → channel pack → anti-slop (optional; not a PR gate). **`anti-slop`** also applies to delivery-loop prose (plans, HTML, issues) per ss-flow rule 6. |
+| `/ss-close-story` | Tracker Done + clear harness files (after merge) |
+| `/ss-release` | Post-ship go-to-market — brief → demo proof → channel pack → anti-slop (optional; not a PR gate). **`anti-slop`** also applies to delivery-loop prose (plans, HTML, issues) per harness ss-flow rule 7. |
 | `/ss-release-distribution` | Legit seed + tagged E2E clips/screenshots → proof on brief |
 | `/ss-release-marketing` | Email / social / YouTube / SEO blog pack from brief |
 
@@ -212,11 +216,11 @@ Product repos usually keep **thin wrappers** (e.g. `qb-*`, `qp-close-jira-story`
 
 ## Harness and delivery loop
 
-**Start here:** [`harness/ss-flow.md`](harness/ss-flow.md) — canonical phase map, which harness file each command loads, and **context budget** rules (avoid loading huge skills on every step).
+**Start here:** slash **`/ss-flow`** for daily Story (three agents). Map + context budget: [`harness/ss-flow.md`](harness/ss-flow.md) (file is not the slash command). Belt index: **`/ss-workflow`**.
 
 | Harness file | Role |
 |--------------|------|
-| `harness/ss-flow.md` | Phase map · context budget |
+| `harness/ss-flow.md` | Phase map · Story agent policy · context budget |
 | `harness/harness-planner-tdd.md` | Default planner (`/ss-plan`) |
 | `harness/harness-planner.md` | Legacy feature-first (local wrappers only) |
 | `harness/harness-generator.md` | `/ss-implement` |
@@ -227,7 +231,7 @@ Product repos usually keep **thin wrappers** (e.g. `qb-*`, `qp-close-jira-story`
 | `harness/harness-security-assess.md` | `/ss-security-plan` whole-plugin health (not every PR) |
 | `harness/accessible-locator-priority.md` | UI/E2E query priority (when applicable) |
 
-Orientation command: **`commands/ss-workflow.md`**. Consumer-specific critic/generator addenda live under **`.cursor/harness/`** on the consumer repo.
+Orientation: **`/ss-flow`** (Story) · **`commands/ss-workflow.md`** (all belts). Consumer-specific critic/generator addenda live under **`.cursor/harness/`** on the consumer repo.
 
 ### Typical phase order
 

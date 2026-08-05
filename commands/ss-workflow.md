@@ -1,27 +1,27 @@
 # ss-workflow
 
-**Canonical delivery loop** — see [`ss-flow.md`](../harness/ss-flow.md) for harness map and context rules.
+**Belt index** — Initiative and Ship entry points, plus pointers into the daily Story spine.
 
-Type **`ss`** in Cursor’s command palette to filter skillsync delivery commands (and not every linked skill).
+**Daily Story:** use [`/ss-flow`](./ss-flow.md) (three fresh agents: Plan → Implement → Done). Harness map and context budget: [`harness/ss-flow.md`](../harness/ss-flow.md).
+
+Type **`ss`** in Cursor’s command palette to filter skillsync delivery commands.
 
 Consumer repos use **thin wrappers** (`qb-*`, `qp-*`, etc.) for tracker-specific steps; they should still point here for belt order.
 
 ## Belts (not one flat checklist)
 
-Three altitudes. **Most days use Story only.** Initiative and Ship are enter-when-needed.
+Three altitudes. **Most days use Story only** via `/ss-flow`. Initiative and Ship are enter-when-needed.
 
-### Story (default)
+### Story (default) — `/ss-flow`
 
-| Step | Command |
-|------|---------|
-| Branch | consumer wrapper |
-| Plan | [`ss-plan`](./ss-plan.md) — domain grill + TDD grill + `.harness/state.md` |
-| Slice (optional) | [`ss-to-issues`](./ss-to-issues.md) — publish story slices from state; **not** initiative epic publish |
-| Implement | [`ss-implement`](./ss-implement.md) (interactive) or [`ss-loop`](./ss-loop.md) (AFK via Paseo + Cursor) |
-| Review | [`ss-review`](./ss-review.md) |
-| PR security gate | [`ss-security-audit`](./ss-security-audit.md) — every PR; not the trust-posture plan |
-| Human walkthrough (optional) | [`ss-handoff`](./ss-handoff.md) — `.harness/code-handoff.html` before PR |
-| PR → Done | [`ss-submit-pr`](./ss-submit-pr.md) → merge *(consumer)* → [`ss-close-story`](./ss-close-story.md) |
+| Phase | Command | Agent |
+|-------|---------|-------|
+| Branch | consumer wrapper | — |
+| **Plan** | [`ss-plan`](./ss-plan.md) (+ optional [`ss-to-issues`](./ss-to-issues.md)) | Fresh |
+| **Implement** | [`ss-implement`](./ss-implement.md) or [`ss-loop`](./ss-loop.md) | Fresh (loop = per Remaining cycle) |
+| **Done** | [`ss-finish`](./ss-finish.md) | Fresh: review → fix → security → handoff → submit; close after merge |
+
+Leaf Done commands ([`ss-review`](./ss-review.md), [`ss-security-audit`](./ss-security-audit.md), [`ss-handoff`](./ss-handoff.md), [`ss-submit-pr`](./ss-submit-pr.md), [`ss-close-story`](./ss-close-story.md)) remain for partial re-runs.
 
 ### Initiative (major / foggy feature)
 
@@ -35,7 +35,7 @@ Lens commands are **sub-steps or resume/edit**, not daily Story steps:
 | UX | [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) |
 | Trust posture | [`ss-security-plan`](./ss-security-plan.md) — not the PR gate |
 
-**Posture vs audit:** `/ss-security-plan` = living trust posture. `/ss-security-audit` = Story PR gate. **to-issues vs roadmap publish:** `/ss-to-issues` slices a story plan; roadmap publish creates initiative epics/v1 stories after lenses lock.
+**Posture vs audit:** `/ss-security-plan` = living trust posture. `/ss-security-audit` = Story PR gate (inside `/ss-finish`). **to-issues vs roadmap publish:** `/ss-to-issues` slices a story plan; roadmap publish creates initiative epics/v1 stories after lenses lock.
 
 ### Ship (after merge)
 
@@ -45,12 +45,12 @@ Not a PR gate. [`ss-release`](./ss-release.md), or partial [`ss-release-distribu
 
 | File | Role |
 |------|------|
-| [`ss-flow.md`](../harness/ss-flow.md) | Belt map · context budget |
+| [`ss-flow.md`](../harness/ss-flow.md) | Belt map · context budget · Story agent policy |
 | [`harness-planner-tdd.md`](../harness/harness-planner-tdd.md) | Default planner |
 | [`harness-planner.md`](../harness/harness-planner.md) | Legacy feature-first |
 | [`harness-generator.md`](../harness/harness-generator.md) | Implement |
 | [`harness-loop.md`](../harness/harness-loop.md) | AFK implement (`/ss-loop`) |
-| [`harness-critic.md`](../harness/harness-critic.md) | Review |
+| [`harness-critic.md`](../harness/harness-critic.md) | Review (via `/ss-finish` or `/ss-review`) |
 | [`critic-tdd-testing.md`](../harness/critic-tdd-testing.md) | TDD audit (auto-loaded) |
 | [`harness-security-audit.md`](../harness/harness-security-audit.md) | Security gate (scripts + agent) |
 | [`accessible-locator-priority.md`](../harness/accessible-locator-priority.md) | UI query priority |
@@ -59,11 +59,11 @@ Local addenda: **`.cursor/harness/`** per consumer.
 
 ## Optional GitNexus
 
-Structural MCP (`impact`, `detect_changes`, …) during arch / implement / review — see [`docs/gitnexus.md`](../docs/gitnexus.md) and [`ss-flow.md`](../harness/ss-flow.md). Not required for the loop.
+Structural MCP (`impact`, `detect_changes`, …) during arch / implement / review — see [`docs/gitnexus.md`](../docs/gitnexus.md) and [`harness/ss-flow.md`](../harness/ss-flow.md). Not required for the loop.
 
 ## Optional AFK loop (Paseo + Cursor)
 
-After `/ss-plan`, use [`/ss-loop`](./ss-loop.md) instead of interactive `/ss-implement` to walk Remaining cycles unattended. Setup: [`docs/ss-loop.md`](../docs/ss-loop.md).
+After `/ss-plan`, use [`/ss-loop`](./ss-loop.md) instead of interactive `/ss-implement` to walk Remaining cycles unattended. Setup: [`docs/ss-loop.md`](../docs/ss-loop.md). Then `/ss-finish`.
 
 ## `ss-*` prefix
 

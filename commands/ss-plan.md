@@ -1,6 +1,6 @@
 # ss-plan
 
-**Phase: planning** — follow [`ss-flow.md`](../harness/ss-flow.md).
+**Phase: planning** — Story Plan agent under [`/ss-flow`](./ss-flow.md). Map: [`harness/ss-flow.md`](../harness/ss-flow.md).
 
 **Before:** story branch per consumer docs (see [`ss-workflow.md`](./ss-workflow.md) phase Branch). For **UI-heavy** work, run [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) first and pass the living UX HTML path (`.harness/ux-plan.html`) into this session.
 

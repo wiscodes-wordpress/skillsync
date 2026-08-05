@@ -1,24 +1,28 @@
-# ss-flow — canonical delivery loop
+# ss-flow — harness belt map
 
-**Product-neutral** harness workflow for consumer repos. Slash commands are thin entry points; this file is the single map of **belts** → harness → skills.
+**Not** the slash command [`/ss-flow`](../commands/ss-flow.md) (Story: three fresh agents). This file maps **belts** → harness → skills and **context budget**.
 
-Type **`ss`** in Cursor’s command palette to filter delivery commands. Consumers document **branch**, **verification commands**, and **stack skills** in root **`AGENTS.md`** and **`skillsync.config.json`**.
+Slash commands are thin entry points. Type **`ss`** in Cursor’s command palette. Consumers document **branch**, **verification commands**, and **stack skills** in root **`AGENTS.md`** and **`skillsync.config.json`**.
 
 ## Belts
 
 ### Story (default daily path)
 
+**Agent policy:** three fresh agents — see slash command [`/ss-flow`](../commands/ss-flow.md). Pass `.harness/state.md` (and evidence), not chat history.
+
 | Phase | Command | Harness (read one) | Skills (only when applicable) |
 |-------|---------|-------------------|-------------------------------|
 | Branch | consumer wrapper | — | — |
-| Plan | `/ss-plan` | [`harness-planner-tdd.md`](./harness-planner-tdd.md) | 1a: [`grill-me`](../skills/productivity/grill-me/SKILL.md) or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) · 1b: [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) |
-| Slice to issues | `/ss-to-issues` (optional) | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
-| Implement | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
+| **Plan** (agent 1) | `/ss-plan` | [`harness-planner-tdd.md`](./harness-planner-tdd.md) | 1a: [`grill-me`](../skills/productivity/grill-me/SKILL.md) or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) · 1b: [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) |
+| Slice to issues | `/ss-to-issues` (optional; same plan agent) | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
+| **Implement** (agent 2) | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
 | Implement (AFK) | `/ss-loop` | [`harness-loop.md`](./harness-loop.md) | Same TDD skills; one fresh Paseo Cursor agent per Remaining cycle — [`docs/ss-loop.md`](../docs/ss-loop.md) |
-| Review | `/ss-review` | [`harness-critic.md`](./harness-critic.md) | auto: [`critic-tdd-testing.md`](./critic-tdd-testing.md) when state has TDD contracts |
-| Security gate | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; DB: `postgresql-security-best-practices`, `supabase-security`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
-| Human walkthrough (optional) | `/ss-handoff` | — | [`code-handoff`](../skills/engineering/code-handoff/SKILL.md) — `.harness/code-handoff.html` for human review; after review (ideally after security), before `/ss-submit-pr` |
-| PR / close | `/ss-submit-pr`, `/ss-close-story` | — | linked PR/Jira skills per consumer |
+| **Done** (agent 3) | `/ss-finish` | orchestrates leaves below | — |
+| → Review (+ fix) | `/ss-review` (via finish) | [`harness-critic.md`](./harness-critic.md) | auto: [`critic-tdd-testing.md`](./critic-tdd-testing.md) when state has TDD contracts |
+| → Security gate | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; DB: `postgresql-security-best-practices`, `supabase-security`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
+| → Human walkthrough (optional) | `/ss-handoff` | — | [`code-handoff`](../skills/engineering/code-handoff/SKILL.md) — `.harness/code-handoff.html`; before `/ss-submit-pr` |
+| → PR | `/ss-submit-pr` | — | linked PR skills; **stop for merge** |
+| → Close (after merge) | `/ss-close-story` | — | linked Jira/close skills; harness reset |
 
 **Legacy:** feature-first planning only → [`harness-planner.md`](./harness-planner.md) (skip grill-tdd).
 
@@ -45,16 +49,17 @@ Type **`ss`** in Cursor’s command palette to filter delivery commands. Consume
 
 **Enter Ship when:** post-merge go-to-market. Does **not** block `/ss-submit-pr`.
 
-**Human walkthrough order:** after `/ss-review` PASS (and ideally `/ss-security-audit`) → `/ss-handoff` → human opens `.harness/code-handoff.html` in a browser → `/ss-submit-pr`. Optional; does **not** replace critic or security. Skip when the human already understands the diff.
+**Human walkthrough order:** inside `/ss-finish` after review + security PASS → `/ss-handoff` → human opens `.harness/code-handoff.html` → `/ss-submit-pr`. Optional; does **not** replace critic or security. Skip when the human already understands the diff.
 
 ## Context budget rules
 
-1. **One harness file per command** — do not chain duplicate harnesses.
-2. **Stack skills on demand** — read `jest-react-testing`, `bulletproof-react`, `wordpress-testing-qa`, `postgresql-security-best-practices`, `supabase-security`, etc. only when `AGENTS.md` / diff surface says that stack; not on every implement/review.
-3. **No `testing-expert` in this loop** — encyclopedic reference; use `tdd` + stack skill instead.
-4. **Locators** — [accessible-locator-priority.md](./accessible-locator-priority.md) when writing or reviewing **UI / end-to-end (E2E)** tests only.
-5. **State is the contract** — after plan, `Behavior & Test Contracts` and `RED→GREEN Plan` in **`.harness/state.md`** replace re-reading `grill-tdd` at review.
-6. **Prose** — when writing plans, living HTML briefings, issue text, PR bodies, or skill docs, apply [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) (expand abbreviations on first use; no hype filler). Skip for pure code and mechanical evidence tables. Marketing packs still finish with a full anti-slop pass.
+1. **Fresh agent per Story phase** — Plan / Implement / Done (`/ss-flow`). Do not carry plan grill into implement, or implement chat into critic.
+2. **One harness file per command** — do not chain duplicate harnesses. `/ss-finish` loads critic first; PR/close skills only after PASS.
+3. **Stack skills on demand** — read `jest-react-testing`, `bulletproof-react`, `wordpress-testing-qa`, `postgresql-security-best-practices`, `supabase-security`, etc. only when `AGENTS.md` / diff surface says that stack; not on every implement/review.
+4. **No `testing-expert` in this loop** — encyclopedic reference; use `tdd` + stack skill instead.
+5. **Locators** — [accessible-locator-priority.md](./accessible-locator-priority.md) when writing or reviewing **UI / end-to-end (E2E)** tests only.
+6. **State is the contract** — after plan, `Behavior & Test Contracts` and `RED→GREEN Plan` in **`.harness/state.md`** replace re-reading `grill-tdd` at review. Hand off artifacts between agents, not threads.
+7. **Prose** — when writing plans, living HTML briefings, issue text, PR bodies, or skill docs, apply [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) (expand abbreviations on first use; no hype filler). Skip for pure code and mechanical evidence tables. Marketing packs still finish with a full anti-slop pass.
 
 ## TDD loop (implement)
 

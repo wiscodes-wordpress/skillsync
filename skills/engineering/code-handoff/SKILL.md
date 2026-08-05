@@ -98,7 +98,7 @@ Use when it clarifies structure. For **`#frontend`**: **Platform** line first; *
 
 | Command / skill | Relationship |
 |-----------------|--------------|
-| `/ss-review` | Critic PASS/FAIL — run before handoff when following ss-flow |
+| `/ss-review` | Critic PASS/FAIL — usually via `/ss-finish`; run before handoff when following ss-flow |
 | `/ss-security-audit` | PR security gate — ideally PASS before handoff or before submit |
 | `/ss-submit-pr` | Open PR; may reuse Intent / What to verify from the HTML when drafting `.harness/pr-body.md` |
 | `/ss-close-story` | Deletes this artifact via harness reset after Jira Done |

@@ -1,6 +1,6 @@
 # ss-loop
 
-**Phase: AFK implementation** — follow [`ss-flow.md`](../harness/ss-flow.md).
+**Phase: AFK implementation** — Story Implement (AFK) under [`/ss-flow`](./ss-flow.md). Map: [`harness/ss-flow.md`](../harness/ss-flow.md). After Remaining is empty → [`/ss-finish`](./ss-finish.md).
 
 **Away-from-keyboard (AFK) twin of [`ss-implement`](./ss-implement.md):** walk **Remaining** RED→GREEN cycles (or sprint slices) by spawning a **fresh Cursor agent per cycle** via [Paseo](https://paseo.sh/). Memory stays in `.harness/state.md` + git. Interactive implement stays `/ss-implement`.
 

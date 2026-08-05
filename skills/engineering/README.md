@@ -10,7 +10,7 @@ Code work, delivery workflow, and technical review skills.
 | **Initiative** | `wayfinder`, `major-feature-roadmap`, `arch-plan`, `ui-ux-planner`, `security-plan`, `app-map` |
 | **Ship** | (productivity) `anti-slop`, `release-distribution`, `release-marketing` |
 
-Commands: type **`ss`** in Cursor — see [`commands/ss-workflow.md`](../../commands/ss-workflow.md).
+Commands: type **`ss`** — daily Story [`/ss-flow`](../../commands/ss-flow.md); all belts [`/ss-workflow`](../../commands/ss-workflow.md).
 
 ## From [Matt Pocock](https://github.com/mattpocock/skills) (upstream)
 

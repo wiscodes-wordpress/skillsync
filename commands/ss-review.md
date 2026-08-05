@@ -1,6 +1,6 @@
 # ss-review
 
-**Phase: critic** — follow [`ss-flow.md`](../harness/ss-flow.md).
+**Phase: critic** — follow [`harness/ss-flow.md`](../harness/ss-flow.md). Prefer [`/ss-finish`](./ss-finish.md) for the full Done agent; use this leaf for critic-only or re-review.
 
 **Pre-step (Agent, when vendored):** run hard gates before the rubric:
 

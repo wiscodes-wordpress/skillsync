@@ -1,6 +1,6 @@
 # ss-close-story
 
-**Phase: tracker close + harness reset** — follow [`ss-flow.md`](../harness/ss-flow.md) (after PR merge or when updating the board).
+**Phase: tracker close + harness reset** — follow [`harness/ss-flow.md`](../harness/ss-flow.md) (after PR merge or when updating the board). Resume step of [`/ss-finish`](./ss-finish.md) after merge.
 
 Transitions the **Jira issue** (and children when needed) to **Done** per consumer docs. **Does not merge** GitHub PRs.
 

@@ -11,7 +11,7 @@ Not a fork of [snarktank/ralph](https://github.com/snarktank/ralph) — same ide
 | `/ss-implement` | You stay in the session; walk Remaining cycles interactively |
 | `/ss-loop` | AFK: overnight / unattended Remaining walk after `/ss-plan` |
 
-Always finish with **`/ss-review`** when Remaining is empty. `/ss-loop` does not replace the critic.
+Always finish with **`/ss-finish`** (or at least **`/ss-review`**) when Remaining is empty. `/ss-loop` does not replace the critic.
 
 ## Machine setup (once)
 
@@ -86,4 +86,4 @@ Harness for each worker: [`harness/harness-loop.md`](../harness/harness-loop.md)
 2. `ss-loop.md` linked; `.cursor/permissions.json` tuned for Auto-review (recommended).
 3. `/ss-plan` produced Remaining cycles + Verification Plan commands that actually run.
 4. `/ss-loop` (or `ss-loop.cjs`) until COMPLETE or intentional stop.
-5. `/ss-review` → normal Story belt (security / PR / close).
+5. `/ss-finish` (or `/ss-review` → …) → normal Story Done path (security / PR / close).

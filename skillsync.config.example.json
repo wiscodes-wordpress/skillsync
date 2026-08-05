@@ -42,11 +42,13 @@
 		"journal-vault-privacy.mdc"
 	],
 	"linkedCommands": [
+		"ss-flow.md",
 		"ss-workflow.md",
 		"ss-plan.md",
 		"ss-to-issues.md",
 		"ss-implement.md",
 		"ss-loop.md",
+		"ss-finish.md",
 		"ss-review.md",
 		"ss-security-audit.md",
 		"ss-handoff.md",

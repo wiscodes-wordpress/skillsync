@@ -10,7 +10,7 @@ description: >
 
 **Phase: submit work for review** — create (open) a **pull request** from the **current branch** with a deliberate **title** and **body** (summary, how to test, risks, tracker **Browse** URL, optional screenshots). **Not** merging; hands work to reviewers.
 
-**Typical order:** after implementation (and often after harness **critic** / review), before consumer steps that assume an open PR (QA handoff, `Fixes #n` automation, tracker updates after merge — see consumer docs and **`commands/ss-workflow.md`** in skillsync or the linked **`/ss-workflow`** command).
+**Typical order:** after implementation, prefer **`/ss-finish`** (critic → security → optional handoff → open PR). See **`commands/ss-finish.md`** / **`/ss-flow`**. Before consumer steps that assume an open PR (QA handoff, `Fixes #n` automation, tracker updates after merge — see consumer docs).
 
 ## Principles
 

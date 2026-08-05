@@ -1,6 +1,6 @@
 # ss-submit-pr
 
-**Phase: open PR** — follow [`ss-flow.md`](../harness/ss-flow.md) (after critic PASS, **security PASS**, optional [`/ss-handoff`](./ss-handoff.md), or human sign-off).
+**Phase: open PR** — follow [`harness/ss-flow.md`](../harness/ss-flow.md) (after critic PASS, **security PASS**, optional [`/ss-handoff`](./ss-handoff.md), or human sign-off). Usually via [`/ss-finish`](./ss-finish.md).
 
 Opens a **GitHub pull request** from the **current branch**. **Does not merge.**
 

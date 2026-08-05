@@ -1,6 +1,6 @@
 # ss-security-audit
 
-**Story — PR security gate.** Follow [`ss-flow.md`](../harness/ss-flow.md).
+**Story — PR security gate.** Follow [`harness/ss-flow.md`](../harness/ss-flow.md). Usually run inside [`/ss-finish`](./ss-finish.md); use this leaf to re-run the gate alone.
 
 Run **after** [`/ss-review`](./ss-review.md) PASS (and any review fixes), **before** [`/ss-submit-pr`](./ss-submit-pr.md).
 

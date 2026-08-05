@@ -1,6 +1,6 @@
 # ss-handoff
 
-**Phase: human code walkthrough** — follow [`ss-flow.md`](../harness/ss-flow.md) (after `/ss-review` PASS; ideally after `/ss-security-audit`; **before** `/ss-submit-pr`).
+**Phase: human code walkthrough** — follow [`harness/ss-flow.md`](../harness/ss-flow.md) (after `/ss-review` PASS; ideally after `/ss-security-audit`; **before** `/ss-submit-pr`). Usually via [`/ss-finish`](./ss-finish.md).
 
 Writes a **browser HTML** brief of the branch changes so you can review without replaying the agent thread. **Does not** open a PR, merge, close Jira, or replace the critic / security gates.
 
