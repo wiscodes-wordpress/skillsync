@@ -52,6 +52,8 @@ node .cursor/vendor/skillsync/tools/ss-loop.cjs . --worktree --new-branch ss-loo
 
 Progress log (under story scratch, usually gitignored): `.harness/loop-progress.txt`.
 
+**One agent per cycle:** `ss-loop` spawns a single Paseo agent for each Remaining cycle. It does **not** respawn when the agent goes idle without updating `state.md` (that used to flood duplicate `ss-loop Cycle N` agents). Concurrent loops on the same repo are blocked by `.harness/ss-loop.lock`. `--max-retries` only retries when `paseo run` fails to create/start an agent (default `0`).
+
 ## Permissions (AFK without babysitting prompts)
 
 Cursor’s **agent** mode still gates some shell/MCP calls. For unattended runs:

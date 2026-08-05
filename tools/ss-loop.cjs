@@ -10,7 +10,8 @@
  *   --cycle N              Only this cycle number
  *   --through N            Remaining cycles up to and including N
  *   --max-iterations N     Cap agent spawns (default: 20)
- *   --max-retries N        Retries per cycle on verify/state failure (default: 2)
+ *   --max-retries N        Retries only when paseo fails to create/start an agent (default: 0).
+ *                          Incomplete cycles (Remaining still lists N) never respawn — one agent per cycle.
  *   --provider NAME        Paseo provider or provider/model (default: cursor)
  *   --model ID             Optional model override
  *   --mode MODE            Provider mode (default: agent for cursor)
@@ -36,8 +37,11 @@ const {
 } = require('./lib/ss-tools.cjs');
 
 const DEFAULT_MAX_ITERATIONS = 20;
-const DEFAULT_MAX_RETRIES = 2;
+/** Spawn-create failures only — never respawn when Remaining still lists the cycle. */
+const DEFAULT_MAX_RETRIES = 0;
 const PERMIT_POLL_MS = 2500;
+/** After paseo wait sees idle, require stable idle this long (permissions pause looks like idle). */
+const IDLE_SETTLE_MS = 5000;
 
 /**
  * @param {string} text
@@ -236,36 +240,90 @@ function extractAgentId(stdout) {
 
 /**
  * @param {string} agentId
- * @param {string} consumerRoot
+ * @param {unknown} rowAgent
+ * @returns {boolean}
  */
-function allowPendingPermits(agentId, consumerRoot) {
+function rowMatchesAgent(agentId, rowAgent) {
+	if (!rowAgent) {
+		return true;
+	}
+	const s = String(rowAgent);
+	return s === agentId || s.startsWith(agentId) || agentId.startsWith(s);
+}
+
+/**
+ * @param {string} agentId
+ * @param {string} consumerRoot
+ * @returns {object[]}
+ */
+function listPendingPermits(agentId, consumerRoot) {
 	const listed = runPaseo(['permit', 'ls', '--json'], { cwd: consumerRoot });
 	if (listed.status !== 0 || !listed.stdout.trim()) {
-		return;
+		return [];
 	}
 	try {
 		const rows = JSON.parse(listed.stdout);
 		if (!Array.isArray(rows)) {
-			return;
+			return [];
 		}
-		for (const row of rows) {
-			const rowAgent =
-				row.agentId ?? row.agent ?? row.agent_id ?? row.id?.agent;
-			const reqId = row.requestId ?? row.reqId ?? row.id ?? row.request_id;
-			if (rowAgent && String(rowAgent) !== agentId && !String(rowAgent).startsWith(agentId)) {
-				continue;
-			}
-			if (reqId) {
-				runPaseo(['permit', 'allow', agentId, String(reqId)], {
-					cwd: consumerRoot,
-				});
-			} else {
-				runPaseo(['permit', 'allow', agentId], { cwd: consumerRoot });
-			}
-		}
+		return rows.filter((row) =>
+			rowMatchesAgent(
+				agentId,
+				row.agentId ?? row.agent ?? row.agent_id ?? row.id?.agent,
+			),
+		);
 	} catch {
-		// Best-effort; AFK continues via wait
+		return [];
 	}
+}
+
+/**
+ * @param {string} agentId
+ * @param {string} consumerRoot
+ */
+function allowPendingPermits(agentId, consumerRoot) {
+	for (const row of listPendingPermits(agentId, consumerRoot)) {
+		const reqId = row.requestId ?? row.reqId ?? row.id ?? row.request_id;
+		if (reqId) {
+			runPaseo(['permit', 'allow', agentId, String(reqId)], {
+				cwd: consumerRoot,
+			});
+		} else {
+			runPaseo(['permit', 'allow', agentId], { cwd: consumerRoot });
+		}
+	}
+}
+
+/**
+ * @param {string} agentId
+ * @param {string} consumerRoot
+ * @returns {string | null}
+ */
+function getAgentStatus(agentId, consumerRoot) {
+	const inspected = runPaseo(['inspect', agentId, '--json'], {
+		cwd: consumerRoot,
+	});
+	if (inspected.status !== 0 || !inspected.stdout.trim()) {
+		return null;
+	}
+	try {
+		const parsed = JSON.parse(inspected.stdout);
+		const status = parsed.Status ?? parsed.status;
+		return typeof status === 'string' ? status.toLowerCase() : null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * @param {string} agentId
+ * @param {string} consumerRoot
+ */
+function archiveAgent(agentId, consumerRoot) {
+	if (!agentId) {
+		return;
+	}
+	runPaseo(['archive', agentId], { cwd: consumerRoot });
 }
 
 /**
@@ -283,6 +341,25 @@ function waitWithPermitPolling(agentId, consumerRoot, opts) {
 		const waitArgs = ['wait', agentId, '--timeout', '5'];
 		const waited = runPaseo(waitArgs, { cwd: consumerRoot });
 		if (waited.status === 0) {
+			// Idle can mean "paused for permissions" — settle before treating as finished.
+			if (opts.pollPermits) {
+				allowPendingPermits(agentId, consumerRoot);
+			}
+			spawnSync('sleep', [String(IDLE_SETTLE_MS / 1000)], { stdio: 'ignore' });
+			if (opts.pollPermits) {
+				allowPendingPermits(agentId, consumerRoot);
+			}
+			const status = getAgentStatus(agentId, consumerRoot);
+			if (status === 'running') {
+				continue;
+			}
+			if (status === 'error') {
+				return 1;
+			}
+			if (listPendingPermits(agentId, consumerRoot).length > 0) {
+				continue;
+			}
+			// Stable idle or closed — agent finished its turn.
 			return 0;
 		}
 		if (opts.timeoutSec !== null) {
@@ -292,6 +369,69 @@ function waitWithPermitPolling(agentId, consumerRoot, opts) {
 			}
 		}
 		spawnSync('sleep', [String(PERMIT_POLL_MS / 1000)], { stdio: 'ignore' });
+	}
+}
+
+/**
+ * @param {number} pid
+ * @returns {boolean}
+ */
+function isPidAlive(pid) {
+	try {
+		process.kill(pid, 0);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * One ss-loop process per consumer repo.
+ *
+ * @param {string} consumerRoot
+ * @returns {string} lock path
+ */
+function acquireLoopLock(consumerRoot) {
+	const dir = harnessDir(consumerRoot);
+	fs.mkdirSync(dir, { recursive: true });
+	const lockPath = path.join(dir, 'ss-loop.lock');
+	try {
+		fs.writeFileSync(lockPath, `${process.pid}\n`, { flag: 'wx' });
+		return lockPath;
+	} catch (err) {
+		const e = /** @type {NodeJS.ErrnoException} */ (err);
+		if (e.code !== 'EEXIST') {
+			throw err;
+		}
+		const existing = Number.parseInt(
+			fs.readFileSync(lockPath, 'utf8').trim().split(/\s+/)[0] ?? '',
+			10,
+		);
+		if (Number.isFinite(existing) && isPidAlive(existing)) {
+			assertOrExit(
+				false,
+				`ss-loop already running (pid ${existing}, ${lockPath}). One agent loop at a time.`,
+			);
+		}
+		fs.writeFileSync(lockPath, `${process.pid}\n`);
+		return lockPath;
+	}
+}
+
+/**
+ * @param {string | null} lockPath
+ */
+function releaseLoopLock(lockPath) {
+	if (!lockPath) {
+		return;
+	}
+	try {
+		const raw = fs.readFileSync(lockPath, 'utf8').trim();
+		if (raw.split(/\s+/)[0] === String(process.pid)) {
+			fs.unlinkSync(lockPath);
+		}
+	} catch {
+		// ignore
 	}
 }
 
@@ -518,6 +658,18 @@ function main() {
 
 	assertOrExit(paseoAvailable(), 'paseo CLI not found on PATH — see docs/ss-loop.md');
 
+	const lockPath = acquireLoopLock(consumerRoot);
+	const release = () => releaseLoopLock(lockPath);
+	process.on('exit', release);
+	process.on('SIGINT', () => {
+		release();
+		process.exit(130);
+	});
+	process.on('SIGTERM', () => {
+		release();
+		process.exit(143);
+	});
+
 	/** @type {{ cycle: number; ok: boolean; agentId: string | null; detail: string }[]} */
 	const results = [];
 	let iterations = 0;
@@ -573,6 +725,10 @@ function main() {
 			if (spawned.status !== 0) {
 				lastDetail = spawned.stderr || `paseo agent exited ${spawned.status}`;
 				appendLoopProgress(consumerRoot, `agent fail Cycle ${cycle}: ${lastDetail}`);
+				// Only spawn-create failures retry — archive the orphan if one was created.
+				if (spawned.agentId) {
+					archiveAgent(spawned.agentId, consumerRoot);
+				}
 				attempt += 1;
 				continue;
 			}
@@ -581,8 +737,8 @@ function main() {
 			if (!verify.ok) {
 				lastDetail = verify.detail;
 				appendLoopProgress(consumerRoot, `verify fail Cycle ${cycle}: ${lastDetail}`);
-				attempt += 1;
-				continue;
+				// Do not respawn — one agent per cycle. Leave agent for inspection.
+				break;
 			}
 
 			const after = readState(consumerRoot);
@@ -591,10 +747,10 @@ function main() {
 			);
 			if (remAfter.includes(cycle)) {
 				lastDetail =
-					`Cycle ${cycle} still listed under Remaining after agent — fail closed (agent must update state.md)`;
+					`Cycle ${cycle} still listed under Remaining after agent — fail closed (one agent per cycle; agent must update state.md)`;
 				appendLoopProgress(consumerRoot, lastDetail);
-				attempt += 1;
-				continue;
+				// Do not respawn — premature idle used to spawn duplicates here.
+				break;
 			}
 
 			cycleOk = true;
