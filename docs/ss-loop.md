@@ -46,9 +46,24 @@ node .cursor/vendor/skillsync/tools/ss-loop.cjs .
 node .cursor/vendor/skillsync/tools/ss-loop.cjs . --dry-run
 node .cursor/vendor/skillsync/tools/ss-loop.cjs . --cycle 2
 node .cursor/vendor/skillsync/tools/ss-loop.cjs . --through 3 --max-iterations 10
-node .cursor/vendor/skillsync/tools/ss-loop.cjs . --provider cursor --model composer-2.5
 node .cursor/vendor/skillsync/tools/ss-loop.cjs . --worktree --new-branch ss-loop/my-story
+# Cost overrides (default is already cursor + composer-2.5):
+node .cursor/vendor/skillsync/tools/ss-loop.cjs . --model gpt-5.4-mini   # API-credit pool — avoid for AFK
+node .cursor/vendor/skillsync/tools/ss-loop.cjs . --model default        # inherit Cursor/Paseo account default
 ```
+
+**Default model:** `cursor` + **`composer-2.5`** (Cursor Models pool). Do not omit `--model` and rely on account default — that often inherits the parent tab’s `gpt-5.4-mini` + medium thinking and burns Other Models credits. **Auto-review** (permissions) is unrelated to Auto Cost / model routing.
+
+**Preflight:** before the first agent, `ss-loop` checks that every scoped Remaining cycle has a `### Cycle N` Verification Plan block with at least one runnable command (`1. \`cmd\`` or a bash fence). Empty plans fail immediately — no Paseo agent is spawned.
+
+**Postflight (deterministic agent check):** after each agent goes idle, before continuing:
+1. Paseo agent status is not `error`
+2. Verification Plan commands for that cycle **PASS** (`run-verification.cjs`)
+3. `state.md` changed vs pre-agent snapshot
+4. Cycle N is under **Completed** and not under **Remaining**
+5. If RED→GREEN Plan has Cycle N → `## TDD Evidence` must mention that cycle
+
+These gates are code, not LLM judgment — soft “agent said done” is not enough.
 
 Progress log (under story scratch, usually gitignored): `.harness/loop-progress.txt`.
 
