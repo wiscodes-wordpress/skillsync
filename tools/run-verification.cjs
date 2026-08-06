@@ -6,35 +6,16 @@
  *   node path/to/skillsync/tools/run-verification.cjs [/path/to/consumer-repo] [--cycle N] [--continue] [--json]
  */
 
-const fs = require('node:fs');
 const {
 	parseArgs,
 	resolveConsumerRoot,
 	statePath,
 	readState,
 	parseMarkdownSections,
-	extractShellCommands,
+	commandsFromVerificationPlan,
 	runCommand,
 	assertOrExit,
 } = require('./lib/ss-tools.cjs');
-
-/**
- * @param {string} verificationPlan
- * @param {number | null} cycle
- * @returns {string[]}
- */
-function commandsFromPlan(verificationPlan, cycle) {
-	if (cycle !== null) {
-		const cycleHeader = `### Cycle ${cycle}`;
-		const idx = verificationPlan.indexOf(cycleHeader);
-		assertOrExit(idx !== -1, `No ${cycleHeader} block in Verification Plan`);
-		const rest = verificationPlan.slice(idx + cycleHeader.length);
-		const nextCycle = rest.search(/\n### Cycle \d+/);
-		const block = nextCycle === -1 ? rest : rest.slice(0, nextCycle);
-		return extractShellCommands(block);
-	}
-	return extractShellCommands(verificationPlan);
-}
 
 function main() {
 	const { positional, flags } = parseArgs(process.argv.slice(2));
@@ -51,8 +32,10 @@ function main() {
 	const plan = sections.get('Verification Plan');
 	assertOrExit(Boolean(plan), 'Missing ## Verification Plan in state.md');
 
-	const commands = commandsFromPlan(/** @type {string} */ (plan), cycle);
-	assertOrExit(commands.length > 0, 'No runnable commands found in Verification Plan');
+	const parsed = commandsFromVerificationPlan(/** @type {string} */ (plan), cycle);
+	assertOrExit(parsed.ok, parsed.ok === false ? parsed.error : '');
+	/** @type {string[]} */
+	const commands = parsed.ok ? parsed.commands : [];
 
 	/** @type {{ command: string; status: number; stdout: string; stderr: string }[]} */
 	const results = [];

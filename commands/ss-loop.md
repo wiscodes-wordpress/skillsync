@@ -9,6 +9,7 @@
 1. Preconditions — `node .cursor/vendor/skillsync/tools/validate-state.cjs . --mode implement`; Paseo daemon running; Cursor provider available (`paseo provider` / MCP `list_providers`).
 2. Orchestrator — [`harness-loop.md`](../harness/harness-loop.md) + run:
    `node .cursor/vendor/skillsync/tools/ss-loop.cjs .`
+   (defaults: **Cursor** provider, **`composer-2.5`** model — cost-efficient Cursor Models pool; override with `--model` only when needed)
 3. Default: all **Remaining** cycles in order — **one fresh agent per cycle** (no duplicate respawns when Remaining is unchanged). Scope overrides (passed through to the tool): `only Cycle N`, `through Cycle N`, or flags `--cycle N` / `--through N` / `--max-iterations N`.
 4. After Remaining is empty → **Next Action** points at `/ss-review` (`harness-critic`). Do not skip review.
 

@@ -13,7 +13,7 @@
  *   --max-retries N        Retries only when paseo fails to create/start an agent (default: 0).
  *                          Incomplete cycles (Remaining still lists N) never respawn — one agent per cycle.
  *   --provider NAME        Paseo provider or provider/model (default: cursor)
- *   --model ID             Optional model override
+ *   --model ID             Model override (default for cursor: composer-2.5 — Cursor Models pool)
  *   --mode MODE            Provider mode (default: agent for cursor)
  *   --worktree             Branch-off worktree workspace for each cycle
  *   --new-branch NAME      Branch name when --worktree (default: ss-loop/<task-slug>)
@@ -33,75 +33,25 @@ const {
 	readState,
 	parseMarkdownSections,
 	harnessDir,
+	commandsFromVerificationPlan,
+	parseCompletedRemaining,
+	extractCycleBlock,
+	checkCycleAgentOutcome,
 	assertOrExit,
 } = require('./lib/ss-tools.cjs');
 
 const DEFAULT_MAX_ITERATIONS = 20;
 /** Spawn-create failures only — never respawn when Remaining still lists the cycle. */
 const DEFAULT_MAX_RETRIES = 0;
+/**
+ * Cost-efficient Cursor default: first-party Composer (Cursor Models pool), not
+ * account/parent default which often resolves to gpt-5.4-mini + medium thinking.
+ * Override with --model (e.g. default, gpt-5.4-mini, composer-2).
+ */
+const DEFAULT_CURSOR_MODEL = 'composer-2.5';
 const PERMIT_POLL_MS = 2500;
 /** After paseo wait sees idle, require stable idle this long (permissions pause looks like idle). */
 const IDLE_SETTLE_MS = 5000;
-
-/**
- * @param {string} text
- * @returns {number[]}
- */
-function parseCycleList(text) {
-	if (!text) {
-		return [];
-	}
-	const normalized = text.replace(/\(none\)/gi, '').trim();
-	if (!normalized) {
-		return [];
-	}
-	/** @type {number[]} */
-	const ids = [];
-	const re = /Cycle\s+(\d+)/gi;
-	let m;
-	while ((m = re.exec(normalized)) !== null) {
-		ids.push(Number.parseInt(m[1], 10));
-	}
-	return [...new Set(ids)].sort((a, b) => a - b);
-}
-
-/**
- * @param {string} state
- * @returns {{ completed: number[]; remaining: number[] }}
- */
-function parseCompletedRemaining(state) {
-	const sections = parseMarkdownSections(state);
-	const block =
-		sections.get('Completed / Remaining') ??
-		sections.get('Completed/Remaining') ??
-		'';
-	const completedMatch = block.match(/\*\*Completed:\*\*\s*(.+)/i);
-	const remainingMatch = block.match(/\*\*Remaining:\*\*\s*(.+)/i);
-	return {
-		completed: parseCycleList(completedMatch?.[1] ?? ''),
-		remaining: parseCycleList(remainingMatch?.[1] ?? ''),
-	};
-}
-
-/**
- * @param {string} sectionContent
- * @param {number} cycle
- * @returns {string}
- */
-function extractCycleBlock(sectionContent, cycle) {
-	if (!sectionContent) {
-		return '';
-	}
-	const start = sectionContent.search(
-		new RegExp(`^###\\s+Cycle\\s+${cycle}\\b`, 'm'),
-	);
-	if (start === -1) {
-		return '';
-	}
-	const rest = sectionContent.slice(start);
-	const next = rest.search(/\n###\s+Cycle\s+\d+/);
-	return (next === -1 ? rest : rest.slice(0, next)).trim();
-}
 
 /**
  * @param {string} state
@@ -156,6 +106,26 @@ function buildCyclePrompt(state, cycle) {
 		`- If Remaining is empty, set Next Action to harness-critic (/ss-review).`,
 		`- Prefer: node .cursor/vendor/skillsync/tools/run-verification.cjs . --cycle ${cycle}`,
 	].join('\n');
+}
+
+/**
+ * Fail before spawning if Cycle N has no runnable Verification Plan commands.
+ *
+ * @param {string} state
+ * @param {number} cycle
+ * @returns {{ ok: true } | { ok: false; detail: string }}
+ */
+function preflightVerificationPlan(state, cycle) {
+	const sections = parseMarkdownSections(state);
+	const plan = sections.get('Verification Plan');
+	if (!plan) {
+		return { ok: false, detail: 'Missing ## Verification Plan in state.md' };
+	}
+	const parsed = commandsFromVerificationPlan(plan, cycle);
+	if (!parsed.ok) {
+		return { ok: false, detail: parsed.error };
+	}
+	return { ok: true };
 }
 
 /**
@@ -582,11 +552,19 @@ function main() {
 			? Number.parseInt(String(flags.through), 10)
 			: null;
 	const provider = typeof flags.provider === 'string' ? flags.provider : 'cursor';
-	const model = typeof flags.model === 'string' ? flags.model : null;
+	const isCursor =
+		provider === 'cursor' || provider.startsWith('cursor/');
+	/** Explicit --model wins; otherwise pin Composer for Cursor so loops stay off API credits. */
+	const model =
+		typeof flags.model === 'string'
+			? flags.model
+			: isCursor
+				? DEFAULT_CURSOR_MODEL
+				: null;
 	const mode =
 		typeof flags.mode === 'string'
 			? flags.mode
-			: provider === 'cursor' || provider.startsWith('cursor/')
+			: isCursor
 				? 'agent'
 				: null;
 	const waitTimeout =
@@ -656,6 +634,15 @@ function main() {
 		process.exit(0);
 	}
 
+	// Fail closed before Paseo/agents: every scoped Remaining cycle needs runnable verify cmds.
+	for (const cycle of scoped) {
+		const pre = preflightVerificationPlan(/** @type {string} */ (state), cycle);
+		assertOrExit(
+			pre.ok,
+			`ss-loop preflight Cycle ${cycle}: ${'detail' in pre ? pre.detail : 'invalid'} — fix Verification Plan before AFK (no agent spawned)`,
+		);
+	}
+
 	assertOrExit(paseoAvailable(), 'paseo CLI not found on PATH — see docs/ss-loop.md');
 
 	const lockPath = acquireLoopLock(consumerRoot);
@@ -701,7 +688,17 @@ function main() {
 			if (iterations > maxIterations) {
 				break;
 			}
-			const prompt = buildCyclePrompt(/** @type {string} */ (readState(consumerRoot)), cycle);
+
+			const liveForPre = readState(consumerRoot);
+			const stateBefore = /** @type {string} */ (liveForPre);
+			const pre = preflightVerificationPlan(stateBefore, cycle);
+			if (!pre.ok) {
+				lastDetail = `preflight: ${pre.detail}`;
+				appendLoopProgress(consumerRoot, `preflight fail Cycle ${cycle}: ${pre.detail}`);
+				break;
+			}
+
+			const prompt = buildCyclePrompt(stateBefore, cycle);
 			console.error(`ss-loop: Cycle ${cycle} (attempt ${attempt + 1}/${maxRetries + 1})`);
 			appendLoopProgress(
 				consumerRoot,
@@ -733,6 +730,15 @@ function main() {
 				continue;
 			}
 
+			if (spawned.agentId) {
+				const agentStatus = getAgentStatus(spawned.agentId, consumerRoot);
+				if (agentStatus === 'error') {
+					lastDetail = `agent ${spawned.agentId} ended in error status`;
+					appendLoopProgress(consumerRoot, `agent status fail Cycle ${cycle}: ${lastDetail}`);
+					break;
+				}
+			}
+
 			const verify = runVerification(consumerRoot, cycle);
 			if (!verify.ok) {
 				lastDetail = verify.detail;
@@ -741,15 +747,15 @@ function main() {
 				break;
 			}
 
-			const after = readState(consumerRoot);
-			const { remaining: remAfter } = parseCompletedRemaining(
-				/** @type {string} */ (after),
-			);
-			if (remAfter.includes(cycle)) {
-				lastDetail =
-					`Cycle ${cycle} still listed under Remaining after agent — fail closed (one agent per cycle; agent must update state.md)`;
-				appendLoopProgress(consumerRoot, lastDetail);
-				// Do not respawn — premature idle used to spawn duplicates here.
+			const after = /** @type {string} */ (readState(consumerRoot));
+			const outcome = checkCycleAgentOutcome(stateBefore, after, cycle);
+			if (!outcome.ok) {
+				lastDetail = outcome.errors.join('; ');
+				appendLoopProgress(
+					consumerRoot,
+					`outcome fail Cycle ${cycle}: ${lastDetail}`,
+				);
+				// Do not respawn — one agent per cycle. Leave agent for inspection.
 				break;
 			}
 

@@ -234,6 +234,162 @@ function extractShellCommands(sectionContent) {
 }
 
 /**
+ * Shell commands from ## Verification Plan, optionally scoped to ### Cycle N.
+ *
+ * @param {string} verificationPlan
+ * @param {number | null} cycle
+ * @returns {{ ok: true; commands: string[] } | { ok: false; error: string }}
+ */
+function commandsFromVerificationPlan(verificationPlan, cycle) {
+	if (cycle !== null) {
+		const cycleHeader = `### Cycle ${cycle}`;
+		const idx = verificationPlan.indexOf(cycleHeader);
+		if (idx === -1) {
+			return { ok: false, error: `No ${cycleHeader} block in Verification Plan` };
+		}
+		const rest = verificationPlan.slice(idx + cycleHeader.length);
+		const nextCycle = rest.search(/\n### Cycle \d+/);
+		const block = nextCycle === -1 ? rest : rest.slice(0, nextCycle);
+		const commands = extractShellCommands(block);
+		if (commands.length === 0) {
+			return {
+				ok: false,
+				error: `No runnable commands found in Verification Plan under ${cycleHeader}`,
+			};
+		}
+		return { ok: true, commands };
+	}
+	const commands = extractShellCommands(verificationPlan);
+	if (commands.length === 0) {
+		return {
+			ok: false,
+			error: 'No runnable commands found in Verification Plan',
+		};
+	}
+	return { ok: true, commands };
+}
+
+/**
+ * @param {string} text
+ * @returns {number[]}
+ */
+function parseCycleList(text) {
+	if (!text) {
+		return [];
+	}
+	const normalized = text.replace(/\(none\)/gi, '').trim();
+	if (!normalized) {
+		return [];
+	}
+	/** @type {number[]} */
+	const ids = [];
+	const re = /Cycle\s+(\d+)/gi;
+	let m;
+	while ((m = re.exec(normalized)) !== null) {
+		ids.push(Number.parseInt(m[1], 10));
+	}
+	return [...new Set(ids)].sort((a, b) => a - b);
+}
+
+/**
+ * @param {string} state
+ * @returns {{ completed: number[]; remaining: number[] }}
+ */
+function parseCompletedRemaining(state) {
+	const sections = parseMarkdownSections(state);
+	const block =
+		sections.get('Completed / Remaining') ??
+		sections.get('Completed/Remaining') ??
+		'';
+	const completedMatch = block.match(/\*\*Completed:\*\*\s*(.+)/i);
+	const remainingMatch = block.match(/\*\*Remaining:\*\*\s*(.+)/i);
+	return {
+		completed: parseCycleList(completedMatch?.[1] ?? ''),
+		remaining: parseCycleList(remainingMatch?.[1] ?? ''),
+	};
+}
+
+/**
+ * @param {string} sectionContent
+ * @param {number} cycle
+ * @returns {string}
+ */
+function extractCycleBlock(sectionContent, cycle) {
+	if (!sectionContent) {
+		return '';
+	}
+	const start = sectionContent.search(
+		new RegExp(`^###\\s+Cycle\\s+${cycle}\\b`, 'm'),
+	);
+	if (start === -1) {
+		return '';
+	}
+	const rest = sectionContent.slice(start);
+	const next = rest.search(/\n###\s+Cycle\s+\d+/);
+	return (next === -1 ? rest : rest.slice(0, next)).trim();
+}
+
+/**
+ * Deterministic post-agent gates for one AFK cycle (no LLM judgment).
+ *
+ * @param {string} stateBefore
+ * @param {string} stateAfter
+ * @param {number} cycle
+ * @returns {{ ok: true } | { ok: false; errors: string[] }}
+ */
+function checkCycleAgentOutcome(stateBefore, stateAfter, cycle) {
+	/** @type {string[]} */
+	const errors = [];
+
+	if (stateBefore === stateAfter) {
+		errors.push(
+			`state.md unchanged after agent — Cycle ${cycle} did not update harness state`,
+		);
+	}
+
+	const { completed, remaining } = parseCompletedRemaining(stateAfter);
+	if (remaining.includes(cycle)) {
+		errors.push(
+			`Cycle ${cycle} still listed under Remaining after agent`,
+		);
+	}
+	if (!completed.includes(cycle)) {
+		errors.push(
+			`Cycle ${cycle} not listed under Completed after agent`,
+		);
+	}
+
+	const sections = parseMarkdownSections(stateAfter);
+	const redPlan =
+		sections.get('RED→GREEN Plan') ??
+		sections.get('RED->GREEN Plan') ??
+		'';
+	const cyclePlan = extractCycleBlock(redPlan, cycle);
+	if (cyclePlan) {
+		if (!hasSection(stateAfter, 'TDD Evidence')) {
+			errors.push(
+				`RED→GREEN Plan has Cycle ${cycle} but ## TDD Evidence is missing`,
+			);
+		} else {
+			const evidence = sections.get('TDD Evidence') ?? '';
+			const mentions =
+				new RegExp(`Cycle\\s+${cycle}\\b`, 'i').test(evidence) ||
+				new RegExp(`\\|\\s*${cycle}\\s*\\|`).test(evidence);
+			if (!mentions) {
+				errors.push(
+					`## TDD Evidence does not mention Cycle ${cycle} after agent`,
+				);
+			}
+		}
+	}
+
+	if (errors.length > 0) {
+		return { ok: false, errors };
+	}
+	return { ok: true };
+}
+
+/**
  * @param {string} cwd
  * @param {string} cmd
  * @param {{ inherit?: boolean }} [opts]
@@ -411,6 +567,11 @@ module.exports = {
 	hasSection,
 	upsertMarkdownSection,
 	extractShellCommands,
+	commandsFromVerificationPlan,
+	parseCycleList,
+	parseCompletedRemaining,
+	extractCycleBlock,
+	checkCycleAgentOutcome,
 	runCommand,
 	titleFromBranch,
 	gitCurrentBranch,

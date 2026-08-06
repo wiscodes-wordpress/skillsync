@@ -192,8 +192,140 @@ implementing
 	if (!loopDry.includes('"dryRun": true') || !loopDry.includes('Cycle 1')) {
 		console.error('ss-loop: expected dry-run JSON mentioning Cycle 1');
 		failed = true;
+	} else if (
+		!loopDry.includes('"provider": "cursor"') ||
+		!loopDry.includes('"model": "composer-2.5"')
+	) {
+		console.error(
+			'ss-loop: expected default provider=cursor model=composer-2.5 in dry-run JSON',
+		);
+		failed = true;
 	} else {
 		console.log('OK: ss-loop dry-run');
+	}
+
+	const loopPreflight = makeTempConsumer();
+	fs.mkdirSync(path.join(loopPreflight, '.harness'), { recursive: true });
+	fs.writeFileSync(
+		path.join(loopPreflight, '.harness', 'state.md'),
+		`# Harness state
+
+## Current Task
+
+LOOP-2 preflight fixture
+
+## Status
+
+implementing
+
+## RED→GREEN Plan
+
+### Cycle 1 — B1
+
+| Field | Content |
+|-------|---------|
+| **name** | Has verify |
+
+### Cycle 2 — B2
+
+| Field | Content |
+|-------|---------|
+| **name** | Empty verify |
+
+## Verification Plan
+
+### Cycle 1
+
+1. \`node -e "process.exit(0)"\`
+
+### Cycle 2
+
+(no commands — should fail preflight)
+
+## Next Action
+
+**Actor:** harness-loop  
+**Do:** AFK.
+
+## Completed / Remaining
+
+**Completed:** (none)  
+**Remaining:** Cycle 1, Cycle 2
+`,
+		'utf8',
+	);
+	runTool(path.join(toolsDir, 'ss-loop.cjs'), [loopPreflight], { expectFail: true });
+	console.log('OK: ss-loop preflight blocks empty Verification Plan (no agent)');
+
+	const ssTools = require(path.join(toolsDir, 'lib/ss-tools.cjs'));
+	const beforeOutcome = `# Harness state
+
+## Completed / Remaining
+
+**Completed:** (none)
+**Remaining:** Cycle 1
+
+## RED→GREEN Plan
+
+### Cycle 1 — B1
+
+| Field | Content |
+|-------|---------|
+| **name** | Demo |
+
+## TDD Evidence
+
+| Cycle | Behavior ID | RED cmd | RED fail snippet | GREEN cmd | GREEN | Test Δ | Re-break |
+|-------|-------------|---------|------------------|-----------|-------|--------|----------|
+`;
+	const noopOutcome = ssTools.checkCycleAgentOutcome(beforeOutcome, beforeOutcome, 1);
+	if (noopOutcome.ok) {
+		console.error('checkCycleAgentOutcome: expected fail on unchanged state');
+		failed = true;
+	}
+	const badRemaining = beforeOutcome.replace(
+		'**Remaining:** Cycle 1',
+		'**Remaining:** Cycle 1\n**Completed:** Cycle 1',
+	);
+	// Still in Remaining + Completed — should fail Remaining gate
+	const stillRem = ssTools.checkCycleAgentOutcome(
+		beforeOutcome,
+		badRemaining.replace('**Remaining:** Cycle 1\n', '**Remaining:** Cycle 1\n'),
+		1,
+	);
+	if (stillRem.ok) {
+		console.error('checkCycleAgentOutcome: expected fail when still Remaining');
+		failed = true;
+	}
+	const goodAfter = `# Harness state
+
+## Completed / Remaining
+
+**Completed:** Cycle 1
+**Remaining:** (none)
+
+## RED→GREEN Plan
+
+### Cycle 1 — B1
+
+| Field | Content |
+|-------|---------|
+| **name** | Demo |
+
+## TDD Evidence
+
+| Cycle | Behavior ID | RED cmd | RED fail snippet | GREEN cmd | GREEN | Test Δ | Re-break |
+|-------|-------------|---------|------------------|-----------|-------|--------|----------|
+| Cycle 1 | B1 | yarn test | FAIL | yarn test | PASS | +1 | PASS |
+`;
+	const goodOutcome = ssTools.checkCycleAgentOutcome(beforeOutcome, goodAfter, 1);
+	if (!goodOutcome.ok) {
+		console.error(
+			`checkCycleAgentOutcome: expected pass, got ${goodOutcome.errors?.join('; ')}`,
+		);
+		failed = true;
+	} else {
+		console.log('OK: checkCycleAgentOutcome deterministic postflight');
 	}
 
 	const initConsumer = makeTempConsumer();
