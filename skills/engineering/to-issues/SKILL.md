@@ -19,8 +19,8 @@ Break a plan into **independently grabbable** issues on the project **issue trac
 ## Relationship to planning
 
 - After **`/ss-plan`**, slices may already exist in **`.harness/state.md`**. Prefer that file (or an agreed spec/PRD in chat) as the source of slices — do not invent a second competing breakdown unless the user asks to re-slice.
-- After **`/ss-arch-plan`**, prefer the resolved **`architecture-plan.html`** stages (pack or root); **fold into existing epics** when possible (stories per stage); write keys (`data-epic` / `data-story`) back into the HTML so later `/ss-arch-plan` runs can refresh status.
-- After **`/ss-security-plan`**, prefer the resolved **`security-posture.html`** hardening stages (pack or root); fold into existing epics when possible; write keys back into the HTML.
+- After **`/ss-arch-plan`**, prefer the resolved **`architecture-plan.md`** stages (pack or root); **fold into existing epics** when possible (stories per stage); write keys (`epic:` / `story:` meta) back into the Markdown, then `render-plan-html.cjs --kind arch`.
+- After **`/ss-security-plan`**, prefer the resolved **`security-posture.md`** hardening stages (pack or root); fold into existing epics when possible; write keys back into the Markdown, then re-render.
 - This skill **publishes** approved slices to the tracker. It does **not** replace [`harness-planner`](../../../harness/harness-planner.md) for spec writing or [`arch-plan`](../arch-plan/SKILL.md) for architecture direction.
 
 ## Process
@@ -30,8 +30,8 @@ Break a plan into **independently grabbable** issues on the project **issue trac
 Work from whatever is already in the conversation. Acceptable sources (in priority order when multiple exist):
 
 1. **Parent issue** — if the user passes an issue key, URL, or path, fetch it from the tracker (MCP or `gh` per consumer docs). Read the full body and comments.
-2. **Architecture plan** — resolved **`architecture-plan.html`** migration stages (prefer fold into existing epics + stories from `/ss-arch-plan`). Write returned keys back into the HTML.
-3. **Security posture** — resolved **`security-posture.html`** hardening stages from `/ss-security-plan`. Write keys back into the HTML.
+2. **Architecture plan** — resolved **`architecture-plan.md`** migration stages (prefer fold into existing epics + stories from `/ss-arch-plan`). Write returned keys back into the Markdown, then re-render HTML.
+3. **Security posture** — resolved **`security-posture.md`** hardening stages from `/ss-security-plan`. Write keys back into the Markdown, then re-render.
 4. **Harness plan** — **`.harness/state.md`** (especially **Sprint Plan** / numbered slices and acceptance criteria).
 5. **Other artifacts** — PRD, spec, plan doc, or prior chat agreement (reference by path; do not duplicate long content into every child issue).
 

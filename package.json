@@ -2,17 +2,19 @@
   "name": "skillsync",
   "private": true,
   "description": "Shared Cursor skills, rules, ss-* commands, and journal tooling",
-  "scripts": {
-    "dashboard": "node tools/journal-dashboard-server.cjs",
-    "dashboard:bundle": "node tools/journal-dashboard-bundle.cjs",
-    "journal:index": "node tools/journal-index.cjs",
-    "google:auth": "node tools/google-oauth-setup.cjs --calendar",
-    "google:sync": "node tools/sync-google-tasks.cjs && node tools/sync-google-calendar.cjs",
-    "google:sync:dry": "node tools/sync-google-tasks.cjs --dry-run && node tools/sync-google-calendar.cjs --dry-run",
-    "meetings": "node tools/list-meetings.cjs",
-    "prs": "node tools/list-prs.cjs",
-    "jira:sprint": "node tools/list-jira-sprint.cjs",
-    "verify:tools": "node tools/verify-tools.cjs ."
-  },
+	"scripts": {
+		"dashboard": "node tools/journal-dashboard-server.cjs",
+		"dashboard:bundle": "node tools/journal-dashboard-bundle.cjs",
+		"journal:index": "node tools/journal-index.cjs",
+		"google:auth": "node tools/google-oauth-setup.cjs --calendar",
+		"google:sync": "node tools/sync-google-tasks.cjs && node tools/sync-google-calendar.cjs",
+		"google:sync:dry": "node tools/sync-google-tasks.cjs --dry-run && node tools/sync-google-calendar.cjs --dry-run",
+		"meetings": "node tools/list-meetings.cjs",
+		"prs": "node tools/list-prs.cjs",
+		"jira:sprint": "node tools/list-jira-sprint.cjs",
+		"plans:watch": "node tools/watch-plan-html.cjs .",
+		"plans:render": "node tools/watch-plan-html.cjs . --once",
+		"verify:tools": "node tools/verify-tools.cjs ."
+	},
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

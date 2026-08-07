@@ -2,13 +2,13 @@
 
 **Initiative — trust posture (not PR gate).** Optional lens; resume/edit under `/ss-roadmap` or when trust model is unclear. See [`ss-flow.md`](../harness/ss-flow.md).
 
-Set **how we intend to be secure** as a living HTML briefing (`.harness/security-posture.html`). Does **not** implement code, does **not** replace the per-PR Story gate (`/ss-security-audit`).
+Set **how we intend to be secure** as living **Markdown** (`.harness/security-posture.md`) with derived HTML for humans. Does **not** implement code, does **not** replace the per-PR Story gate (`/ss-security-audit`).
 
 ## Two tracks
 
 | Track | When | Tooling |
 |-------|------|---------|
-| **Posture / decisions** | Trust model unclear; hardening roadmap | Living HTML + Q&A ([`security-plan`](../skills/engineering/security-plan/SKILL.md)) |
+| **Posture / decisions** | Trust model unclear; hardening roadmap | Living MD + Q&A ([`security-plan`](../skills/engineering/security-plan/SKILL.md)) |
 | **Whole-plugin assess** | Release, quarterly, major feature, or “is the plugin healthy?” | [`harness-security-assess.md`](../harness/harness-security-assess.md) + `security-assess.cjs` |
 
 **Every PR** still uses [`ss-security-audit`](./ss-security-audit.md) only — lean ship gate. Do **not** run Wordfence/full Semgrep on every PR.
@@ -17,24 +17,31 @@ Set **how we intend to be secure** as a living HTML briefing (`.harness/security
 
 In **Agent** mode, follow [`security-plan`](../skills/engineering/security-plan/SKILL.md):
 
-1. **Locate** the living HTML via `docs/agents/domain.md`, then `.harness/initiatives/<slug>/security-posture.html`, then legacy `.harness/security-posture.html` — see [`security-plan`](../skills/engineering/security-plan/SKILL.md) / `tools/lib/plan-paths.cjs`. `#gate` lives in that same file.
+1. **Locate** the living Markdown via `docs/agents/domain.md`, then `.harness/initiatives/<slug>/security-posture.md`, then legacy `.harness/security-posture.md` — see `tools/lib/plan-paths.cjs`. `## gate` lives in that same file. **Do not hand-edit** derived `.html`.
 2. **If missing:** `node .cursor/vendor/skillsync/tools/init-plan-html.cjs . --kind security [--slug <slug>] --product "…" --task "…"`.
-3. **If stages/finish-line have keys** — refresh **Jira → HTML** only. Never push status back to Jira.
-4. **If the user asks for assess / deep / whole-plugin health** (or no recent `#assess` and they want health):
+3. **If stages/finish-line have keys** — refresh **Jira → Markdown** only, then re-render. Never push status back to Jira.
+4. **If the user asks for assess / deep / whole-plugin health** (or no recent `## assess` and they want health):
    - Read [`harness-security-assess.md`](../harness/harness-security-assess.md).
    - Run:
      ```bash
      node .cursor/vendor/skillsync/tools/security-assess.cjs . --write-state
      ```
-   - Fold `.harness/security-assess.json` / `## Security Assess` into HTML **`#assess`** (and refresh `#cves` from deps probe).
-5. If no filled content — explore entrypoints / trust surfaces; draft per [`HTML-REPORT.md`](../skills/engineering/security-plan/HTML-REPORT.md). Open the file; tell the user the path.
-6. **Follow-ups** — targeted Q&A on open posture decisions only; rewrite the same HTML after each material answer.
-7. When stages are ready — `/ss-to-issues` (fold into existing epics when possible); write keys into the HTML.
-8. **Validate structure** (when vendored): `node .cursor/vendor/skillsync/tools/validate-plan-html.cjs . --kind security` — fix until exit 0 (cross-checks `#assess` / `#status` against `security-assess.json` when present).
-9. On lock: offer ADRs; mirror pointer into `.harness/state.md` when present.
-10. **Handoff:** `/ss-plan` for a hardening slice — **every PR still runs** [`/ss-security-audit`](./ss-security-audit.md) after review.
+   - Fold `.harness/security-assess.json` / `## Security Assess` into Markdown **`## assess`** (and refresh `## cves` from deps probe), then re-render.
+5. If no filled content — explore entrypoints / trust surfaces; draft Markdown per [`HTML-REPORT.md`](../skills/engineering/security-plan/HTML-REPORT.md).
+6. **Render:**
 
-**Not** a full grill. **Not** Phase A/B of the audit. **Not** a pen-test score — the HTML includes **CVE/dep** and optional **assess** machine snapshots instead. Inventory themes: [`harness-security-audit.md`](../harness/harness-security-audit.md).
+```bash
+node .cursor/vendor/skillsync/tools/render-plan-html.cjs . --kind security [--slug <slug>] --validate
+```
+
+Open the `.html`; tell the user the path.
+7. **Follow-ups** — targeted Q&A on open posture decisions only; rewrite the same `.md` after each material answer, then re-render.
+8. When stages are ready — `/ss-to-issues` (fold into existing epics when possible); write keys into the Markdown, then re-render.
+9. **Validate:** `validate-plan-html.cjs . --kind security` (cross-checks `#assess` / `#status` against `security-assess.json` when present).
+10. On lock: offer ADRs; mirror pointer into `.harness/state.md` when present.
+11. **Handoff:** `/ss-plan` for a hardening slice — **every PR still runs** [`/ss-security-audit`](./ss-security-audit.md) after review.
+
+**Not** a full grill. **Not** Phase A/B of the audit. **Not** a pen-test score — the plan includes **CVE/dep** and optional **assess** machine snapshots instead. Inventory themes: [`harness-security-audit.md`](../harness/harness-security-audit.md).
 
 **Skip** when posture is already agreed and only a normal story ships (still run the audit gate). Run **assess** when the user wants whole-plugin health.
 

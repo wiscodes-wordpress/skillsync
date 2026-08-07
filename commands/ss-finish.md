@@ -23,6 +23,7 @@ Invoke with “resume close”, “after merge”, or `/ss-close-story` directly
 
 - Start **fresh** after implement — load critic first; PR/close skills only after review PASS.
 - Contract is **`.harness/state.md`** (TDD Evidence, Verification Plan, Security Evidence) + the branch diff — not the implement chat.
-- Leaf commands stay available for partial re-runs (e.g. security only).
+- Leaf commands stay available for partial re-runs (e.g. security only). Prefer one `/ss-finish` over five leaf agents unless re-running a single gate.
+- More savings tips: [`harness/ss-flow.md`](../harness/ss-flow.md) → **Further savings**.
 
 Available as `/ss-finish` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

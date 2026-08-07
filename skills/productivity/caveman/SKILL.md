@@ -45,7 +45,7 @@ When user is in **planner phase**, use **normal clarity** (full sentences, scann
 
 - Slash commands **`/ss-plan`**, **`/ss-ui-ux-plan`**, **`/ss-arch-plan`**, **`/ss-security-plan`**, **`/ss-roadmap`**, or consumer planner wrappers (e.g. `qb-plan`), **or**
 - Following **`harness-planner-tdd.md`** or legacy **`harness-planner.md`** (and any chained planner addendum) to produce spec, slices/cycles, verification plan, **`.harness/state.md`** planning sections, **or**
-- Following **`ui-ux-planner`**, **`arch-plan`**, or **`security-plan`** to produce living HTML briefings (and optional thin exports), **or**
+- Following **`ui-ux-planner`**, **`arch-plan`**, or **`security-plan`** to produce living plan Markdown (and derived HTML), **or**
 - Publishing tracker issues via **`to-issues`** / **`/ss-to-issues`**.
 
 **Resume caveman** after that planner pass is done (e.g. `state.md` / HTML plan written, or user leaves planner-only work). Implement / review / casual Q&A → terse again.

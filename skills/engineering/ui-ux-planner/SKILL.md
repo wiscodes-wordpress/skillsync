@@ -1,34 +1,36 @@
 ---
 name: ui-ux-planner
 description: >
-  UI/UX planning for product surfaces — living HTML is the plan source of truth
-  (journeys, screen inventory, states, decisions). On /ss-ui-ux-plan, draft or rewrite
-  the same HTML; follow-ups update that file. Use when designing or redesigning
-  screens/flows, planning UI-heavy stories, or when the user asks for senior UX
-  planning before /ss-plan. Does not write production UI code or replace TDD grilling.
+  UI/UX planning for product surfaces — Markdown is the plan source of truth;
+  HTML is derived via render-plan-html.cjs (journeys, screen inventory, states,
+  decisions). On /ss-ui-ux-plan, draft or rewrite the same MD then re-render.
+  Use when designing or redesigning screens/flows, planning UI-heavy stories,
+  or when the user asks for senior UX planning before /ss-plan. Does not write
+  production UI code or replace TDD grilling.
 ---
 
 # UI/UX planner
 
-Plan **product UX** (flows + surfaces) as a visual **living HTML** briefing before delivery planning. Invoke via **`/ss-ui-ux-plan`**.
+Plan **product UX** (flows + surfaces) as living **Markdown** with a derived HTML briefing before delivery planning. Invoke via **`/ss-ui-ux-plan`**.
 
-The HTML is the **source of truth**. **`/ss-plan`** consumes journeys from it for Behavior & Test Contracts — do not skip straight to implement on UI-heavy work.
+The Markdown is the **source of truth**. **`/ss-plan`** consumes journeys from it for Behavior & Test Contracts — do not skip straight to implement on UI-heavy work.
 
-**Prose:** apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) to HTML copy and chat — expand abbreviations on first use (information architecture (IA), architecture decision record (ADR), accessibility); no brochure voice.
+**Prose:** apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) to plan copy and chat — expand abbreviations on first use (information architecture (IA), architecture decision record (ADR), accessibility); no brochure voice.
 
 ## Source of truth
 
-The living HTML (pack `ux-plan.html` or legacy `.harness/ux-plan.html`) is **the** source of truth for this UX plan: primary job, journeys, surfaces, states, design decisions, accessibility, and open questions.
+The living Markdown (pack `ux-plan.md` or legacy `.harness/ux-plan.md`) is **the** source of truth for this UX plan: primary job, journeys, surfaces, states, design decisions, accessibility, and open questions.
 
-**Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — sticky nav, Job, Journeys, Surfaces, States, Decisions, Handoff. That browser HTML is the deliverable; do **not** substitute a Cursor Canvas or chat-only summary for the source of truth.
+**Derived view:** `render-plan-html.cjs --kind ux` → `ux-plan.html` for humans. **Do not hand-edit** HTML. Follow [HTML-REPORT.md](HTML-REPORT.md) for section contract.
 
 | Layer | Role |
 |-------|------|
-| **HTML** | Plan source of truth — read and decide from here |
+| **Markdown** | Plan source of truth — read and decide from here |
+| **HTML** | Human browser view — derived only |
 | Optional **`docs/ux/ux-<slug>.md`** | Thin paste/export for tracker — not a competing source of truth |
 | **`.harness/state.md` pointer** | Path + status for the delivery loop |
 
-Follow-up answers **update that same HTML** before the next question. Do not spawn timestamped copies per answer.
+Follow-up answers **update that same Markdown** then re-render before the next question. Do not spawn timestamped copies per answer.
 
 ## When to use
 

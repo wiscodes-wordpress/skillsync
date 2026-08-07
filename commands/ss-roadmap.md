@@ -48,7 +48,7 @@ In **Agent** mode:
 
    Omit `--epics` until publish (or pass draft titles only as comments in the hub). Writes `.harness/initiatives/<slug>/` (`initiative.md`, `index.html` hub, empty `assets/`). Lens HTML stays missing until their commands run.
 
-4. **Run required lens commands in order** — `/ss-arch-plan` → `/ss-ui-ux-plan` → `/ss-security-plan`, each writing **into the pack** (`architecture-plan.html` / `ux-plan.html` / `security-posture.html`) instead of the global `.harness/*.html`, and validating with `validate-plan-html.cjs --file`. Stages / journeys / hardening may use **draft** titles until keys exist; `#phase` can say “keys pending publish”. After each lens lands, rewrite the hub lens row (`missing → draft → locked`). After lenses lock:
+4. **Run required lens commands in order** — `/ss-arch-plan` → `/ss-ui-ux-plan` → `/ss-security-plan`, each writing **into the pack** (`architecture-plan.md` / `ux-plan.md` / `security-posture.md`, then `render-plan-html.cjs`) instead of freehand HTML, and validating with `validate-plan-html.cjs --file`. Stages / journeys / hardening may use **draft** titles until keys exist; `## phase` can say “keys pending publish”. After each lens lands, rewrite the hub lens row (`missing → draft → locked`). After lenses lock:
 
    ```bash
    node .cursor/vendor/skillsync/tools/render-app-map.cjs . --title "<product>"
@@ -69,6 +69,6 @@ In **Agent** mode:
 
 **One-pass roadmap (no lenses):** when step 2 gates require no lens, publish straight from the approved draft (step 5) — that is the whole flow; there is no separate roadmap command.
 
-**Pack layout:** living plans live under `.harness/initiatives/<slug>/` (`architecture-plan.html`, `ux-plan.html`, `security-posture.html` beside `initiative.md`). Prefer the pack for that train; do not spawn flat `.harness/ux-<slug>.html`. Legacy root `.harness/*.html` is only for simple single-plan repos. Grand plan: `.harness/app-map.html`.
+**Pack layout:** living plans live under `.harness/initiatives/<slug>/` (`architecture-plan.md` / `ux-plan.md` / `security-posture.md` beside `initiative.md`; HTML derived). Prefer the pack for that train; do not spawn flat `.harness/ux-<slug>.html`. Legacy root `.harness/*.md` is only for simple single-plan repos. Grand plan: `.harness/app-map.html`.
 
 Available as `/ss-roadmap` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

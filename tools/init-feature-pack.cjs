@@ -5,9 +5,9 @@
  * Layout (matches consumer harness architecture):
  *   initiative.md              — product scope (default SoT path)
  *   index.html                 — lens status hub (keys + gate table)
- *   architecture-plan.html     — written later by /ss-arch-plan
- *   ux-plan.html               — written later by /ss-ui-ux-plan
- *   security-posture.html      — written later by /ss-security-plan
+ *   architecture-plan.md/.html — MD SoT; HTML via render-plan-html (/ss-arch-plan)
+ *   ux-plan.md/.html           — MD SoT; HTML derived
+ *   security-posture.md/.html  — MD SoT; HTML derived
  *   assets/                    — optional mockups
  *
  * Usage:
@@ -121,7 +121,7 @@ function renderHub({ slug, title, spec, epics, requiredLenses }) {
 				<p class="text-xs uppercase tracking-wider">${escapeHtml(slug)}</p>
 				<h1 class="font-serif text-3xl">Initiative — ${escapeHtml(title)}</h1>
 				<p class="text-sm">Product scope: <span class="font-mono">${escapeHtml(spec)}</span></p>
-					<p>This hub joins the roadmap to its living plan lenses (<span class="font-mono">architecture-plan.html</span> / <span class="font-mono">ux-plan.html</span> / <span class="font-mono">security-posture.html</span>). Lens files are the plan sources of truth; this page carries status and keys only. Plugin grand plan: <a class="underline" href="../../app-map.html">app-map.html</a>.</p>
+					<p>This hub joins the roadmap to its living plan lenses (<span class="font-mono">architecture-plan.md</span> / <span class="font-mono">ux-plan.md</span> / <span class="font-mono">security-posture.md</span> → derived <span class="font-mono">.html</span> for humans). Markdown is the plan source of truth; this page carries status and keys only. Plugin grand plan: <a class="underline" href="../../app-map.html">app-map.html</a>.</p>
 			</header>
 			<section id="phase">
 				<h2 class="font-serif text-2xl">Phase we are at</h2>
@@ -218,9 +218,9 @@ function main() {
 			'',
 			'| Plan | Path |',
 			'|------|------|',
-			'| Architecture | [`architecture-plan.html`](architecture-plan.html) |',
-			'| UX | [`ux-plan.html`](ux-plan.html) |',
-			'| Security posture | [`security-posture.html`](security-posture.html) |',
+			'| Architecture | [`architecture-plan.md`](architecture-plan.md) → `.html` (derived) |',
+			'| UX | [`ux-plan.md`](ux-plan.md) → `.html` (derived) |',
+			'| Security posture | [`security-posture.md`](security-posture.md) → `.html` (derived) |',
 			'',
 			'Mockups (optional): [`assets/`](assets/). Lens status hub: [`index.html`](index.html).',
 			'',

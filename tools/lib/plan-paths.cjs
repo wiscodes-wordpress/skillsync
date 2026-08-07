@@ -1,32 +1,36 @@
 #!/usr/bin/env node
 /**
- * Resolve living plan HTML paths for skillsync consumers.
+ * Resolve living plan paths for skillsync consumers.
  *
  * Canonical layout (initiative pack):
  *   .harness/initiatives/<slug>/
  *     initiative.md
- *     architecture-plan.html
- *     ux-plan.html
- *     security-posture.html
+ *     architecture-plan.md    ← lens source of truth (agent reads/writes)
+ *     architecture-plan.html  ← derived via render-plan-html.cjs (human browser)
+ *     ux-plan.md / ux-plan.html
+ *     security-posture.md / security-posture.html
  *     assets/                 (optional)
  *     index.html              (optional lens hub from init-feature-pack)
  *
  * Legacy / simple repos may still keep a single plan at `.harness/<file>`.
+ * Prefer Markdown SoT; HTML-only packs remain readable until migrated.
  *
  * Resolve order for arch | ux | security:
  *   1. Explicit --file / opts.file
- *   2. skillsync.config.json planHtml[kind]
+ *   2. skillsync.config.json planHtml[kind] / planMd[kind]
  *   3. --slug → initiatives/<slug>/<file>
  *   4. Exactly one initiative pack under .harness/initiatives/
  *   5. Exactly one pack that already contains the file
  *   6. Legacy: .harness/<file>
  *
- * handoff / wayfinder / app-map stay harness-root (not per-initiative).
+ * handoff stays harness-root; wayfinder under .harness/wayfinder/<slug>/;
+ * app-map stays harness-root (render-app-map.cjs only).
  */
 
 const fs = require('node:fs');
 const path = require('node:path');
 const { harnessDir, readOptionalConfig } = require('./ss-tools.cjs');
+const { PLAN_MD_FILES } = require('./plan-md.cjs');
 
 /** @type {Record<string, string>} */
 const PLAN_FILES = {
@@ -77,18 +81,25 @@ function isInitiativePackDir(dir) {
 		PLAN_FILES.arch,
 		PLAN_FILES.ux,
 		PLAN_FILES.security,
+		PLAN_MD_FILES.arch,
+		PLAN_MD_FILES.ux,
+		PLAN_MD_FILES.security,
 	];
 	return markers.some((name) => fs.existsSync(path.join(dir, name)));
 }
 
 /**
+ * Shared resolve for plan HTML or Markdown filenames.
+ *
  * @param {string} consumerRoot
  * @param {string} kind
- * @param {{ file?: string; slug?: string; config?: object | null; preferPack?: boolean }} [opts]
+ * @param {Record<string, string>} fileMap
+ * @param {'planHtml' | 'planMd'} configKey
+ * @param {{ file?: string; slug?: string; config?: object | null }} [opts]
  * @returns {string}
  */
-function resolvePlanHtmlPath(consumerRoot, kind, opts = {}) {
-	const fileName = PLAN_FILES[kind];
+function resolvePlanPath(consumerRoot, kind, fileMap, configKey, opts = {}) {
+	const fileName = fileMap[kind];
 	if (!fileName) {
 		throw new Error(`Unknown plan kind "${kind}"`);
 	}
@@ -99,7 +110,7 @@ function resolvePlanHtmlPath(consumerRoot, kind, opts = {}) {
 
 	const config = opts.config !== undefined ? opts.config : readOptionalConfig(consumerRoot);
 	const configured = /** @type {Record<string, string> | undefined} */ (
-		/** @type {any} */ (config)?.planHtml
+		/** @type {any} */ (config)?.[configKey]
 	)?.[kind];
 	if (configured) {
 		return path.resolve(consumerRoot, configured);
@@ -134,6 +145,28 @@ function resolvePlanHtmlPath(consumerRoot, kind, opts = {}) {
 }
 
 /**
+ * @param {string} consumerRoot
+ * @param {string} kind
+ * @param {{ file?: string; slug?: string; config?: object | null; preferPack?: boolean }} [opts]
+ * @returns {string}
+ */
+function resolvePlanHtmlPath(consumerRoot, kind, opts = {}) {
+	return resolvePlanPath(consumerRoot, kind, PLAN_FILES, 'planHtml', opts);
+}
+
+/**
+ * Markdown source of truth path (arch | ux | security | handoff).
+ *
+ * @param {string} consumerRoot
+ * @param {string} kind
+ * @param {{ file?: string; slug?: string; config?: object | null }} [opts]
+ * @returns {string}
+ */
+function resolvePlanMdPath(consumerRoot, kind, opts = {}) {
+	return resolvePlanPath(consumerRoot, kind, PLAN_MD_FILES, 'planMd', opts);
+}
+
+/**
  * Default product-spec path for a new initiative.
  *
  * @param {string} slug
@@ -145,9 +178,11 @@ function defaultInitiativeSpecPath(slug) {
 
 module.exports = {
 	PLAN_FILES,
+	PLAN_MD_FILES,
 	listInitiativeSlugs,
 	initiativePackDir,
 	isInitiativePackDir,
 	resolvePlanHtmlPath,
+	resolvePlanMdPath,
 	defaultInitiativeSpecPath,
 };
