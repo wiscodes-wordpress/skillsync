@@ -25,14 +25,15 @@ Commands: type **`ss`** — daily Story [`/ss-flow`](../../commands/ss-flow.md);
 - **[to-prd](./to-prd/SKILL.md)** — Turn conversation context into a PRD on the issue tracker.
 - **[triage](./triage/SKILL.md)** — Triage issues through a state machine of triage roles.
 - **[zoom-out](./zoom-out/SKILL.md)** — Higher-level perspective on an unfamiliar section of code.
-- **[wayfinder](./wayfinder/SKILL.md)** — Foggy initiative decision map as local HTML (`/ss-roadmap` phase 0; no Jira). Adapted from upstream wayfinder.
+- **[wayfinder](./wayfinder/SKILL.md)** — Foggy initiative decision map (`map.md` SoT; `/ss-roadmap` phase 0; no Jira). Adapted from upstream wayfinder.
 
 ## Skillsync shared
 
 - **[app-map](./app-map/SKILL.md)** — Plugin grand plan `.harness/app-map.html` via deterministic `render-app-map.cjs` (Mind-elixir).
-- **[arch-plan](./arch-plan/SKILL.md)** — Architecture plan as living HTML source of truth (`/ss-arch-plan`); Quick-Builder-style briefing; epic/story keys; one-way Jira refresh on run.
-- **[security-plan](./security-plan/SKILL.md)** — Security posture as living HTML (`/ss-security-plan`); optional whole-plugin assess (Semgrep + Wordfence); does not replace `/ss-security-audit`.
-- **[code-handoff](./code-handoff/SKILL.md)** — Human walkthrough of branch changes → `.harness/code-handoff.html` (`/ss-handoff`); before `/ss-submit-pr`.
+- **[arch-plan](./arch-plan/SKILL.md)** — Architecture direction; Markdown SoT + derived HTML (`/ss-arch-plan`); epic/story keys; one-way Jira refresh on run.
+- **[ui-ux-planner](./ui-ux-planner/SKILL.md)** — Flows + surfaces; Markdown SoT before `/ss-plan` (`/ss-ui-ux-plan`).
+- **[security-plan](./security-plan/SKILL.md)** — Trust posture Markdown SoT; optional whole-plugin assess; does not replace `/ss-security-audit`.
+- **[code-handoff](./code-handoff/SKILL.md)** — Human walkthrough → `.harness/code-handoff.md` + derived HTML (`/ss-handoff`); before `/ss-submit-pr`.
 - **[dependabot-batch-merge](./dependabot-batch-merge/SKILL.md)** — Batch-merge Dependabot PRs safely.
 - **[bulletproof-react](./bulletproof-react/SKILL.md)** — Feature-based React app architecture (shared → features → app); link when consumer has a React SPA/app.
 - **[frontend-react-best-practices](./frontend-react-best-practices/SKILL.md)** — React performance and composition patterns.
@@ -44,7 +45,6 @@ Commands: type **`ss`** — daily Story [`/ss-flow`](../../commands/ss-flow.md);
 - **[pr-review](./pr-review/SKILL.md)** — Structured pull request review workflow.
 - **[submit-github-pr](./submit-github-pr/SKILL.md)** — Open a GitHub PR via `gh`.
 - **[typescript-react-reviewer](./typescript-react-reviewer/SKILL.md)** — TypeScript + React code review expert.
-- **[ui-ux-planner](./ui-ux-planner/SKILL.md)** — Flows + surfaces → living HTML UX source of truth before `/ss-plan` (`/ss-ui-ux-plan`).
 
 ## WordPress
 

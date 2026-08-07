@@ -24,33 +24,50 @@ Fog lives in roadmap (local wayfinder HTML); **Jira only at publish**; grand pla
 
 ## Harness layout (living plans)
 
-Living architecture / UX / security plans are **HTML** under **`.harness/`**. Prefer **one folder per initiative** — do not leave multi-train plans as flat root siblings with long suffixes.
+Living architecture / UX / security plans use **Markdown as source of truth** under **`.harness/`**, with **HTML derived** for humans (`render-plan-html.cjs`). Prefer **one folder per initiative** — do not leave multi-train plans as flat root siblings with long suffixes.
 
 ```text
 .harness/
   README.md                         # optional consumer layout note
   app-map.html                      # plugin grand plan (script-generated)
   state.md / qa-current.md          # delivery-loop scratch (usually gitignored)
-  code-handoff.html                 # optional PR walkthrough (scratch)
+  code-handoff.md                   # optional PR walkthrough SoT (scratch)
+  code-handoff.html                 # derived — open in browser
   specs/                            # epic / story AC markdown (optional)
   release/                          # channel packs (optional / gitignored)
   initiatives/<slug>/
     initiative.md                   # product scope
-    architecture-plan.html          # Arch lens SoT
-    ux-plan.html                    # UX lens SoT
-    security-posture.html           # Security lens SoT (+ `#gate` when this train owns it)
+    architecture-plan.md            # Arch lens SoT
+    architecture-plan.html          # derived (human)
+    ux-plan.md / ux-plan.html
+    security-posture.md / .html     # Security lens SoT (+ ## gate when this train owns it)
     assets/                         # optional mockups
     index.html                      # optional lens status hub (from init-feature-pack)
 ```
 
-**Path resolve** for `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` and `init-plan-html.cjs` / `validate-plan-html.cjs`:
+**Path resolve** for `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` and `init-plan-html.cjs` / `render-plan-html.cjs` / `validate-plan-html.cjs`:
 
 1. `docs/agents/domain.md` (consumer path table) when documented  
 2. `.harness/initiatives/<slug>/…` (`--slug`, or the only pack)  
-3. Legacy single-file `.harness/architecture-plan.html` (etc.) for simple one-plan repos  
-4. Optional `skillsync.config.json` → `planHtml.{arch,ux,security}`
+3. Legacy single-file `.harness/architecture-plan.md` (etc.) for simple one-plan repos  
+4. Optional `skillsync.config.json` → `planMd.{arch,ux,security}` / `planHtml.*`
 
 Scaffold a pack: `init-feature-pack.cjs --slug <slug> --lenses arch,ux,security`. Document consumer paths in **`docs/agents/domain.md`**.
+
+**Hard rule:** agents edit `.md` only; run `render-plan-html.cjs` for `.html`. Never hand-edit derived HTML (same family as `app-map.html`).
+
+**Optional watcher** (IDE edits while planning — not part of default Story `yarn dev`):
+
+```bash
+yarn ss:watch-plans
+# or one-shot: yarn ss:render-plans
+```
+
+Compose with app `dev` only when you want one terminal:
+
+```json
+"dev": "concurrently -k \"webpack --watch\" \"yarn ss:watch-plans\""
+```
 
 ## Submodule (recommended)
 
@@ -195,9 +212,9 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-flow` | **Story spine** — three fresh agents: Plan → Implement → Done |
 | `/ss-workflow` | Belt index — Initiative / Ship entry; points at `/ss-flow` for daily Story |
 | `/ss-roadmap` | Initiative orchestrator — draft roadmap (story map + spec) → lens pack (arch / UX / security) → **then** publish Jira epics/stories → `/ss-plan` |
-| `/ss-arch-plan` | Architecture plan source of truth (living HTML); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
-| `/ss-security-plan` | Security posture source of truth (living HTML); optional whole-plugin **assess** (Semgrep + deps + Wordfence) — does **not** replace `/ss-security-audit` |
-| `/ss-ui-ux-plan` | UX plan source of truth (living HTML; flows + surfaces) — before `/ss-plan` when UI-heavy |
+| `/ss-arch-plan` | Architecture plan SoT (Markdown; HTML derived); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
+| `/ss-security-plan` | Security posture SoT (Markdown; HTML derived); optional whole-plugin **assess** — does **not** replace `/ss-security-audit` |
+| `/ss-ui-ux-plan` | UX plan SoT (Markdown; HTML derived; flows + surfaces) — before `/ss-plan` when UI-heavy |
 | `/ss-plan` | Grill + TDD plan → `.harness/state.md` (Story Plan agent) |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
 | `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential (interactive) |
@@ -205,7 +222,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-finish` | **Done agent** — review → fix → security → handoff → submit; close after merge |
 | `/ss-review` | Critic / quality gate (leaf; usually via `/ss-finish`) |
 | `/ss-security-audit` | Security gate (scripts + agent) — after review, before PR |
-| `/ss-handoff` | Human code walkthrough → `.harness/code-handoff.html` (optional; before PR) |
+| `/ss-handoff` | Human code walkthrough → `.harness/code-handoff.md` + derived `.html` (optional; before PR) |
 | `/ss-submit-pr` | Open GitHub PR (does not merge; requires Security Evidence PASS) |
 | `/ss-close-story` | Tracker Done + clear harness files (after merge) |
 | `/ss-release` | Post-ship go-to-market — brief → demo proof → channel pack → anti-slop (optional; not a PR gate). **`anti-slop`** also applies to delivery-loop prose (plans, HTML, issues) per harness ss-flow rule 7. |
@@ -273,8 +290,10 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `init-release-brief.cjs` | `/ss-release*` | Scaffold `.harness/release-brief.md` (`--version`, `--force`) |
 | `validate-release-brief.cjs` | `/ss-release*` | Assert brief sections (`--mode structure\|ready`) |
 | `validate-release-pack.cjs` | `/ss-release*` | Assert channel pack files exist and are non-empty |
-| `validate-plan-html.cjs` | lenses / wayfinder / app-map / handoff | Structural lint (`--kind`; `--slug` / `--file`; `--mode structure\|ready`) |
-| `init-plan-html.cjs` | same plan / handoff commands | Chrome-only scaffold (`--kind`; `--slug` → pack; `--force`) |
+| `validate-plan-html.cjs` | lenses / wayfinder / app-map / handoff | Structural lint on derived HTML (`--kind`; `--slug` / `--file`; `--mode structure\|ready`) |
+| `init-plan-html.cjs` | same plan / handoff commands | Scaffold MD SoT + render HTML (`--kind`; `--slug` → pack; `--force`) |
+| `render-plan-html.cjs` | after MD edits | Derive `.html` from `.md` (`--kind`; `--validate`) |
+| `watch-plan-html.cjs` | optional IDE safety net | Watch `.harness/**/*.md` plans → re-render (debounce; `--once`) |
 | `init-feature-pack.cjs` | `/ss-roadmap` | Scaffold `.harness/initiatives/<slug>/` (`initiative.md`, `index.html`, `assets/`; `--epics`, `--lenses`) |
 | `validate-feature-pack.cjs` | `/ss-roadmap` | Assert required lenses exist + hub/lens epic-key parity (`--slug`) |
 | `render-app-map.cjs` | `/ss-roadmap` | Deterministic `.harness/app-map.html` (Mind-elixir; `--title`) |
@@ -325,6 +344,8 @@ Example **`package.json`** scripts (consumer root):
 		"ss:validate-state": "node ./.cursor/vendor/skillsync/tools/validate-state.cjs . --mode implement",
 		"ss:open-pr": "node ./.cursor/vendor/skillsync/tools/open-pr.cjs .",
 		"ss:app-map": "node ./.cursor/vendor/skillsync/tools/render-app-map.cjs . --title \"Product\"",
+		"ss:watch-plans": "node ./.cursor/vendor/skillsync/tools/watch-plan-html.cjs .",
+		"ss:render-plans": "node ./.cursor/vendor/skillsync/tools/watch-plan-html.cjs . --once",
 		"ss:init-release-brief": "node ./.cursor/vendor/skillsync/tools/init-release-brief.cjs .",
 		"ss:validate-release-brief": "node ./.cursor/vendor/skillsync/tools/validate-release-brief.cjs . --mode ready",
 		"ss:validate-release-pack": "node ./.cursor/vendor/skillsync/tools/validate-release-pack.cjs ."

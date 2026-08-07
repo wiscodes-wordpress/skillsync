@@ -20,4 +20,6 @@ Do **not** keep one mega-session from plan through Done. Do **not** split Plan i
 
 **Enter Initiative** (`/ss-roadmap`, lenses) or **Ship** (`/ss-release*`) only when needed — see [`ss-workflow`](./ss-workflow.md).
 
+**Context budget:** three fresh agents + `.harness/state.md` handoff. Practical savings (thin state, `/ss-loop` for long Remaining, skip optional phases, re-run leaves only): [`harness/ss-flow.md`](../harness/ss-flow.md) → **Context budget rules** / **Further savings**.
+
 Available as `/ss-flow` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

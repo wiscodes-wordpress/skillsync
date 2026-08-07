@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Scaffold chrome-only living HTML for architecture / UX / security / code handoff.
+ * Scaffold Markdown source of truth + derived HTML for architecture / UX / security / handoff.
  *
  * Usage:
  *   node path/to/skillsync/tools/init-plan-html.cjs [/path/to/consumer-repo] \
@@ -9,11 +9,13 @@
  *     [--product "Demo Plugin"] [--task "DEMO-310 title"] \
  *     [--branch feature/x] [--base main] [--force]
  *
- * Path resolve: see tools/lib/plan-paths.cjs (initiative pack preferred; harness root fallback).
- * Placeholders only — no AI prose. Refuses overwrite unless --force.
- * After write, runs validate-plan-html --mode structure (must pass).
+ * Writes .md (SoT), runs render-plan-html.cjs → .html (human view), then
+ * validate-plan-html --mode structure.
  *
- * Templates: tools/templates/plan-{arch,ux,security,handoff}.html
+ * Path resolve: see tools/lib/plan-paths.cjs (initiative pack preferred; harness root fallback).
+ * Placeholders only — no AI prose. Refuses overwrite of existing .md unless --force.
+ *
+ * Templates: tools/templates/plan-{arch,ux,security,handoff}.md
  */
 
 const fs = require('node:fs');
@@ -25,14 +27,14 @@ const {
 	readOptionalConfig,
 	assertOrExit,
 } = require('./lib/ss-tools.cjs');
-const { resolvePlanHtmlPath } = require('./lib/plan-paths.cjs');
-const { KINDS } = require('./validate-plan-html.cjs');
+const { resolvePlanHtmlPath, resolvePlanMdPath } = require('./lib/plan-paths.cjs');
+const { applyMdTokens, mdTemplatePath, PLAN_MD_FILES } = require('./lib/plan-md.cjs');
 
 const TEMPLATE_BY_KIND = {
-	arch: 'plan-arch.html',
-	ux: 'plan-ux.html',
-	security: 'plan-security.html',
-	handoff: 'plan-handoff.html',
+	arch: 'plan-arch.md',
+	ux: 'plan-ux.md',
+	security: 'plan-security.md',
+	handoff: 'plan-handoff.md',
 };
 
 /**
@@ -47,14 +49,14 @@ function defaultPlanPath(consumerRoot, kind, config, slug) {
 }
 
 /**
- * @param {string} template
- * @param {Record<string, string>} vars
+ * @param {string} consumerRoot
+ * @param {string} kind
+ * @param {import('./lib/ss-tools.cjs').SkillsyncConfig | null} config
+ * @param {string | undefined} slug
  * @returns {string}
  */
-function applyTokens(template, vars) {
-	return template.replace(/\{\{(\w+)\}\}/g, (_, key) =>
-		Object.prototype.hasOwnProperty.call(vars, key) ? vars[key] : `{{${key}}}`,
-	);
+function defaultMdPath(consumerRoot, kind, config, slug) {
+	return resolvePlanMdPath(consumerRoot, kind, { config, slug });
 }
 
 function main() {
@@ -68,14 +70,15 @@ function main() {
 		`Missing or invalid --kind. Use arch, ux, security, or handoff.`,
 	);
 
-	const templateName = TEMPLATE_BY_KIND[kind];
-	const templatePath = path.join(__dirname, 'templates', templateName);
+	const templatePath = mdTemplatePath(__dirname, kind);
 	assertOrExit(fs.existsSync(templatePath), `Missing template ${templatePath}`);
 
 	const slug = typeof flags.slug === 'string' ? flags.slug : undefined;
+	const mdPath = defaultMdPath(consumerRoot, kind, config, slug);
 	const outPath = defaultPlanPath(consumerRoot, kind, config, slug);
-	if (fs.existsSync(outPath) && !flags.force) {
-		console.error(`Refusing to overwrite ${outPath} (use --force).`);
+
+	if (fs.existsSync(mdPath) && !flags.force) {
+		console.error(`Refusing to overwrite ${mdPath} (use --force).`);
 		process.exit(1);
 	}
 
@@ -101,38 +104,56 @@ function main() {
 				: 'main';
 	const updated = new Date().toISOString().slice(0, 10);
 
-	const html = applyTokens(fs.readFileSync(templatePath, 'utf8'), {
+	const md = applyMdTokens(fs.readFileSync(templatePath, 'utf8'), {
 		product,
 		task,
 		branch,
 		base,
 		updated,
+		slug: slug || '',
 	});
 
-	fs.mkdirSync(path.dirname(outPath), { recursive: true });
-	fs.writeFileSync(outPath, html, 'utf8');
+	fs.mkdirSync(path.dirname(mdPath), { recursive: true });
+	fs.writeFileSync(mdPath, md, 'utf8');
 
-	const validateTool = path.join(__dirname, 'validate-plan-html.cjs');
-	const result = spawnSync(
+	const renderTool = path.join(__dirname, 'render-plan-html.cjs');
+	const renderResult = spawnSync(
 		process.execPath,
-		[validateTool, consumerRoot, '--kind', kind, '--file', outPath, '--mode', 'structure'],
+		[
+			renderTool,
+			consumerRoot,
+			'--kind',
+			kind,
+			'--file',
+			mdPath,
+			'--out',
+			outPath,
+			'--validate',
+		],
 		{ encoding: 'utf8' },
 	);
-	if (result.stdout) {
-		process.stdout.write(result.stdout);
+	if (renderResult.stdout) {
+		process.stdout.write(renderResult.stdout);
 	}
-	if (result.stderr) {
-		process.stderr.write(result.stderr);
+	if (renderResult.stderr) {
+		process.stderr.write(renderResult.stderr);
 	}
-	if (result.status !== 0) {
-		console.error(`init-plan-html: wrote ${outPath} but structure validate failed`);
-		process.exit(result.status ?? 1);
+	if (renderResult.status !== 0) {
+		console.error(`init-plan-html: wrote ${mdPath} but render/validate failed`);
+		process.exit(renderResult.status ?? 1);
 	}
 
+	console.log(mdPath);
 	console.log(outPath);
 }
 
-module.exports = { TEMPLATE_BY_KIND, applyTokens, defaultPlanPath };
+module.exports = {
+	TEMPLATE_BY_KIND,
+	PLAN_MD_FILES,
+	applyMdTokens,
+	defaultPlanPath,
+	defaultMdPath,
+};
 
 if (require.main === module) {
 	main();

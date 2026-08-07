@@ -37,10 +37,14 @@ const REQUIRED_TOOLS = [
 	'validate-release-pack.cjs',
 	'validate-plan-html.cjs',
 	'init-plan-html.cjs',
+	'render-plan-html.cjs',
+	'watch-plan-html.cjs',
 	'init-feature-pack.cjs',
 	'validate-feature-pack.cjs',
 	'render-app-map.cjs',
 	'lib/ss-tools.cjs',
+	'lib/plan-md.cjs',
+	'lib/plan-paths.cjs',
 ];
 
 /**
@@ -114,7 +118,7 @@ function main() {
 		failed = true;
 	}
 	if (fs.existsSync(path.join(temp, '.harness', 'code-handoff.md'))) {
-		console.error('harness-reset: legacy code-handoff.md should be deleted');
+		console.error('harness-reset: code-handoff.md (SoT) should be deleted');
 		failed = true;
 	}
 	console.log('OK: harness-reset integration');
@@ -744,9 +748,105 @@ implementing
 			'DEMO-1 scaffold',
 		]);
 		runTool(validatePlanHtmlTool, [initConsumer, '--kind', kind, '--mode', 'structure']);
+		const mdName =
+			kind === 'arch'
+				? 'architecture-plan.md'
+				: kind === 'ux'
+					? 'ux-plan.md'
+					: kind === 'security'
+						? 'security-posture.md'
+						: 'code-handoff.md';
+		if (!fs.existsSync(path.join(initConsumer, '.harness', mdName))) {
+			console.error(`init-plan-html: expected .harness/${mdName}`);
+			failed = true;
+		}
 		runTool(initPlanHtml, [initConsumer, '--kind', kind], { expectFail: true });
 	}
 	console.log('OK: init-plan-html scaffold + structure validate + overwrite refuse');
+
+	const renderPlanHtml = path.join(toolsDir, 'render-plan-html.cjs');
+	const renderMdConsumer = makeTempConsumer();
+	fs.mkdirSync(path.join(renderMdConsumer, '.harness'), { recursive: true });
+	const mdFixtures = [
+		['arch', 'plan-arch-valid.md', 'architecture-plan.md'],
+		['ux', 'plan-ux-valid.md', 'ux-plan.md'],
+		['security', 'plan-security-valid.md', 'security-posture.md'],
+		['handoff', 'plan-handoff-valid.md', 'code-handoff.md'],
+	];
+	for (const [kind, fixture, dest] of mdFixtures) {
+		fs.copyFileSync(
+			path.join(fixturesDir, fixture),
+			path.join(renderMdConsumer, '.harness', dest),
+		);
+		runTool(renderPlanHtml, [renderMdConsumer, '--kind', kind, '--validate']);
+		runTool(validatePlanHtmlTool, [renderMdConsumer, '--kind', kind, '--mode', 'ready']);
+	}
+	fs.mkdirSync(path.join(renderMdConsumer, '.harness', 'wayfinder', 'demo-chat'), {
+		recursive: true,
+	});
+	fs.copyFileSync(
+		path.join(fixturesDir, 'plan-wayfinder-valid.md'),
+		path.join(renderMdConsumer, '.harness', 'wayfinder', 'demo-chat', 'map.md'),
+	);
+	runTool(renderPlanHtml, [
+		renderMdConsumer,
+		'--kind',
+		'wayfinder',
+		'--slug',
+		'demo-chat',
+		'--validate',
+	]);
+	runTool(validatePlanHtmlTool, [
+		renderMdConsumer,
+		'--kind',
+		'wayfinder',
+		'--file',
+		'.harness/wayfinder/demo-chat/map.html',
+		'--mode',
+		'ready',
+	]);
+	console.log('OK: render-plan-html from MD fixtures + ready validate');
+
+	const watchPlanHtml = path.join(toolsDir, 'watch-plan-html.cjs');
+	const watchLib = require(watchPlanHtml);
+	const classifyCases = [
+		['.harness/architecture-plan.md', 'arch', undefined],
+		['.harness/initiatives/demo/ux-plan.md', 'ux', 'demo'],
+		['.harness/code-handoff.md', 'handoff', undefined],
+		['.harness/wayfinder/chat/map.md', 'wayfinder', 'chat'],
+		['.harness/notes.md', null, undefined],
+	];
+	for (const [rel, kind, slug] of classifyCases) {
+		const hit = watchLib.classifyPlanMdPath('/tmp/consumer', path.join('/tmp/consumer', rel));
+		if (kind === null) {
+			if (hit !== null) {
+				console.error(`watch-plan-html classify: expected null for ${rel}`);
+				failed = true;
+			}
+			continue;
+		}
+		if (!hit || hit.kind !== kind || hit.slug !== slug) {
+			console.error(
+				`watch-plan-html classify: ${rel} → ${JSON.stringify(hit)} (expected kind=${kind} slug=${slug})`,
+			);
+			failed = true;
+		}
+	}
+	const watchOnceConsumer = makeTempConsumer();
+	fs.mkdirSync(path.join(watchOnceConsumer, '.harness'), { recursive: true });
+	fs.copyFileSync(
+		path.join(fixturesDir, 'plan-arch-valid.md'),
+		path.join(watchOnceConsumer, '.harness', 'architecture-plan.md'),
+	);
+	runTool(watchPlanHtml, [watchOnceConsumer, '--once']);
+	if (
+		!fs.existsSync(path.join(watchOnceConsumer, '.harness', 'architecture-plan.html'))
+	) {
+		console.error('watch-plan-html --once: expected architecture-plan.html');
+		failed = true;
+	} else {
+		console.log('OK: watch-plan-html classify + --once render');
+	}
 
 	const packConsumer = makeTempConsumer();
 	const initFeaturePack = path.join(toolsDir, 'init-feature-pack.cjs');
@@ -800,8 +900,15 @@ implementing
 		'demo-pack',
 		'architecture-plan.html',
 	);
-	if (!fs.existsSync(packArch)) {
-		console.error(`init-plan-html --slug: expected ${packArch}`);
+	const packArchMd = path.join(
+		packInitConsumer,
+		'.harness',
+		'initiatives',
+		'demo-pack',
+		'architecture-plan.md',
+	);
+	if (!fs.existsSync(packArch) || !fs.existsSync(packArchMd)) {
+		console.error(`init-plan-html --slug: expected ${packArch} and ${packArchMd}`);
 		failed = true;
 	} else {
 		runTool(validatePlanHtmlTool, [
@@ -873,6 +980,8 @@ implementing
 	fs.rmSync(packConsumer, { recursive: true, force: true });
 	fs.rmSync(packInitConsumer, { recursive: true, force: true });
 	fs.rmSync(appMapConsumer, { recursive: true, force: true });
+	fs.rmSync(renderMdConsumer, { recursive: true, force: true });
+	fs.rmSync(watchOnceConsumer, { recursive: true, force: true });
 
 	if (failed) {
 		console.error('');

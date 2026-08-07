@@ -1,18 +1,19 @@
-# Architecture plan — living HTML
+# Architecture plan — living plan (MD → HTML)
 
-Self-contained HTML briefing for **project/plugin direction**. This file is the **plan source of truth**. Prefer this over chat dumps or Cursor Canvas — the HTML must open in a browser, survive sessions, and accept Jira→HTML refresh.
+Self-contained briefing for **project/plugin direction**. **Markdown is the plan source of truth**; HTML is derived for the browser via `render-plan-html.cjs`. Prefer this over chat dumps or Cursor Canvas — the plan must survive sessions and accept Jira→MD refresh.
 
-**Presentation reference:** match the Quick Builder style — sticky nav (highlight **Start → finish**), Phase, ordered **finish-line** story path, dual-track Epic A/B when needed, At a glance, Current|Target side by side, compact decisions, stages, optional sizing + epic portfolio. **Dark mode** zinc chrome + emerald/sky/violet accents (scaffold: `tools/templates/plan-arch.html`); Mermaid `theme: "dark"`; sparse prose.
+**Presentation reference:** sticky nav (highlight **Start → finish**), Phase, ordered **finish-line** story path, dual-track Epic A/B when needed, At a glance, Current|Target side by side, compact decisions, stages, optional sizing + epic portfolio. **Dark mode** zinc chrome + emerald/sky/violet accents (render chrome); Mermaid `theme: "dark"`; sparse prose.
 
-**Lifecycle:** rewrite this **same file** after every material follow-up and after every Jira status refresh. Do not timestamp a new file per answer. Rejected explorations may live in a sibling archive HTML (e.g. `architecture-plan-archive-*.html`) linked from the nav — do not clutter the source of truth with discarded forks.
+**Lifecycle:** rewrite the **same `.md`** after every material follow-up and after every Jira status refresh, then re-render HTML. Do not timestamp a new file per answer. Rejected explorations may live in a sibling archive MD linked from the plan — do not clutter the source of truth with discarded forks.
 
-## Why HTML (not Canvas / markdown alone)
+## Why Markdown + derived HTML
 
 | Format | Use |
 |--------|-----|
-| **`architecture-plan.html`** (`.harness/initiatives/<slug>/` or legacy `.harness/`) | plan source of truth — decisions, diagrams, stages, keys, refreshed status |
+| **`architecture-plan.md`** (pack or legacy `.harness/`) | **plan source of truth** — decisions, Mermaid, stages, keys, refreshed status |
+| **`architecture-plan.html`** | Human browser view — **derived** via `render-plan-html.cjs`; do not hand-edit |
 | Markdown ADRs / `CONTEXT.md` | Narrow permanence for *why* / glossary |
-| Cursor Canvas | Optional chat-side scratch only — **never** replace the HTML source of truth |
+| Cursor Canvas | Optional chat-side scratch only — **never** replace the MD source of truth |
 
 ## Scaffold
 

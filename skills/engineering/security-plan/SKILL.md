@@ -1,21 +1,21 @@
 ---
 name: security-plan
 description: >
-  Security posture planning — living HTML is the posture source of truth (surfaces,
-  trust decisions, hardening stages with optional Jira keys). On /ss-security-plan,
-  refresh keyed issue status one-way from Jira; follow-ups rewrite the same file.
-  Supports whole-plugin security assess (Semgrep + deps + Wordfence) into HTML #assess.
-  Use for durable how-we-intend-to-be-secure and plugin health. Does not replace
-  /ss-security-audit (per-PR gate) or /ss-plan TDD grilling.
+  Security posture planning — Markdown is the posture source of truth (surfaces,
+  trust decisions, hardening stages with optional Jira keys); HTML is derived via
+  render-plan-html.cjs. On /ss-security-plan, refresh keyed issue status one-way
+  from Jira into MD then re-render. Supports whole-plugin security assess into
+  MD ## assess. Use for durable how-we-intend-to-be-secure and plugin health.
+  Does not replace /ss-security-audit (per-PR gate) or /ss-plan TDD grilling.
 ---
 
 # Security plan
 
-Set **security posture** as a visual **living HTML** briefing. Invoke via **`/ss-security-plan`**.
+Set **security posture** as living **Markdown** with a derived HTML briefing. Invoke via **`/ss-security-plan`**.
 
 This is **posture planning** (durable intent) plus optional **whole-plugin assess** — not a relentless grill and not the ship gate.
 
-**Prose:** apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) to HTML copy and chat — expand abbreviations on first use; keep trust decisions concrete.
+**Prose:** apply [`anti-slop`](../../productivity/anti-slop/SKILL.md) to plan copy and chat — expand abbreviations on first use; keep trust decisions concrete.
 
 ## Two stages
 
@@ -28,21 +28,22 @@ Stage 2 probes: surface census, **Semgrep**, npm/composer **deps**, **Wordfence 
 
 ## Source of truth
 
-The living HTML (pack `security-posture.html` or legacy `.harness/security-posture.html`) is **the** source of truth for security posture: surface inventory, open/resolved trust decisions, hardening stages, optional epic/story keys, machine **assess** / CVE snapshots, and **status as shown** after refresh.
+The living Markdown (pack `security-posture.md` or legacy `.harness/security-posture.md`) is **the** source of truth for security posture: surface inventory, open/resolved trust decisions, hardening stages, optional epic/story keys, machine **assess** / CVE snapshots, and **status as shown** after refresh.
 
-**Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) — same craft as [`arch-plan`](../arch-plan/SKILL.md) (sticky nav, Phase, At a glance, Current|Target, decisions, stages). Browser HTML is the deliverable — not a chat TODO dump or Cursor Canvas.
+**Derived view:** `render-plan-html.cjs --kind security` → `security-posture.html`. **Do not hand-edit** HTML. Follow [HTML-REPORT.md](HTML-REPORT.md) for section contract.
 
 | Layer | Role |
 |-------|------|
-| **HTML** | Posture source of truth — read and decide from here |
-| **Jira epics / stories** | Workflow; keys join stages; status feeds into HTML on command run |
+| **Markdown** | Posture source of truth — read and decide from here |
+| **HTML** | Human browser view — derived only |
+| **Jira epics / stories** | Workflow; keys join stages; status feeds into MD on command run |
 | **Architecture decision records (ADRs)** | Load-bearing *why* (e.g. public REST policy) |
 | **`/ss-security-audit`** | Per-PR **gate** — Phase A scripts + Phase B judgment; consumes posture, does not replace it |
-| **`security-assess.cjs`** | Whole-plugin facts → `#assess` (completeness + findings); not a PR gate |
+| **`security-assess.cjs`** | Whole-plugin facts → `## assess` (completeness + findings); not a PR gate |
 
-**One-way only:** Jira → HTML on refresh. Never push workflow status from this skill back to Jira.
+**One-way only:** Jira → Markdown on refresh, then re-render. Never push workflow status from this skill back to Jira.
 
-Follow-up answers **update that same HTML** before the next question.
+Follow-up answers **update that same Markdown** then re-render before the next question.
 
 ## Boundaries
 

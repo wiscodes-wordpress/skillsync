@@ -53,6 +53,8 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 
 ## Context budget rules
 
+`/ss-flow` is **context-efficient** (fresh agents + artifact handoff), not always minimum total tokens — each phase re-reads harness + state. The win is dropping dead chat and keeping the durable contract on disk.
+
 1. **Fresh agent per Story phase** — Plan / Implement / Done (`/ss-flow`). Do not carry plan grill into implement, or implement chat into critic.
 2. **One harness file per command** — do not chain duplicate harnesses. `/ss-finish` loads critic first; PR/close skills only after PASS.
 3. **Stack skills on demand** — read `jest-react-testing`, `bulletproof-react`, `wordpress-testing-qa`, `postgresql-security-best-practices`, `supabase-security`, etc. only when `AGENTS.md` / diff surface says that stack; not on every implement/review.
@@ -60,6 +62,18 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 5. **Locators** — [accessible-locator-priority.md](./accessible-locator-priority.md) when writing or reviewing **UI / end-to-end (E2E)** tests only.
 6. **State is the contract** — after plan, `Behavior & Test Contracts` and `RED→GREEN Plan` in **`.harness/state.md`** replace re-reading `grill-tdd` at review. Hand off artifacts between agents, not threads.
 7. **Prose** — when writing plans, living HTML briefings, issue text, PR bodies, or skill docs, apply [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) (expand abbreviations on first use; no hype filler). Skip for pure code and mechanical evidence tables. Marketing packs still finish with a full anti-slop pass.
+
+### Further savings
+
+1. **Keep `.harness/state.md` tight** — contracts, Remaining, evidence tables. Cut narrative dumps and paste-ins; every later agent re-reads this file.
+2. **Prefer `/ss-loop` on long Remaining lists** — interactive `/ss-implement` is fine for a few cycles; for many Remaining cycles, one fresh agent per cycle usually beats one long implement chat. See [`docs/ss-loop.md`](../docs/ss-loop.md).
+3. **Scope Implement when blocked** — `only Cycle N` / `through Cycle N` / `stop after Cycle N` instead of burning later cycles while stuck.
+4. **Prefer one `/ss-finish` over five leaf agents** — review → fix → security → handoff → PR in one Done session unless re-running a single gate.
+5. **Skip optional work** — no `/ss-to-issues` unless slicing; no `/ss-handoff` when the human already knows the diff; no Initiative / Ship when the story is already clear; call GitNexus tools when needed, do not load GitNexus skill docs every turn.
+6. **Pointed tools over re-exploration** — prefer vendored `run-verification.cjs`, `tdd-audit.cjs`, `security-audit.cjs`, etc. over asking the model to re-walk the tree.
+7. **Point at paths; do not paste large artifacts** — `.harness/state.md`, plan HTML, diffs. Pasting full docs into chat double-pays.
+8. **Keep consumer `AGENTS.md` short** — branch, verification commands, which stack skills apply. Long always-on rules are re-read every agent.
+9. **Re-run leaves, not the whole spine** — failed security → `/ss-security-audit` only; do not re-plan or re-implement from scratch.
 
 ## TDD loop (implement)
 
@@ -92,7 +106,7 @@ Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-
 
 | Phase | Tool |
 |-------|------|
-| Arch / UX / Security / wayfinder / app-map / handoff | `validate-plan-html.cjs --kind arch\|ux\|security\|wayfinder\|app-map\|handoff`; scaffold: `init-plan-html.cjs --kind …` |
+| Arch / UX / Security / wayfinder / handoff | `init-plan-html.cjs` (MD + HTML); `render-plan-html.cjs` (MD→HTML); `watch-plan-html.cjs` (optional IDE watch); `validate-plan-html.cjs --kind arch\|ux\|security\|wayfinder\|app-map\|handoff` |
 | Initiative pack (`/ss-roadmap`) | `init-feature-pack.cjs --slug … --lenses …`, `validate-feature-pack.cjs --slug …` |
 | Grand plan / mind map | `render-app-map.cjs` (deterministic; do not freehand mind-map JSON) |
 | Plan (post-write) | `validate-state.cjs --mode plan` |
@@ -102,7 +116,7 @@ Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-
 | Security (PR gate) | `security-audit.cjs` (`--write-state`, `--set-phase-b`, `--check-state`) |
 | Security (whole plugin) | `security-assess.cjs` (`--write-state` → `#assess` / `security-assess.json`) |
 | Submit PR | `render-pr-body.cjs`, `open-pr.cjs` (requires Security Evidence PASS) |
-| Human walkthrough | `init-plan-html.cjs --kind handoff` (if missing) → agent fill → `validate-plan-html.cjs --kind handoff` |
+| Human walkthrough | `init-plan-html.cjs --kind handoff` → edit `.md` → `render-plan-html.cjs --kind handoff --validate` |
 | To issues (post-approve) | `publish-slices-from-state.cjs` |
 | Close story | `harness-reset.cjs`, optional `jira-close.cjs` |
 | Release / GTM | `init-release-brief.cjs`, `validate-release-brief.cjs`, `validate-release-pack.cjs` |

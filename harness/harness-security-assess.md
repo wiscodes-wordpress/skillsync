@@ -64,7 +64,7 @@ Artifacts:
 
 ### 2. Fold into posture HTML
 
-Update the resolved **security-posture.html** (pack or harness root — see `tools/lib/plan-paths.cjs` / `docs/agents/domain.md`) per [`security-plan/HTML-REPORT.md`](../skills/engineering/security-plan/HTML-REPORT.md) section **`#assess`**:
+Update the resolved **security-posture.md** (pack or harness root — see `tools/lib/plan-paths.cjs` / `docs/agents/domain.md`) per [`security-plan/HTML-REPORT.md`](../skills/engineering/security-plan/HTML-REPORT.md) section **`## assess`**, then `render-plan-html.cjs --kind security`:
 
 - Completeness + date + command
 - Probe table (status + one-line detail)
@@ -101,7 +101,7 @@ Update the resolved **security-posture.html** (pack or harness root — see `too
 - (reasons) | none
 
 ### Next
-- Update security-posture.html `#assess` + `#status` (resolved pack or root path)
+- Update security-posture.md `## assess` + `## status` (resolved pack or root path), then re-render HTML
 - Confirmed issues → stages / `/ss-plan`
 - PRs still use `/ss-security-audit` only
 ```
