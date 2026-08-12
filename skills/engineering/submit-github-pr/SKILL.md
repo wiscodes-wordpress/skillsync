@@ -1,14 +1,15 @@
 ---
 name: submit-github-pr
 description: >
-  Open a GitHub pull request from the current branch using gh: deliberate title and body
-  (summary, test plan, tracker link), body via temp file, push if needed. Does not merge.
-  Use when user opens a PR, /ss-submit-pr, qp-submit-pr, gh pr create, or post-review submit.
+  Open a GitHub pull request from the current branch using gh: deliberate title and
+  terse body (Purpose, Changes Made, optional visual checks + screenshot), body via
+  temp file, push if needed. Does not merge. Use when user opens a PR, /ss-submit-pr,
+  qp-submit-pr, gh pr create, or post-review submit.
 ---
 
 # Submit GitHub PR
 
-**Phase: submit work for review** — create (open) a **pull request** from the **current branch** with a deliberate **title** and **body** (summary, how to test, risks, tracker **Browse** URL, optional screenshots). **Not** merging; hands work to reviewers.
+**Phase: submit work for review** — create (open) a **pull request** from the **current branch** with a deliberate **title** and **terse body** for human reviewers. **Not** merging.
 
 **Typical order:** after implementation, prefer **`/ss-finish`** (critic → security → optional handoff → open PR). See **`commands/ss-finish.md`** / **`/ss-flow`**. Before consumer steps that assume an open PR (QA handoff, `Fixes #n` automation, tracker updates after merge — see consumer docs).
 
@@ -16,7 +17,8 @@ description: >
 
 - Run **`git`** and **`gh`** from the **repository root** unless consumer docs say otherwise.
 - **Ask / read-only:** print the checklist and exact commands for the human; do not require `gh` to succeed in chat-only mode.
-- **No Cursor attribution in PR bodies** — do not append `Made in Cursor`, `Made-with: Cursor`, or similar footers. Write only the deliberate review content (summary, test plan, risks, tracker links).
+- **No Cursor attribution in PR bodies** — do not append `Made in Cursor`, `Made-with: Cursor`, or similar footers.
+- **Body stays short** — caveman-clear for a human scanning the PR page. No test-command dumps, CI paste, harness section dumps, or commit logs in the body (those live in checks / diff / commits).
 
 ## Prerequisites
 
@@ -28,12 +30,36 @@ description: >
 
 1. **Base branch** — default: repo default (often `main`). Override via consumer convention or `gh pr create --base <branch>`.
 2. **PR title** — short, imperative; include **issue key** (`PROJECT-123`, etc.) when branch or tracker maps cleanly (consumer **issue-tracker** / agent docs).
-3. **PR body** — what changed, how to test (commands the repo actually uses), risks, tracker link. Optional: screenshots / Loom.
+3. **PR body** — write **`.harness/pr-body.md`** (or temp file) using the template below.
+
+## PR body template
+
+Keep bullets short. Skip empty optional sections rather than writing “(none)”.
+
+```markdown
+## Purpose of PR
+
+(1–2 sentences: why this change)
+
+## Changes Made
+
+- (concrete what landed)
+
+## Visual changes to check in review (optional)
+
+- (screens / flows reviewer should look at — omit whole section if no UI)
+
+## Screenshot
+
+(embed or link image when UI changed; omit section if no UI)
+```
+
+Do **not** add: Test plan, test results, harness evidence, recent commits, risk essays, or “how to verify” command lists. Verification stays in CI / local harness / review conversation.
 
 ## Steps (agent)
 
 1. Confirm **remote branch** exists (`git status`; `git push -u origin HEAD` if needed).
-2. Build **title** and **body** from `git diff <base>...HEAD`, commits, **`.harness/state.md`**, optional **`.harness/code-handoff.html`** (Intent / What to verify only), or human paste. Prefer **`render-pr-body.cjs`** + **`open-pr.cjs`** from vendored `tools/` when available; write narrative into **`.harness/pr-body.md`** first when prose is needed. Write body to a **temp file** (e.g. `/tmp/pr-body.md`) to avoid shell escaping issues when not using `open-pr.cjs`.
+2. Draft **title** and fill the body template from `git diff <base>...HEAD`, commits, **`.harness/state.md`** (intent only — do not paste sections), optional **`.harness/code-handoff.html`** (Intent only), or human paste. Prefer **`render-pr-body.cjs`** + **`open-pr.cjs`** from vendored `tools/` when available; write narrative into **`.harness/pr-body.md`** first. Write body to a **temp file** (e.g. `/tmp/pr-body.md`) to avoid shell escaping issues when not using `open-pr.cjs`.
 3. Create the PR:
 
    ```bash

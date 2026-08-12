@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Render PR body markdown from harness state and optional draft file.
+ * Render PR body markdown from optional draft file.
+ * Default skeleton is terse for human reviewers — no harness dump, no test results.
  *
  * Usage:
  *   node path/to/skillsync/tools/render-pr-body.cjs [/path/to/consumer-repo] [--out /path/to/body.md] [--draft /path/to/draft.md]
@@ -13,88 +14,40 @@ const {
 	parseArgs,
 	resolveConsumerRoot,
 	harnessDir,
-	readState,
-	parseMarkdownSections,
-	runCommand,
-	gitCurrentBranch,
 } = require('./lib/ss-tools.cjs');
 
+/** Terse default for human review — agent fills `.harness/pr-body.md` before open. */
+const DEFAULT_BODY = `## Purpose of PR
+
+(why this change)
+
+## Changes Made
+
+- (what changed)
+
+## Visual changes to check in review (optional)
+
+- (UI / UX spots to look at — omit section if none)
+
+## Screenshot
+
+(attach image or omit if no UI)
+`;
+
 /**
- * @param {string | null} state
  * @param {string | undefined} draft
- * @param {string} consumerRoot
  * @returns {string}
  */
-function renderBody(state, draft, consumerRoot) {
-	/** @type {string[]} */
-	const parts = [];
-
+function renderBody(draft) {
 	if (draft?.trim()) {
-		parts.push(draft.trim());
-		parts.push('');
+		return draft.trim() + '\n';
 	}
-
-	if (state) {
-		const sections = parseMarkdownSections(state);
-		const summarySections = [
-			'Spec Overview',
-			'Current Task',
-			'Acceptance Criteria',
-			'TDD Evidence',
-			'Security Evidence',
-			'Verification Plan',
-			'Completed / Remaining',
-		];
-
-		let addedHarness = false;
-		for (const name of summarySections) {
-			const body = sections.get(name);
-			if (body) {
-				if (!addedHarness) {
-					parts.push('## Harness summary');
-					parts.push('');
-					addedHarness = true;
-				}
-				parts.push(`### ${name}`);
-				parts.push('');
-				parts.push(body);
-				parts.push('');
-			}
-		}
-	}
-
-	const branchResult = runCommand(consumerRoot, 'git rev-parse --is-inside-work-tree 2>/dev/null');
-	const inGit = branchResult.stdout.trim() === 'true';
-	const branch = inGit ? gitCurrentBranch(consumerRoot) : '(not a git repo)';
-	const log = inGit
-		? runCommand(consumerRoot, 'git log --oneline -10 2>/dev/null || true')
-		: { stdout: '' };
-	if (log.stdout.trim()) {
-		parts.push('## Recent commits');
-		parts.push('');
-		parts.push('```');
-		parts.push(log.stdout.trim());
-		parts.push('```');
-		parts.push('');
-	}
-
-	if (parts.length === 0) {
-		parts.push('## Summary');
-		parts.push('');
-		parts.push(`Branch: \`${branch}\``);
-		parts.push('');
-		parts.push('## Test plan');
-		parts.push('');
-		parts.push('- [ ] (add verification steps)');
-	}
-
-	return parts.join('\n').trim() + '\n';
+	return DEFAULT_BODY;
 }
 
 function main() {
 	const { positional, flags } = parseArgs(process.argv.slice(2));
 	const consumerRoot = resolveConsumerRoot(positional[0]);
-	const state = readState(consumerRoot);
 
 	const draftPath =
 		(typeof flags.draft === 'string' && flags.draft) ||
@@ -104,7 +57,7 @@ function main() {
 		draft = fs.readFileSync(draftPath, 'utf8');
 	}
 
-	const body = renderBody(state, draft, consumerRoot);
+	const body = renderBody(draft);
 	const outPath =
 		typeof flags.out === 'string'
 			? path.resolve(flags.out)

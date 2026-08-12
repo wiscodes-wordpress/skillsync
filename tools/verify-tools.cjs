@@ -343,18 +343,36 @@ implementing
 
 	const renderConsumer = makeTempConsumer();
 	fs.mkdirSync(path.join(renderConsumer, '.harness'), { recursive: true });
-	fs.copyFileSync(
-		path.join(fixturesDir, 'plan-valid-state.md'),
-		path.join(renderConsumer, '.harness', 'state.md'),
-	);
 	const bodyPath = runTool(path.join(toolsDir, 'render-pr-body.cjs'), [
 		renderConsumer,
 	]).trim();
-	if (!fs.existsSync(bodyPath) || !fs.readFileSync(bodyPath, 'utf8').includes('Harness summary')) {
-		console.error('render-pr-body: expected Harness summary section');
+	const bodyText = fs.existsSync(bodyPath) ? fs.readFileSync(bodyPath, 'utf8') : '';
+	if (
+		!bodyText.includes('## Purpose of PR') ||
+		!bodyText.includes('## Changes Made') ||
+		bodyText.includes('## Test plan') ||
+		bodyText.includes('Harness summary')
+	) {
+		console.error('render-pr-body: expected terse Purpose/Changes template, no Test plan / Harness summary');
 		failed = true;
 	} else {
 		console.log('OK: render-pr-body');
+	}
+
+	fs.writeFileSync(
+		path.join(renderConsumer, '.harness', 'pr-body.md'),
+		'## Purpose of PR\n\nShip fix.\n\n## Changes Made\n\n- fix auth\n',
+		'utf8',
+	);
+	const draftBodyPath = runTool(path.join(toolsDir, 'render-pr-body.cjs'), [
+		renderConsumer,
+	]).trim();
+	const draftBody = fs.readFileSync(draftBodyPath, 'utf8');
+	if (!draftBody.includes('Ship fix.') || draftBody.includes('(why this change)')) {
+		console.error('render-pr-body: draft .harness/pr-body.md should pass through unchanged');
+		failed = true;
+	} else {
+		console.log('OK: render-pr-body draft passthrough');
 	}
 
 	const publishConsumer = makeTempConsumer();

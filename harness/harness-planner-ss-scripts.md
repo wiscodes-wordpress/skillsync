@@ -35,7 +35,7 @@ See [ss-flow.md](./ss-flow.md) for phase context. This file is **not** loaded by
 | `/ss-to-issues` | Slice design, human-in-the-loop (HITL) / away-from-keyboard (AFK) quiz | Publish approved slices from state → tracker API |
 | `/ss-implement` | Code + tests | Run Verification Plan, log TDD Evidence, re-break sequence |
 | `/ss-review` | Rubric scores (functionality, security, UX) | Hard gates: tampering diff, RED evidence, locator grep, command runner |
-| `/ss-submit-pr` | Summary prose, risk narrative | push, duplicate PR check, title from branch, body skeleton, `gh pr create` |
+| `/ss-submit-pr` | Purpose / Changes Made (terse) | push, duplicate PR check, title from branch, body skeleton, `gh pr create` |
 | `/ss-close-story` | Ambiguous workflow / missing Jira fields | Harness reset; Jira child→parent transitions (REST/CLI) |
 | `/ss-release*` | Brief content, copy, anti-slop, seed quality | Init/validate brief structure; validate pack file set |
 | `/ss-arch-plan` · `/ss-ui-ux-plan` · `/ss-security-plan` · `/ss-handoff` | Decision prose, Mermaid, journey/trust wording, code walkthrough | Structure: `validate-plan-html.cjs`; scaffold: `init-plan-html.cjs`; later: data-first render + Jira status refresh |
@@ -113,7 +113,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 - From consumer root: `git push -u origin HEAD` (skip with `--no-push`).
 - Detect existing open PR for current head (`gh pr view --head …`).
 - Derive title: `--title` override, else branch regex (`PROJECT-123-slug` → `PROJECT-123: …`), else prompt/error.
-- Build body file: merge `--body-file`, `.harness/pr-body.md`, and optional extraction from state (Verification Plan, TDD Evidence, Acceptance Criteria) via `render-pr-body.cjs`.
+- Build body file: `--body-file` or `.harness/pr-body.md` via `render-pr-body.cjs` (terse template: Purpose · Changes Made · optional Visual checks · Screenshot). Do not dump harness evidence or test plans into the PR body.
 - Run `gh pr create --base <base> --title … --body-file …`.
 - Print PR URL; exit non-zero if `gh` or push fails.
 - Config: `skillsync.config.json` keys optional — `prBaseBranch`, `issueKeyPattern`, `prBodyTemplate`.

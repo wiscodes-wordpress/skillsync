@@ -277,7 +277,7 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `harness-reset.cjs` | `/ss-close-story` | Empty `state.md` / `qa-current.md`; delete `pr-body.md` |
 | `validate-state.cjs` | pre-implement / pre-review / CI | Assert `.harness/state.md` section contract (`--mode plan\|implement\|review`) |
 | `init-state.cjs` | branch / new story | Skeleton `state.md` (`--task`, `--force`) |
-| `render-pr-body.cjs` | `/ss-submit-pr` | Merge draft + harness sections → PR body file |
+| `render-pr-body.cjs` | `/ss-submit-pr` | Draft or terse Purpose/Changes skeleton → PR body file |
 | `open-pr.cjs` | `/ss-submit-pr` | Push, duplicate check, `gh pr create` (`--no-push`, `--dry-run`) |
 | `tdd-audit.cjs` | `/ss-review` | Hard TDD gates (contract cards, tampering, RED evidence, locators) |
 | `security-audit.cjs` | `/ss-security-audit`, `/ss-submit-pr` | Phase A inventory/patterns; `--set-phase-b`; `--check-state` before PR |
