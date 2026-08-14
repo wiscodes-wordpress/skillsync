@@ -24,11 +24,14 @@ const REQUIRED_TOOLS = [
 	'init-state.cjs',
 	'render-pr-body.cjs',
 	'open-pr.cjs',
+	'preflight-local.cjs',
 	'tdd-audit.cjs',
 	'security-audit.cjs',
 	'security-assess.cjs',
 	'run-verification.cjs',
 	'ss-loop.cjs',
+	'paseo-set-feature.cjs',
+	'paseo-permit-watch.cjs',
 	're-break.cjs',
 	'publish-slices-from-state.cjs',
 	'jira-close.cjs',
@@ -208,6 +211,18 @@ implementing
 		console.log('OK: ss-loop dry-run');
 	}
 
+	const setFeatureHelp = execFileSync(
+		process.execPath,
+		[path.join(toolsDir, 'paseo-set-feature.cjs'), '--help'],
+		{ encoding: 'utf8' },
+	);
+	if (!String(setFeatureHelp).includes('paseo-set-feature')) {
+		console.error('paseo-set-feature --help missing usage');
+		failed = true;
+	} else {
+		console.log('OK: paseo-set-feature --help');
+	}
+
 	const loopPreflight = makeTempConsumer();
 	fs.mkdirSync(path.join(loopPreflight, '.harness'), { recursive: true });
 	fs.writeFileSync(
@@ -350,10 +365,12 @@ implementing
 	if (
 		!bodyText.includes('## Purpose of PR') ||
 		!bodyText.includes('## Changes Made') ||
-		bodyText.includes('## Test plan') ||
-		bodyText.includes('Harness summary')
+		bodyText.includes('Harness summary') ||
+		bodyText.includes('## Test plan')
 	) {
-		console.error('render-pr-body: expected terse Purpose/Changes template, no Test plan / Harness summary');
+		console.error(
+			'render-pr-body: expected terse Purpose/Changes template, no Test plan / Harness summary',
+		);
 		failed = true;
 	} else {
 		console.log('OK: render-pr-body');
@@ -367,8 +384,10 @@ implementing
 	const draftBodyPath = runTool(path.join(toolsDir, 'render-pr-body.cjs'), [
 		renderConsumer,
 	]).trim();
-	const draftBody = fs.readFileSync(draftBodyPath, 'utf8');
-	if (!draftBody.includes('Ship fix.') || draftBody.includes('(why this change)')) {
+	const draftBody = fs.existsSync(draftBodyPath)
+		? fs.readFileSync(draftBodyPath, 'utf8')
+		: '';
+	if (!draftBody.includes('Ship fix.') || !draftBody.includes('fix auth')) {
 		console.error('render-pr-body: draft .harness/pr-body.md should pass through unchanged');
 		failed = true;
 	} else {
@@ -983,6 +1002,177 @@ implementing
 	runTool(validatePlanHtmlTool, [appMapConsumer, '--kind', 'app-map']);
 	console.log('OK: render-app-map + validate app-map');
 
+	const preflightLocal = path.join(toolsDir, 'preflight-local.cjs');
+	const preflightConsumer = makeTempConsumer();
+	fs.writeFileSync(
+		path.join(preflightConsumer, 'package.json'),
+		JSON.stringify(
+			{
+				name: 'preflight-consumer',
+				private: true,
+				scripts: { preflight: 'node -e "process.exit(0)"' },
+			},
+			null,
+			'\t',
+		) + '\n',
+		'utf8',
+	);
+	runTool(preflightLocal, [preflightConsumer]);
+	console.log('OK: preflight-local consumer package script');
+
+	const preflightStoryConsumer = makeTempConsumer();
+	const storyMarker = path.join(preflightStoryConsumer, 'story-e2e.txt');
+	fs.mkdirSync(path.join(preflightStoryConsumer, '.harness'), { recursive: true });
+	fs.writeFileSync(
+		path.join(preflightStoryConsumer, 'package.json'),
+		JSON.stringify(
+			{
+				name: 'preflight-story-e2e',
+				private: true,
+				scripts: {
+					test: 'node -e "process.exit(0)"',
+					e2e: 'node -e "require(\'fs\').writeFileSync(\'full-suite.txt\',\'bad\'); process.exit(1)"',
+				},
+			},
+			null,
+			'\t',
+		) + '\n',
+		'utf8',
+	);
+	fs.writeFileSync(
+		path.join(preflightStoryConsumer, '.harness', 'state.md'),
+		[
+			'# Task: DEMO-1',
+			'',
+			'## Verification Plan',
+			'',
+			'1. `node -e "require(\'fs\').writeFileSync(\'story-e2e.txt\',\'ok\')" # e2e/checkout.spec.ts`',
+			'',
+		].join('\n'),
+		'utf8',
+	);
+	runTool(preflightLocal, [preflightStoryConsumer]);
+	if (!fs.existsSync(storyMarker)) {
+		console.error('preflight-local did not run story Verification Plan e2e command');
+		failed = true;
+	} else if (fs.existsSync(path.join(preflightStoryConsumer, 'full-suite.txt'))) {
+		console.error('preflight-local ran full e2e suite instead of story-scoped commands');
+		failed = true;
+	} else {
+		console.log('OK: preflight-local story-scoped E2E from Verification Plan');
+	}
+
+	const preflightDiffConsumer = makeTempConsumer();
+	const diffMarker = path.join(preflightDiffConsumer, 'diff-e2e.txt');
+	fs.mkdirSync(path.join(preflightDiffConsumer, 'e2e'), { recursive: true });
+	fs.writeFileSync(
+		path.join(preflightDiffConsumer, 'run-e2e.cjs'),
+		[
+			"const fs = require('node:fs');",
+			'const files = process.argv.slice(2);',
+			"if (!files.some((f) => f.includes('e2e/'))) process.exit(2);",
+			"fs.writeFileSync('diff-e2e.txt', files.join(','));",
+		].join('\n') + '\n',
+		'utf8',
+	);
+	fs.writeFileSync(
+		path.join(preflightDiffConsumer, 'package.json'),
+		JSON.stringify(
+			{
+				name: 'preflight-diff-e2e',
+				private: true,
+				scripts: {
+					test: 'node -e "process.exit(0)"',
+					e2e: 'node run-e2e.cjs',
+				},
+			},
+			null,
+			'\t',
+		) + '\n',
+		'utf8',
+	);
+	fs.writeFileSync(
+		path.join(preflightDiffConsumer, 'e2e', 'checkout.spec.ts'),
+		"test('checkout', async () => {});",
+		'utf8',
+	);
+	execFileSync('git', ['init'], { cwd: preflightDiffConsumer, stdio: 'pipe' });
+	execFileSync('git', ['add', 'package.json', 'run-e2e.cjs'], {
+		cwd: preflightDiffConsumer,
+		stdio: 'pipe',
+	});
+	execFileSync(
+		'git',
+		[
+			'-c',
+			'user.email=test@example.com',
+			'-c',
+			'user.name=Test',
+			'commit',
+			'-m',
+			'init',
+		],
+		{ cwd: preflightDiffConsumer, stdio: 'pipe' },
+	);
+	runTool(preflightLocal, [preflightDiffConsumer]);
+	if (!fs.existsSync(diffMarker)) {
+		console.error('preflight-local did not run diff-scoped e2e for changed e2e files');
+		failed = true;
+	} else {
+		console.log('OK: preflight-local diff-scoped E2E from git changes');
+	}
+
+	const preflightNoE2eConsumer = makeTempConsumer();
+	fs.writeFileSync(
+		path.join(preflightNoE2eConsumer, 'package.json'),
+		JSON.stringify(
+			{
+				name: 'preflight-no-e2e',
+				private: true,
+				scripts: {
+					test: 'node -e "process.exit(0)"',
+					e2e: 'node -e "require(\'fs\').writeFileSync(\'full-suite.txt\',\'bad\'); process.exit(1)"',
+				},
+			},
+			null,
+			'\t',
+		) + '\n',
+		'utf8',
+	);
+	runTool(preflightLocal, [preflightNoE2eConsumer]);
+	if (fs.existsSync(path.join(preflightNoE2eConsumer, 'full-suite.txt'))) {
+		console.error('preflight-local ran full e2e suite with no story/diff scope');
+		failed = true;
+	} else {
+		console.log('OK: preflight-local skips full e2e suite without story/diff scope');
+	}
+
+	const preflightFullConsumer = makeTempConsumer();
+	const fullMarker = path.join(preflightFullConsumer, 'full-suite.txt');
+	fs.writeFileSync(
+		path.join(preflightFullConsumer, 'package.json'),
+		JSON.stringify(
+			{
+				name: 'preflight-full-e2e',
+				private: true,
+				scripts: {
+					test: 'node -e "process.exit(0)"',
+					e2e: 'node -e "require(\'fs\').writeFileSync(\'full-suite.txt\',\'ok\')"',
+				},
+			},
+			null,
+			'\t',
+		) + '\n',
+		'utf8',
+	);
+	runTool(preflightLocal, [preflightFullConsumer, '--full']);
+	if (!fs.existsSync(fullMarker)) {
+		console.error('preflight-local --full did not run full e2e suite');
+		failed = true;
+	} else {
+		console.log('OK: preflight-local --full runs full e2e suite');
+	}
+
 	fs.rmSync(temp, { recursive: true, force: true });
 	fs.rmSync(planConsumer, { recursive: true, force: true });
 	fs.rmSync(implementConsumer, { recursive: true, force: true });
@@ -1000,6 +1190,11 @@ implementing
 	fs.rmSync(appMapConsumer, { recursive: true, force: true });
 	fs.rmSync(renderMdConsumer, { recursive: true, force: true });
 	fs.rmSync(watchOnceConsumer, { recursive: true, force: true });
+	fs.rmSync(preflightConsumer, { recursive: true, force: true });
+	fs.rmSync(preflightStoryConsumer, { recursive: true, force: true });
+	fs.rmSync(preflightDiffConsumer, { recursive: true, force: true });
+	fs.rmSync(preflightNoE2eConsumer, { recursive: true, force: true });
+	fs.rmSync(preflightFullConsumer, { recursive: true, force: true });
 
 	if (failed) {
 		console.error('');

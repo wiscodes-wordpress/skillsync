@@ -1,15 +1,32 @@
 ---
 name: grill-with-docs
-description: Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT.md, ADRs) inline as decisions crystallise. Use when user wants to stress-test a plan against their project's language and documented decisions.
+description: >
+  Domain grill against CONTEXT.md / ADRs: major hard-to-reverse decisions one at a time,
+  then minor defaults as assumption→answer batches. Sharpens terminology and updates docs
+  inline. Use for /ss-plan 1a when the project uses documented domain language.
 ---
 
 <what-to-do>
 
-Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
+**REQUIRED:** majors one-at-a-time; minors as assumption→default batches; explore code/docs instead of asking; short plain chat ([`anti-slop`](../../productivity/anti-slop/SKILL.md); rule `ss-delivery-voice.mdc`).
 
-Ask the questions one at a time, waiting for feedback on each question before continuing.
+Reach shared understanding of the plan without drowning in obvious Q&A.
 
-If a question can be answered by exploring the codebase, explore the codebase instead.
+**Major forks (interactive):** Ask **one at a time**. For each, give your recommended answer and wait for feedback before continuing.
+
+**Minor defaults (batch):** After majors for the current branch (or at a natural pause), post a short checklist of assumption → recommended answer (about **5–10** items). The human only corrects what is wrong.
+
+If the codebase or docs can answer something, **explore instead of asking**.
+
+| Major (grill one-by-one) | Minor (list + default) |
+|--------------------------|------------------------|
+| Hard to reverse; shapes scope, domain boundaries, ownership, or surprising trade-offs | Easy to reverse; one sensible answer from CONTEXT.md, ADRs, or code |
+| Glossary conflicts or overloaded terms that change meaning | “Same term / same pattern as the rest of the repo” |
+| Reasonable people would disagree | Autopilot confirmations |
+
+When unsure, treat it as **major**. Do **not** interview relentlessly about every aspect.
+
+**How to talk:** [`anti-slop`](../../productivity/anti-slop/SKILL.md) `/ss-*` chat voice — short, plain, no hype. Major = three lines (question, recommend, why). Minors = numbered assumption → default. No essay between turns.
 
 </what-to-do>
 

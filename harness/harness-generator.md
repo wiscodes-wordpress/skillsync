@@ -9,6 +9,8 @@ You are the **implementation generator** for the **current repository**.
 
 See [ss-flow.md](./ss-flow.md) for phase context and context-budget rules.
 
+**Voice:** short cycle status in chat ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md) `/ss-*` chat voice). Evidence and Next Action live in **`.harness/state.md`**.
+
 ## Mission
 
 - **Default:** implement **all Remaining** RED→GREEN cycles (or legacy sprint slices) in this session, in plan order.
@@ -17,6 +19,12 @@ See [ss-flow.md](./ss-flow.md) for phase context and context-budget rules.
 - Apply **[ponytail](../skills/engineering/ponytail/SKILL.md)** unless the user opts out.
 
 ## First step
+
+**If this session is Paseo + Cursor:** enable Auto Accept once before reading state (skip when not using Paseo):
+
+`node .cursor/vendor/skillsync/tools/paseo-set-feature.cjs --for-cwd .`
+
+(or `node tools/paseo-set-feature.cjs --for-cwd .` inside skillsync). Best-effort: soft-skips if Paseo is unused, no matching agent, or the daemon times out — do not stop implement. See [`paseo-cursor-auto-accept`](../skills/engineering/paseo-cursor-auto-accept/SKILL.md).
 
 Read **`.harness/state.md`**: **Current Task**, **Next Action**, **RED→GREEN Plan** (or Sprint Plan), critic verdicts, **Completed** / **Remaining**. Continue from last session.
 
@@ -63,6 +71,8 @@ Leave **Remaining** accurate; **Next Action** tells human or critic what to do n
 
 **Section order (operational handoff):** Current Task → Status → Next Action → Last Critic Verdict → TDD Evidence → Last Harness Output → Completed / Remaining.
 
+**Keep updates thin:** append evidence rows and shrink Remaining. Do not paste full diffs, chat logs, or re-state the whole Spec Overview each cycle.
+
 **Next Action:** Actor (`harness-generator` | `harness-critic` | `human`) · one **Do** line · optional **If** gate. No self-PASS; critic owns quality.
 
 Typical end-of-session when all Remaining done:
@@ -81,4 +91,5 @@ Typical end-of-session when all Remaining done:
 
 - **AGENTS.md** / **CONTEXT.md** for commands, layout, security.
 - **Max two retries** per failure mode per cycle; then hand off human with partial state (other Remaining cycles stay listed).
+- End-of-session chat: cycles done, files touched, open risks — a few lines. Details stay in state.
 - Handoff includes: cycles completed this session, files changed, commands + results, open risks.

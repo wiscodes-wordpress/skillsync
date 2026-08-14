@@ -61,11 +61,11 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 4. **No `testing-expert` in this loop** — encyclopedic reference; use `tdd` + stack skill instead.
 5. **Locators** — [accessible-locator-priority.md](./accessible-locator-priority.md) when writing or reviewing **UI / end-to-end (E2E)** tests only.
 6. **State is the contract** — after plan, `Behavior & Test Contracts` and `RED→GREEN Plan` in **`.harness/state.md`** replace re-reading `grill-tdd` at review. Hand off artifacts between agents, not threads.
-7. **Prose** — when writing plans, living HTML briefings, issue text, PR bodies, or skill docs, apply [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) (expand abbreviations on first use; no hype filler). Skip for pure code and mechanical evidence tables. Marketing packs still finish with a full anti-slop pass.
+7. **Prose & chat** — all `/ss-*` agent replies and written artifacts follow [`anti-slop`](../skills/productivity/anti-slop/SKILL.md): plain teammate English, short, no hype. Expand abbreviations on first use. Skip for pure code and mechanical evidence tables. Marketing packs still finish with a full anti-slop pass. This is **not** [`caveman`](../skills/productivity/caveman/SKILL.md) (no telegraphic fragments unless the user asked for caveman).
 
 ### Further savings
 
-1. **Keep `.harness/state.md` tight** — contracts, Remaining, evidence tables. Cut narrative dumps and paste-ins; every later agent re-reads this file.
+1. **Keep `.harness/state.md` tight** — contracts, Remaining, evidence tables, one Next Action. Cut narrative dumps, grill paste-ins, and full diff dumps; every later agent re-reads this file.
 2. **Prefer `/ss-loop` on long Remaining lists** — interactive `/ss-implement` is fine for a few cycles; for many Remaining cycles, one fresh agent per cycle usually beats one long implement chat. See [`docs/ss-loop.md`](../docs/ss-loop.md).
 3. **Scope Implement when blocked** — `only Cycle N` / `through Cycle N` / `stop after Cycle N` instead of burning later cycles while stuck.
 4. **Prefer one `/ss-finish` over five leaf agents** — review → fix → security → handoff → PR in one Done session unless re-running a single gate.

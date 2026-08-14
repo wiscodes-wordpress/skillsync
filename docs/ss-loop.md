@@ -71,12 +71,24 @@ Progress log (under story scratch, usually gitignored): `.harness/loop-progress.
 
 ## Permissions (AFK without babysitting prompts)
 
-Cursor’s **agent** mode still gates some shell/MCP calls. For unattended runs:
+Cursor does **not** expose a setting to make the permission dialog default to **Allow once**. For **Paseo + Cursor**, use these instead:
 
-1. **Cursor Run Mode:** prefer **Auto-review** (or **Run Everything** only in trusted local/worktree sandboxes).
-2. **Project allow / steer file** — copy [`examples/permissions.ss-loop.json`](./examples/permissions.ss-loop.json) to the consumer as **`.cursor/permissions.json`** (merge with any existing allowlists). Steer Auto-review toward Verification Plan / test / lint / typecheck; block `.env`, force-push, and prod deploys.
-3. **`ss-loop.cjs`** spawns agents with `--background`, then polls **`paseo permit ls`** and allows pending requests for that agent (disable with `--no-permit-poll`).
-4. Prefer **`--worktree`** so AFK edits stay off your main working tree.
+1. **Auto Accept (best, conditional on Paseo + Cursor)** — Enable at spawn:
+   - MCP `create_agent` / `update_agent`: `settings.features.auto_accept: true` (see skill [`paseo-cursor-auto-accept`](../skills/engineering/paseo-cursor-auto-accept/SKILL.md)).
+   - `/ss-loop`: after each `paseo run`, calls `paseo-set-feature.cjs` for Cursor agents (soft-skips if Paseo is not installed).
+   - Desktop: toggle **Auto Accept** (green shield) on the agent controls.
+2. **Cursor Run Mode** — prefer **Auto-review** (or **Run Everything** only in trusted local/worktree sandboxes) so fewer prompts are raised.
+3. **Project allow / steer file** — copy [`examples/permissions.ss-loop.json`](./examples/permissions.ss-loop.json) (AFK Remaining) or [`examples/permissions.ss-delivery.json`](./examples/permissions.ss-delivery.json) (broader Story/tools) to **`.cursor/permissions.json`**, and optionally layer **`.cursor/cli.json`** `permissions.allow` (see skillsync’s committed copies under `.cursor/`). Merge with any existing allowlists. Steer Auto-review toward Verification Plan / test / lint / typecheck / `preflight`; block `.env`, force-push, and prod deploys.
+4. **`ss-loop.cjs`** also polls **`paseo permit ls`** and **`paseo permit allow <agent> --all`** (disable with `--no-permit-poll`). Poll interval is ~2s so cards clear quickly if Auto Accept did not apply.
+5. **Side watcher (any Paseo agent)** — if you spawn agents from the Paseo UI (not only `/ss-loop`):
+
+```bash
+node .cursor/vendor/skillsync/tools/paseo-permit-watch.cjs
+# or once: node .../paseo-permit-watch.cjs --once
+# or one agent: node .../paseo-permit-watch.cjs --agent <id-or-prefix>
+```
+
+6. Prefer **`--worktree`** so AFK edits stay off your main working tree.
 
 Cursor provider modes exposed to Paseo are typically `agent` / `plan` / `ask` — default for `/ss-loop` is **`agent`**.
 

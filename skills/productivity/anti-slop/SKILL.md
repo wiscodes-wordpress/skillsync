@@ -1,10 +1,10 @@
 ---
 name: anti-slop
 description: >
-  Revise prose so it sounds human — ban AI-marker density, empty hype, unexplained
-  abbreviations, and corporate synonym soup. Use for release marketing, and for
-  skillsync workflow output (plans, HTML briefings, issues, skill docs, harness
-  narrative). Not for detector evasion or caveman chat.
+  Revise prose and /ss-* chat so they sound human — ban AI-marker density, empty hype,
+  unexplained abbreviations, and corporate synonym soup. Prefer short plain replies.
+  Use for release marketing, skillsync workflow output, and slash-command sessions.
+  Not for detector evasion or caveman chat.
 ---
 
 # Anti-slop
@@ -20,8 +20,36 @@ Revision gate for **human-sounding prose**. Use it for **marketing copy** and fo
 | Email, social, YouTube, launch blog, changelog blurbs | Pure code |
 | Living HTML plans (architecture, security, UX), `.harness/state.md` narrative, issue bodies | Mechanical evidence tables (commands, pass/fail rows) |
 | Skill / harness / command markdown in this repo | Architecture decision record (ADR) decision logs that stay short and factual |
-| After [`release-marketing`](../release-marketing/SKILL.md) | Chat terseness — that is [`caveman`](../caveman/SKILL.md) |
+| **`/ss-*` chat replies** (grill, plan, implement, review, finish, PR) — same bar as plans | Chat terseness-as-telegraph — that is [`caveman`](../caveman/SKILL.md) (only when user asks) |
+| After [`release-marketing`](../release-marketing/SKILL.md) | |
 | Softening technical blog intros that sound generated | Deep tutorial body — prefer [`technical-writing`](../technical-writing/SKILL.md) |
+
+## `/ss-*` chat voice
+
+Every slash-command session should sound like a sharp teammate on Slack — not a launch blog, not a robot checklist dump.
+
+| Do | Don't |
+|----|--------|
+| Short paragraphs; lead with the point | Prefaces (“Great question!”, “Let's dive in”, “I'd be happy to…”) |
+| Concrete names: files, behaviors, commands | Vague filler (“leverage”, “robust”, “holistic”, “ensure alignment”) |
+| One idea per sentence | Stacked benefits or nested caveats in one breath |
+| Show the decision and stop | Recap the whole skill before asking |
+| For grill: major Q + recommend; then minor list | Twenty obvious one-by-one confirmations |
+
+**Length:** Prefer a few tight lines over a wall of markdown. Tables and lists are fine when they beat prose.
+
+**Grill shape (example):**
+
+```markdown
+**Major:** Should checkout fail closed when tax is unknown?
+**Recommend:** Yes — block place-order and show “tax unavailable”.
+Why: wrong tax in production is worse than a retry.
+
+**Minors** (say “all good” or correct a line):
+1. Test path → `tests/checkout/tax.test.ts` (repo pattern)
+2. Layer → unit (public API covers it)
+3. Locator → role=button name=Place order
+```
 
 ## Density, not banlists alone
 
@@ -93,13 +121,14 @@ If the consumer has a brand `TONE.md` (path in the Release Brief or repo root), 
 - [ ] Call to action is one clear action with a real URL when available
 - [ ] Reads like a teammate wrote it after shipping — not like a launch template filled by a bot
 
-### Skillsync plans, skills, issues, HTML briefings
+### Skillsync plans, skills, issues, HTML briefings, `/ss-*` chat
 
 - [ ] Abbreviations expanded on first use (table above)
-- [ ] No tier-1 marketing markers in planning prose
-- [ ] Each section has one job; headings say what the reader gets
+- [ ] No tier-1 marketing markers in planning prose **or** chat
+- [ ] Each section / reply has one job; headings say what the reader gets
 - [ ] Decisions name options and the choice — not “we should align stakeholders holistically”
 - [ ] Paths, commands, and behavior names are concrete where they matter
+- [ ] Chat replies are short enough to skim; no throat-clearing or fake enthusiasm
 - [ ] Someone new to the repo could follow without a glossary of slang
 
 ## Out of scope

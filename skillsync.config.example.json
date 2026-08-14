@@ -29,6 +29,7 @@
 		"wp-performance",
 		"wp-plugin-development",
 		"anti-slop",
+		"paseo-cursor-auto-accept",
 		"release-distribution",
 		"release-marketing",
 		"journal-weekly",
@@ -36,6 +37,7 @@
 		"journal-handoff"
 	],
 	"linkedRules": [
+		"ss-delivery-voice.mdc",
 		"typescript-ai-rules.mdc",
 		"react-patterns.mdc",
 		"frontend-testing.mdc",

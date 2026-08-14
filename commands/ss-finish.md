@@ -1,5 +1,7 @@
 # ss-finish
 
+**REQUIRED voice:** one short status line per leaf (review / security / handoff / PR URL). No phase essays ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md)).
+
 **Story — Done agent.** One fresh session after Implement / `/ss-loop` completes (Remaining empty). Follow [`ss-flow`](./ss-flow.md) phase Done. Belt map: [`harness/ss-flow.md`](../harness/ss-flow.md).
 
 Runs the post-implement leaf commands **in order**. Prefer this over opening five separate agents for the same tail.
@@ -25,5 +27,7 @@ Invoke with “resume close”, “after merge”, or `/ss-close-story` directly
 - Contract is **`.harness/state.md`** (TDD Evidence, Verification Plan, Security Evidence) + the branch diff — not the implement chat.
 - Leaf commands stay available for partial re-runs (e.g. security only). Prefer one `/ss-finish` over five leaf agents unless re-running a single gate.
 - More savings tips: [`harness/ss-flow.md`](../harness/ss-flow.md) → **Further savings**.
+
+**Voice:** one short status line per leaf (review / security / handoff / PR URL). No phase essays ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md) `/ss-*` chat voice).
 
 Available as `/ss-finish` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

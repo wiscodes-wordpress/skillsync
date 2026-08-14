@@ -10,6 +10,8 @@
 
 **Optional — `/ss-loop`:** AFK Remaining-cycle implement via Paseo + Cursor. Setup: [`ss-loop.md`](./ss-loop.md).
 
+**Permissions popups:** When using **Paseo + Cursor**, enable Auto Accept at spawn (`settings.features.auto_accept` on MCP create, or `ss-loop` / `paseo-set-feature.cjs`). Skill: `paseo-cursor-auto-accept`. Fallback: `paseo-permit-watch.cjs`. Plain Cursor IDE chats skip this. Details: [`ss-loop.md` Permissions](./ss-loop.md#permissions-afk-without-babysitting-prompts).
+
 ## Delivery belts (type `ss` to filter)
 
 Linking a **skill** is not the same as a slash command. **`ss-*`** is the filterable command set in Cursor.
@@ -201,6 +203,8 @@ Omit `link-rules` / `verify-rules` if `linkedRules` is empty; omit `link-command
 
 Cursor loads **project rules** from **`.cursor/rules/`** only — not from paths under `vendor/`. Canonical `.mdc` files live in this repo under **`rules/`**; list them in **`linkedRules`** and run **`link-rules.cjs`** / **`verify-rules.cjs`**. Confirm under **Settings → Rules → Project Rules**.
 
+**Strongly recommended:** include **`ss-delivery-voice.mdc`** in `linkedRules` (it is `alwaysApply: true`). That is the practical way to “force” plain `/ss-*` chat and major/minor grilling — skills alone are easy to skip.
+
 For personal journal privacy, also link **`journal-vault-privacy.mdc`** and keep DenMercs **`.cursorignore`** allowlisting only `Journal/` + `_Templates/` (skills alone are soft; ignore is the hard filesystem gate when the vault is in Cursor’s scope).
 
 ## Slash commands and `ss-*`
@@ -230,6 +234,31 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-release-marketing` | Email / social / YouTube / SEO blog pack from brief |
 
 Product repos usually keep **thin wrappers** (e.g. `qb-*`, `qp-close-jira-story`) that add tracker-specific steps and point at these shared files.
+
+### Product PR wrappers (Lifeway / work / etc.)
+
+Use shared **`/ss-submit-pr`** for the green path and terse body. Put **workplace** PR rules in a **consumer-only** command (not in skillsync):
+
+| In skillsync | In the product repo wrapper |
+|--------------|----------------------------|
+| Preflight `--full`, security PASS, `open-pr.cjs` | Title prefix (`[DCD-####]`), `--draft`, assignees |
+| Purpose / Changes / optional Visual / Screenshot | Extra checklist blocks if the board requires them |
+| One-fact bullets, no file inventory, no AI footers | Jira transition after open (e.g. `Ready for Review`) — look up transitions; do not invent states |
+| Ticket **link** in the body (optional) | Ticket **workflow status** stays in Jira — never a `Status:` line in the PR |
+
+Example consumer command (create under **`.cursor/commands/`** on the Lifeway repo; do not add to this submodule):
+
+```markdown
+# qp-submit-pr
+
+Lifeway / DCD submit. Runs shared skillsync submit, then workplace extras.
+
+1. `/ss-submit-pr` (or `yarn ss:open-pr`) — terse `.harness/pr-body.md`, preflight --full, security.
+2. Ensure title has `[DCD-####]` matching the Jira link in Purpose.
+3. Open as draft if team policy says so; set assignee.
+4. Transition Jira to `Ready for Review` (confirm transitions via API first).
+5. Apply any DCD checklist the team keeps in this repo’s agent docs — not in skillsync.
+```
 
 ## Harness and delivery loop
 
@@ -277,7 +306,7 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `harness-reset.cjs` | `/ss-close-story` | Empty `state.md` / `qa-current.md`; delete `pr-body.md` |
 | `validate-state.cjs` | pre-implement / pre-review / CI | Assert `.harness/state.md` section contract (`--mode plan\|implement\|review`) |
 | `init-state.cjs` | branch / new story | Skeleton `state.md` (`--task`, `--force`) |
-| `render-pr-body.cjs` | `/ss-submit-pr` | Draft or terse Purpose/Changes skeleton → PR body file |
+| `render-pr-body.cjs` | `/ss-submit-pr` | Terse PR skeleton (or `.harness/pr-body.md` draft) — no harness dump |
 | `open-pr.cjs` | `/ss-submit-pr` | Push, duplicate check, `gh pr create` (`--no-push`, `--dry-run`) |
 | `tdd-audit.cjs` | `/ss-review` | Hard TDD gates (contract cards, tampering, RED evidence, locators) |
 | `security-audit.cjs` | `/ss-security-audit`, `/ss-submit-pr` | Phase A inventory/patterns; `--set-phase-b`; `--check-state` before PR |
@@ -298,6 +327,7 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `validate-feature-pack.cjs` | `/ss-roadmap` | Assert required lenses exist + hub/lens epic-key parity (`--slug`) |
 | `render-app-map.cjs` | `/ss-roadmap` | Deterministic `.harness/app-map.html` (Mind-elixir; `--title`) |
 | `verify-tools.cjs` | skillsync CI | Smoke-test tools + fixtures |
+| `preflight-local.cjs` | before commit / PR | Scoped by default (story/diff E2E); `--full` before PR open (full E2E when present). `open-pr.cjs` uses `--full`. |
 
 Optional **`skillsync.config.json`** keys for tools / journal handoff:
 
@@ -342,6 +372,8 @@ Example **`package.json`** scripts (consumer root):
 	"scripts": {
 		"ss:harness-reset": "node ./.cursor/vendor/skillsync/tools/harness-reset.cjs .",
 		"ss:validate-state": "node ./.cursor/vendor/skillsync/tools/validate-state.cjs . --mode implement",
+		"ss:preflight": "node ./.cursor/vendor/skillsync/tools/preflight-local.cjs .",
+		"ss:preflight:full": "node ./.cursor/vendor/skillsync/tools/preflight-local.cjs . --full",
 		"ss:open-pr": "node ./.cursor/vendor/skillsync/tools/open-pr.cjs .",
 		"ss:app-map": "node ./.cursor/vendor/skillsync/tools/render-app-map.cjs . --title \"Product\"",
 		"ss:watch-plans": "node ./.cursor/vendor/skillsync/tools/watch-plan-html.cjs .",
@@ -353,8 +385,14 @@ Example **`package.json`** scripts (consumer root):
 }
 ```
 
-From **skillsync repo root** after changing tools:
+`ss:preflight` = scoped (commit/push). `ss:preflight:full` = full E2E when present (before PR). `ss:open-pr` already runs preflight `--full`.
+
+From **skillsync repo root** before commit or PR (also run after changing tools):
 
 ```bash
-node tools/verify-tools.cjs .
+yarn preflight          # commit / push (scoped)
+yarn preflight:full     # before opening a PR (full E2E when present)
+# or: node tools/preflight-local.cjs . [--full]
 ```
+
+`open-pr.cjs` runs preflight `--full` unless `--skip-preflight` / `--skip-full-e2e`. Cursor hooks: scoped on `git commit` / `git push`; `--full` on `gh pr create`.

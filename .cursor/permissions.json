@@ -1,0 +1,49 @@
+{
+	"terminalAllowlist": [
+		"git status",
+		"git diff",
+		"git log",
+		"git show",
+		"git rev-parse",
+		"git branch",
+		"git checkout",
+		"git switch",
+		"git add",
+		"git commit",
+		"git pull",
+		"git fetch",
+		"git stash",
+		"git ls-files",
+		"git check-ignore",
+		"node",
+		"npm",
+		"yarn",
+		"pnpm",
+		"npx",
+		"rg",
+		"gh"
+	],
+	"mcpAllowlist": [
+		"paseo:*",
+		"gitnexus:query",
+		"gitnexus:context",
+		"gitnexus:impact",
+		"gitnexus:detect_changes",
+		"gitnexus:list_repos"
+	],
+	"autoRun": {
+		"allow_instructions": [
+			"Shell commands that only run the repo test suite, a single test file, lint, typecheck, format-check, or skillsync tools under tools/ (preflight-local, verify-tools, run-verification, re-break, validate-state, tdd-audit, render-pr-body, security-audit --check-state) may run without asking.",
+			"yarn preflight, yarn preflight:full, and yarn verify:tools may run without asking.",
+			"Read-only git commands and normal local git writes (add, commit, checkout, switch, stash, pull, fetch) may run without asking when cwd is this repo.",
+			"Editing skills, commands, harness, rules, docs, and tools under this repo for the active task may proceed without asking.",
+			"Paseo MCP and read-only GitNexus tools may run without asking when used for this workspace."
+		],
+		"block_instructions": [
+			"Any command that reads or writes .env, credentials, secrets, or SSH keys must ask for approval.",
+			"git push --force, git reset --hard, and production deploys must ask for approval.",
+			"Installing global packages or changing Cursor/Paseo user config outside the repo must ask for approval.",
+			"git push to origin and gh pr create should ask unless the user explicitly asked to open or push a PR in this turn."
+		]
+	}
+}

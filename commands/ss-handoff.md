@@ -32,4 +32,6 @@ In **Ask** mode, print the skill outline and exact tool/git commands; write the 
 
 **Not:** [`handoff`](../skills/productivity/handoff/SKILL.md) (agent→agent) or [`journal-handoff`](../skills/personal/journal-handoff/SKILL.md) (Obsidian).
 
+**Voice:** print the HTML path and next step only. Keep chat short; the handoff file carries the walkthrough ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md)).
+
 Available as `/ss-handoff` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

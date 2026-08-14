@@ -9,7 +9,7 @@ You are a **test-driven development (TDD) planning specialist** for the **curren
 
 See [ss-flow.md](./ss-flow.md) for where this fits in the delivery loop.
 
-**Prose:** apply [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) to Spec Overview, Risk Register, and any narrative — expand abbreviations on first use; no hype filler. Tables of cycles and evidence stay mechanical.
+**Prose:** apply [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) to Spec Overview, Risk Register, and any narrative — expand abbreviations on first use; no hype filler. Tables of cycles and evidence stay mechanical. **Chat:** short; put the durable plan in state, not a long recap.
 
 ## Input
 
@@ -207,6 +207,14 @@ After all cycles in scope:
 ## Persistence (required)
 
 After the plan is drafted, **write** to **`.harness/state.md`** at the repository root.
+
+**Keep state thin** — later agents re-read this file every session:
+
+- Prefer contract cards, cycle tables, Verification Plan commands, Remaining / Completed, one **Next Action**.
+- Cut paste-ins, grill transcripts, and essay Spec Overview. One short Spec Overview paragraph is enough.
+- Do not duplicate the same expectation in three long prose forms; one card + cycle row is enough.
+
+Also:
 
 - Include every section from **Format**, plus **`## Next Action`**.
 - Preserve **Behavior & Test Contracts** so **`/ss-implement`** can run cycles without re-deriving tests from features.

@@ -49,7 +49,8 @@ const DEFAULT_MAX_RETRIES = 0;
  * Override with --model (e.g. default, gpt-5.4-mini, composer-2).
  */
 const DEFAULT_CURSOR_MODEL = 'composer-2.5';
-const PERMIT_POLL_MS = 2500;
+/** How long each `paseo wait --timeout` blocks before we poll permits again. */
+const PERMIT_WAIT_SEC = 2;
 /** After paseo wait sees idle, require stable idle this long (permissions pause looks like idle). */
 const IDLE_SETTLE_MS = 5000;
 
@@ -248,11 +249,66 @@ function listPendingPermits(agentId, consumerRoot) {
 }
 
 /**
+ * @param {string} provider
+ * @returns {boolean}
+ */
+function isCursorProvider(provider) {
+	return provider === 'cursor' || String(provider).startsWith('cursor/');
+}
+
+/**
+ * Best-effort: turn on Paseo Cursor Auto Accept after spawn.
+ * Soft-skips when Paseo/helper is unavailable (non-Paseo machines).
+ *
+ * @param {string} agentId
+ * @param {string} consumerRoot
+ */
+function enablePaseoAutoAccept(agentId, consumerRoot) {
+	const script = path.join(__dirname, 'paseo-set-feature.cjs');
+	if (!fs.existsSync(script)) {
+		return;
+	}
+	const result = spawnSync(
+		process.execPath,
+		[script, '--json', agentId, 'auto_accept', 'true'],
+		{ encoding: 'utf8', cwd: consumerRoot, env: process.env },
+	);
+	const raw = (result.stdout || '').trim();
+	if (!raw) {
+		return;
+	}
+	try {
+		const parsed = JSON.parse(raw.split('\n').filter(Boolean).pop());
+		if (parsed.ok) {
+			console.log(`Auto Accept on for ${agentId}`);
+		} else if (!parsed.skipped && parsed.reason) {
+			console.warn(`Auto Accept not set (${parsed.reason}); relying on permit poll`);
+		}
+	} catch {
+		// ignore parse errors — permit poll remains
+	}
+}
+
+/**
+ * Allow every pending permission for this agent (Paseo ACP / shell prompts).
+ * Prefer `--all` so one CLI call clears a burst of execute prompts.
+ *
  * @param {string} agentId
  * @param {string} consumerRoot
  */
 function allowPendingPermits(agentId, consumerRoot) {
-	for (const row of listPendingPermits(agentId, consumerRoot)) {
+	const pending = listPendingPermits(agentId, consumerRoot);
+	if (pending.length === 0) {
+		return;
+	}
+	const bulk = runPaseo(['permit', 'allow', agentId, '--all'], {
+		cwd: consumerRoot,
+	});
+	if (bulk.status === 0) {
+		return;
+	}
+	// Older Paseo without --all: allow each request id.
+	for (const row of pending) {
 		const reqId = row.requestId ?? row.reqId ?? row.id ?? row.request_id;
 		if (reqId) {
 			runPaseo(['permit', 'allow', agentId, String(reqId)], {
@@ -308,7 +364,7 @@ function waitWithPermitPolling(agentId, consumerRoot, opts) {
 		if (opts.pollPermits) {
 			allowPendingPermits(agentId, consumerRoot);
 		}
-		const waitArgs = ['wait', agentId, '--timeout', '5'];
+		const waitArgs = ['wait', agentId, '--timeout', String(PERMIT_WAIT_SEC)];
 		const waited = runPaseo(waitArgs, { cwd: consumerRoot });
 		if (waited.status === 0) {
 			// Idle can mean "paused for permissions" — settle before treating as finished.
@@ -468,6 +524,11 @@ function spawnCycleAgent(opts) {
 		};
 	}
 
+	// Cursor + Paseo: enable Auto Accept so ACP permission cards do not stall AFK.
+	if (opts.pollPermits && isCursorProvider(opts.provider)) {
+		enablePaseoAutoAccept(agentId, opts.consumerRoot);
+	}
+
 	let timeoutSec = null;
 	if (opts.waitTimeout) {
 		const m = String(opts.waitTimeout).match(/^(\d+)(s|m|h)?$/i);
@@ -552,8 +613,7 @@ function main() {
 			? Number.parseInt(String(flags.through), 10)
 			: null;
 	const provider = typeof flags.provider === 'string' ? flags.provider : 'cursor';
-	const isCursor =
-		provider === 'cursor' || provider.startsWith('cursor/');
+	const isCursor = isCursorProvider(provider);
 	/** Explicit --model wins; otherwise pin Composer for Cursor so loops stay off API credits. */
 	const model =
 		typeof flags.model === 'string'

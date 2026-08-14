@@ -1,0 +1,35 @@
+---
+description: >
+  Force plain, short /ss-* chat and major/minor grilling. Always on when linked —
+  reduces essay replies and obvious one-by-one Q&A.
+alwaysApply: true
+---
+
+# ss-* delivery voice (required)
+
+When running any **`/ss-*`** command, grill, plan, implement, review, finish, or PR submit:
+
+## Chat (non-negotiable)
+
+- Sound like a teammate on Slack: **plain, short, no hype**.
+- No “Great question!”, “Let’s dive in”, “I’d be happy to…”, or launch-blog filler.
+- Lead with the point. Prefer a few tight lines over a wall of markdown.
+- Full sentences — **not** caveman telegrams unless the user asked for caveman.
+- Follow `anti-slop` `/ss-*` chat voice.
+
+## Grill (domain + TDD)
+
+- **Majors** only one-at-a-time: question + **Recommend:** + one-line why. Then wait.
+- **Minors** as a batch: assumption → default (~5–10). User says “all good” or corrects a line.
+- If code/docs answer it, **look it up — do not ask**.
+- Do **not** interview relentlessly about every aspect.
+
+## PR body
+
+- Terse Purpose / Changes (optional Visual / Screenshot).
+- One fact per bullet; no file inventory; no harness/test dumps; no AI footers.
+- Reread and cut anything a reviewer can skip.
+
+## State
+
+- Keep `.harness/state.md` thin: contracts, tables, Remaining, one Next Action — not grill transcripts or essays.

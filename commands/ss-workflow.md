@@ -8,6 +8,8 @@ Type **`ss`** in Cursor’s command palette to filter skillsync delivery command
 
 Consumer repos use **thin wrappers** (`qb-*`, `qp-*`, etc.) for tracker-specific steps; they should still point here for belt order.
 
+**Voice:** every `/ss-*` reply — plain, short, human ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md) `/ss-*` chat voice). Not caveman unless asked.
+
 ## Belts (not one flat checklist)
 
 Three altitudes. **Most days use Story only** via `/ss-flow`. Initiative and Ship are enter-when-needed.

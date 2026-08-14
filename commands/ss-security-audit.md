@@ -34,4 +34,6 @@ Overall **## Security Evidence** `Status: PASS` is required before `/ss-submit-p
 
 **Related (optional):** durable posture planning → [`/ss-security-plan`](./ss-security-plan.md) (`.harness/security-posture.html`). This command remains the **per-PR gate**; the posture HTML does not PASS a PR.
 
+**Voice:** Phase A result + Phase B verdict in a few lines. No scanner essay in chat ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md)).
+
 Available as `/ss-security-audit` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

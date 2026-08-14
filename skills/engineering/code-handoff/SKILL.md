@@ -99,7 +99,7 @@ Use when it clarifies structure. For **`#frontend`**: **Platform** line first; *
 |-----------------|--------------|
 | `/ss-review` | Critic PASS/FAIL — usually via `/ss-finish`; run before handoff when following ss-flow |
 | `/ss-security-audit` | PR security gate — ideally PASS before handoff or before submit |
-| `/ss-submit-pr` | Open PR; may reuse Intent from the HTML when drafting `.harness/pr-body.md` (Purpose / Changes only) |
+| `/ss-submit-pr` | Open PR; may reuse **Intent** from the HTML when drafting `.harness/pr-body.md` (Purpose / Changes only — not the whole handoff) |
 | `/ss-close-story` | Deletes this artifact via harness reset after Jira Done |
 | `productivity/handoff` | Agent session dump — different audience |
 | `journal-handoff` | Weekly journal — different audience |

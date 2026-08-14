@@ -4,9 +4,9 @@
 
 **Away-from-keyboard (AFK) twin of [`ss-implement`](./ss-implement.md):** walk **Remaining** RED→GREEN cycles (or sprint slices) by spawning a **fresh Cursor agent per cycle** via [Paseo](https://paseo.sh/). Memory stays in `.harness/state.md` + git. Interactive implement stays `/ss-implement`.
 
-**Setup (once):** [`docs/ss-loop.md`](../docs/ss-loop.md) — Paseo daemon, Cursor provider, Auto-review / `permissions.json`.
+**Setup (once):** [`docs/ss-loop.md`](../docs/ss-loop.md) — Paseo daemon, Cursor provider, **Auto Accept** in Paseo + Auto-review / `permissions.json`.
 
-1. Preconditions — `node .cursor/vendor/skillsync/tools/validate-state.cjs . --mode implement`; Paseo daemon running; Cursor provider available (`paseo provider` / MCP `list_providers`).
+1. Preconditions — `node .cursor/vendor/skillsync/tools/validate-state.cjs . --mode implement`; Paseo daemon running; Cursor provider available (`paseo provider` / MCP `list_providers`). For Cursor agents, `/ss-loop` enables **Auto Accept** after spawn when Paseo is available (skill `paseo-cursor-auto-accept`); otherwise use `paseo-permit-watch.cjs`.
 2. Orchestrator — [`harness-loop.md`](../harness/harness-loop.md) + run:
    `node .cursor/vendor/skillsync/tools/ss-loop.cjs .`
    (defaults: **Cursor** provider, **`composer-2.5`** model — cost-efficient Cursor Models pool; override with `--model` only when needed)
@@ -14,5 +14,7 @@
 4. After Remaining is empty → **Next Action** points at `/ss-review` (`harness-critic`). Do not skip review.
 
 **Evidence:** same as implement — **`## TDD Evidence`** + Verification Plan via `run-verification.cjs`.
+
+**Voice:** orchestrator chat stays minimal (cycle N started/passed/blocked). Agents still write evidence to state ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md) `/ss-*` chat voice).
 
 Available as `/ss-loop` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

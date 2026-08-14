@@ -30,6 +30,7 @@ Shared **Cursor Agent Skills**, **project rules**, **`ss-*` slash commands**, **
 | `tools/publish-slices-from-state.cjs` | Dry-run or publish plan slices to tracker. |
 | `tools/jira-close.cjs` | Jira REST close + harness reset (optional). |
 | `tools/verify-tools.cjs` | Smoke-test ss-* tools and fixtures. |
+| `tools/preflight-local.cjs` | Local CI gate: scoped on commit; `--full` before PR (`yarn preflight` / `preflight:full`). |
 | `skillsync.config.example.json` | Example consumer config. |
 | `docs/consumer-setup.md` | Submodule + `package.json` + `ss-*` naming. |
 

@@ -4,7 +4,14 @@
 *.pem
 
 # Local link/verify output when skillsync is used as its own consumer
-.cursor/
+.cursor/*
+!.cursor/hooks.json
+!.cursor/hooks/
+!.cursor/hooks/**
+!.cursor/rules/
+!.cursor/rules/ss-delivery-voice.mdc
+!.cursor/permissions.json
+!.cursor/cli.json
 
 # GitNexus local index + auto-installed agent skill copies
 .gitnexus/

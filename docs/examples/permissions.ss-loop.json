@@ -5,17 +5,29 @@
 		"git log",
 		"git show",
 		"git rev-parse",
+		"git branch",
+		"git checkout",
+		"git switch",
+		"git add",
+		"git commit",
+		"git pull",
+		"git fetch",
+		"git stash",
 		"node",
 		"npm",
 		"yarn",
 		"pnpm",
 		"npx"
 	],
+	"mcpAllowlist": [
+		"paseo:*"
+	],
 	"autoRun": {
 		"allow_instructions": [
-			"Shell commands that only run the repo test suite, a single test file, lint, typecheck, format-check, or skillsync tools under .cursor/vendor/skillsync/tools/ (run-verification, re-break, validate-state, tdd-audit) may run without asking.",
-			"Read-only git commands (status, diff, log, show, rev-parse) may run without asking.",
-			"Editing source and test files under the project tree for the active RED→GREEN cycle may proceed without asking."
+			"Shell commands that only run the repo test suite, a single test file, lint, typecheck, format-check, or skillsync tools under .cursor/vendor/skillsync/tools/ (run-verification, re-break, validate-state, tdd-audit, preflight-local) may run without asking.",
+			"Read-only git commands (status, diff, log, show, rev-parse, branch) and normal local git writes (add, commit, checkout, switch, stash, pull, fetch) may run without asking when cwd is this repo.",
+			"Editing source and test files under the project tree for the active RED→GREEN cycle may proceed without asking.",
+			"Paseo MCP tools used to orchestrate the Remaining loop may run without asking."
 		],
 		"block_instructions": [
 			"Any command that reads or writes .env, credentials, secrets, or SSH keys must ask for approval.",

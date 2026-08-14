@@ -3,7 +3,7 @@
  * Open a GitHub pull request from the current branch (deterministic helper).
  *
  * Usage:
- *   node path/to/skillsync/tools/open-pr.cjs [/path/to/consumer-repo] [--base main] [--title "..."] [--no-push] [--dry-run] [--force-new] [--skip-security]
+ *   node path/to/skillsync/tools/open-pr.cjs [/path/to/consumer-repo] [--base main] [--title "..."] [--no-push] [--dry-run] [--force-new] [--skip-security] [--skip-preflight] [--skip-full-e2e]
  */
 
 const fs = require('node:fs');
@@ -40,6 +40,8 @@ function main() {
 	const noPush = Boolean(flags['no-push']);
 	const forceNew = Boolean(flags['force-new']);
 	const skipSecurity = Boolean(flags['skip-security']);
+	const skipPreflight = Boolean(flags['skip-preflight']);
+	const skipFullE2e = Boolean(flags['skip-full-e2e']);
 	const base =
 		(typeof flags.base === 'string' && flags.base) ||
 		config?.prBaseBranch ||
@@ -48,6 +50,32 @@ function main() {
 	const toolsDir = path.join(__dirname);
 	const renderScript = path.join(toolsDir, 'render-pr-body.cjs');
 	const securityScript = path.join(toolsDir, 'security-audit.cjs');
+	const preflightScript = path.join(toolsDir, 'preflight-local.cjs');
+
+	if (!skipPreflight) {
+		/** @type {string[]} */
+		const preflightArgs = [preflightScript, consumerRoot];
+		// PR open: full local suite (incl. full E2E when present) so Actions is confirmation.
+		if (!skipFullE2e) {
+			preflightArgs.push('--full');
+		}
+		if (dryRun) {
+			console.log(`would run preflight: ${preflightArgs.slice(1).join(' ')}`);
+		} else {
+			try {
+				execFileSync(process.execPath, preflightArgs, {
+					cwd: consumerRoot,
+					encoding: 'utf8',
+					stdio: 'inherit',
+				});
+			} catch {
+				console.error(
+					'Local preflight failed. Fix failures before opening a PR (saves GitHub Actions). Pass --skip-preflight to override, or --skip-full-e2e for scoped-only.',
+				);
+				process.exit(1);
+			}
+		}
+	}
 
 	if (!skipSecurity) {
 		if (dryRun) {

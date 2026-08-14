@@ -1,15 +1,38 @@
 ---
 name: grill-tdd
-description: TDD grilling after domain alignment — behaviors, RED test contracts, false-positive audit, and test-pyramid placement. Use during /ss-plan step 1b after grill-me or grill-with-docs, or when planning test-first work before implementation.
+description: >
+  TDD grilling after domain alignment — major test-design forks one at a time, then
+  minor defaults as assumption→answer batches. Produces Behavior & Test Contracts.
+  Use during /ss-plan step 1b after grill-me or grill-with-docs.
 ---
 
 # Grill TDD
 
 Second grilling phase for **`/ss-plan`**. Run **after** [`grill-me`](../../productivity/grill-me/SKILL.md) or [`grill-with-docs`](../grill-with-docs/SKILL.md) completes — domain scope and design decisions must already be agreed.
 
-Interview the user one question at a time. For each question, give your recommended answer. If the codebase can answer a question, explore the codebase instead.
+**REQUIRED:** same major/minor grill + short chat as domain grill (`ss-delivery-voice.mdc` / [`anti-slop`](../../productivity/anti-slop/SKILL.md)).
 
 **Do not write test files in this session.** Agree on behaviors and test **contracts** only. Actual RED→GREEN cycles happen in **`/ss-implement`** (all Remaining cycles, in order) via the [`tdd`](../tdd/SKILL.md) skill.
+
+## Grilling mode
+
+Same hybrid as domain grill — keep TDD planning sharp:
+
+1. **Major forks (interactive)** — one question at a time, with your recommended answer. Wait for feedback.
+2. **Minor defaults (batch)** — after majors in a phase (or per behavior), list assumption → recommended answer (~**5–10**). Human only corrects mistakes.
+3. If the codebase / existing tests / **`AGENTS.md`** can answer, **explore instead of asking**.
+
+| Major (grill) | Minor (list + default) |
+|---------------|------------------------|
+| Which behaviors are in-scope and priority order | Test file path matching repo conventions |
+| Exact **expectation** chain (`step > step > assertion`) for each prioritized behavior | Layer = unit when the public API can prove it alone |
+| Non-goals; mock boundaries (external I/O only) | Locator = role/label when RTL/Playwright patterns are already clear |
+| False-positive risk on a contested contract; E2E spine vs unit | “Same assert style / harness as neighboring tests” |
+| Hard-to-reverse test-strategy trade-offs (optional ADR) | Boilerplate setup that mirrors existing specs |
+
+When unsure, treat it as **major**.
+
+**How to talk:** [`anti-slop`](../../productivity/anti-slop/SKILL.md) `/ss-*` chat voice — short, plain, no hype. Major = question + recommend + one-line why. Minors = assumption → default list. Do not dump full contract cards until the end.
 
 ## Prerequisites
 
@@ -20,7 +43,7 @@ Before starting:
 
 ## Question phases (in order)
 
-Walk these phases in order. Do not skip ahead until the current phase is resolved.
+Walk these phases in order. Use **major** questions for unresolved forks; push settled pyramid/path/locator conventions into a **minor defaults** batch instead of one-by-one confirmations.
 
 ### A. Behavior and interface
 
