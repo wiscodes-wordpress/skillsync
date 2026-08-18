@@ -3,7 +3,7 @@
  * Publish RED→GREEN or Sprint Plan slices from state to issue tracker (dry-run default).
  *
  * Usage:
- *   node path/to/skillsync/tools/publish-slices-from-state.cjs [/path/to/consumer-repo] [--parent PROJECT-100] [--publish] [--approved]
+ *   node path/to/skillsync/tools/publish-slices-from-state.cjs [/path/to/consumer-repo] [--parent PROJECT-100] [--publish] [--approved] [--voice agent|workplace]
  */
 
 const fs = require('node:fs');
@@ -20,12 +20,52 @@ const {
  * @typedef {{ title: string; body: string; index: number }} Slice
  */
 
+function workplaceAcceptance(acceptance) {
+	return acceptance.replace(/^### .+\n/, '').trim() || '- [ ] Matches the plan';
+}
+
+/**
+ * @param {'agent' | 'workplace'} voice
+ * @param {string} parent
+ * @param {string} what
+ * @param {string} acceptance
+ * @returns {string}
+ */
+function formatBody(voice, parent, what, acceptance) {
+	if (voice === 'workplace') {
+		return `${what}
+
+**Acceptance criteria**
+
+${workplaceAcceptance(acceptance)}
+`.trimEnd();
+	}
+
+	return `## Parent
+
+${parent || '(set --parent)'}
+
+## What to build
+
+${what}
+
+## Acceptance criteria
+
+${acceptance}
+
+## Blocked by
+
+**None — can start immediately**
+`;
+}
+
 /**
  * @param {string} state
  * @param {string} parent
+ * @param {'agent' | 'workplace'} voice
  * @returns {Slice[]}
  */
-function parseSlices(state, parent) {
+function parseSlices(state, parent, voice) {
 	/** @type {Slice[]} */
 	const slices = [];
 
@@ -80,22 +120,7 @@ function parseSlices(state, parent) {
 			}
 		}
 
-		const body = `## Parent
-
-${parent || '(set --parent)'}
-
-## What to build
-
-${what}
-
-## Acceptance criteria
-
-${acceptance}
-
-## Blocked by
-
-**None — can start immediately**
-`;
+		const body = formatBody(voice, parent, what, acceptance);
 		slices.push({ index, title, body });
 	}
 
@@ -113,16 +138,34 @@ function main() {
 		(typeof flags.parent === 'string' && flags.parent) ||
 		process.env.SS_PARENT_ISSUE ||
 		'';
+	const voiceFlag = typeof flags.voice === 'string' ? flags.voice : '';
+	const voiceFromConfig = config?.toIssuesVoice;
+	const dcdParent = /\bDCD-\d+/i.test(parent);
+	/** @type {'agent' | 'workplace'} */
+	const voice =
+		voiceFlag === 'workplace' || voiceFlag === 'agent'
+			? voiceFlag
+			: dcdParent
+				? 'workplace'
+				: voiceFromConfig === 'workplace' || voiceFromConfig === 'agent'
+					? voiceFromConfig
+					: 'agent';
+	assertOrExit(
+		voiceFlag === '' || voiceFlag === 'agent' || voiceFlag === 'workplace',
+		'--voice must be agent or workplace',
+	);
 
 	const state = readState(consumerRoot);
 	assertOrExit(Boolean(state), 'Missing .harness/state.md');
 
-	const slices = parseSlices(/** @type {string} */ (state), parent);
+	const slices = parseSlices(/** @type {string} */ (state), parent, voice);
 
-	console.log('| Slice | Title | Mode |');
-	console.log('|-------|-------|------|');
+	console.log('| Slice | Title | Voice | Mode |');
+	console.log('|-------|-------|-------|------|');
 	for (const slice of slices) {
-		console.log(`| ${slice.index} | ${slice.title} | ${publish ? 'publish' : 'dry-run'} |`);
+		console.log(
+			`| ${slice.index} | ${slice.title} | ${voice} | ${publish ? 'publish' : 'dry-run'} |`,
+		);
 	}
 
 	if (!publish) {

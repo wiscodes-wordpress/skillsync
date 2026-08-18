@@ -14,7 +14,7 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 |-------|---------|-------------------|-------------------------------|
 | Branch | consumer wrapper | — | — |
 | **Plan** (agent 1) | `/ss-plan` | [`harness-planner-tdd.md`](./harness-planner-tdd.md) | 1a: [`grill-me`](../skills/productivity/grill-me/SKILL.md) or [`grill-with-docs`](../skills/engineering/grill-with-docs/SKILL.md) · 1b: [`grill-tdd`](../skills/engineering/grill-tdd/SKILL.md) |
-| Slice to issues | `/ss-to-issues` (optional; same plan agent) | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) |
+| Slice to issues | `/ss-to-issues` (optional; same plan agent) | — | [`to-issues`](../skills/engineering/to-issues/SKILL.md) — agent vs workplace voice |
 | **Implement** (agent 2) | `/ss-implement` | [`harness-generator.md`](./harness-generator.md) | [`ponytail`](../skills/engineering/ponytail/SKILL.md) · [`tdd`](../skills/engineering/tdd/SKILL.md) when state has RED→GREEN Plan |
 | Implement (AFK) | `/ss-loop` | [`harness-loop.md`](./harness-loop.md) | Same TDD skills; one fresh Paseo Cursor agent per Remaining cycle — [`docs/ss-loop.md`](../docs/ss-loop.md) |
 | **Done** (agent 3) | `/ss-finish` | orchestrates leaves below | — |

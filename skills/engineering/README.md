@@ -21,7 +21,7 @@ Commands: type **`ss`** — daily Story [`/ss-flow`](../../commands/ss-flow.md);
 - **[prototype](./prototype/SKILL.md)** — Throwaway prototype to flesh out a design before committing.
 - **[setup-matt-pocock-skills](./setup-matt-pocock-skills/SKILL.md)** — Scaffold per-repo config (issue tracker, triage labels, domain docs).
 - **[tdd](./tdd/SKILL.md)** — Test-driven development with red-green-refactor, one behavior at a time.
-- **[to-issues](./to-issues/SKILL.md)** — Break a plan into independently grabbable tracker issues (skillsync harness variant).
+- **[to-issues](./to-issues/SKILL.md)** — Break a plan into tracker issues: agent slices (own project) or short workplace tickets (Lifeway / teammates).
 - **[to-prd](./to-prd/SKILL.md)** — Turn conversation context into a PRD on the issue tracker.
 - **[triage](./triage/SKILL.md)** — Triage issues through a state machine of triage roles.
 - **[zoom-out](./zoom-out/SKILL.md)** — Higher-level perspective on an unfamiliar section of code.

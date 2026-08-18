@@ -178,7 +178,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 **Behavior:**
 
 - Parse RED→GREEN Plan or Sprint Plan from state into structured slices (title, acceptance criteria, blocked-by).
-- Render issue bodies from [to-issues](../skills/engineering/to-issues/SKILL.md) template.
+- Render issue bodies from [to-issues](../skills/engineering/to-issues/SKILL.md) / [VOICES.md](../skills/engineering/to-issues/VOICES.md) (`--voice agent|workplace`).
 - **Dry-run** (default): print markdown table slice → would-be body.
 - **`--publish`:** call `gh issue create` or Jira REST per consumer config (`issueTracker: github|jira`, project key, parent key, labels).
 - Require `--approved` flag or stdin `yes` after dry-run (human-in-the-loop (HITL) gate — no auto-publish without explicit flag).

@@ -125,6 +125,7 @@ function readState(consumerRoot) {
  * @property {string} [issueTracker]
  * @property {string} [jiraProjectKey]
  * @property {string} [githubIssueLabels]
+ * @property {'agent' | 'workplace'} [toIssuesVoice]
  */
 
 /**

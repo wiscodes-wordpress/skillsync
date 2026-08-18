@@ -329,7 +329,7 @@ Mechanical steps from the delivery loop live in **`tools/`** (run from the vendo
 | `verify-tools.cjs` | skillsync CI | Smoke-test tools + fixtures |
 | `preflight-local.cjs` | before commit / PR | Scoped by default (story/diff E2E); `--full` before PR open (full E2E when present). `open-pr.cjs` uses `--full`. |
 
-Optional **`skillsync.config.json`** keys for tools / journal handoff:
+Optional **`skillsync.config.json`** keys for tools / journal handoff. **`toIssuesVoice`:** optional override (`agent` or `workplace`). Skip it when you can: a `DCD-` story/parent or a `LifewayIT` remote already picks workplace.
 
 ```json
 {
