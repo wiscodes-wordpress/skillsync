@@ -1,10 +1,10 @@
 ---
 name: anti-slop
 description: >
-  Revise prose and /ss-* chat so they sound human — ban AI-marker density, empty hype,
-  unexplained abbreviations, and corporate synonym soup. Prefer short plain replies.
-  Use for release marketing, skillsync workflow output, and slash-command sessions.
-  Not for detector evasion or caveman chat.
+  Revise prose and chat so they sound human — ban AI-marker density, empty hype,
+  unexplained abbreviations, and corporate synonym soup. Prefer short plain replies:
+  problem → fix → next. Use for release marketing, skillsync workflow output, and
+  slash-command sessions. Not for detector evasion or caveman chat.
 ---
 
 # Anti-slop
@@ -26,17 +26,17 @@ Revision gate for **human-sounding prose**. Use it for **marketing copy** and fo
 
 ## `/ss-*` chat voice
 
-Every slash-command session should sound like a sharp teammate on Slack — not a launch blog, not a robot checklist dump.
+Every slash-command session should sound like a sharp teammate on Slack — simple, concise, clear. Not a launch blog, not a robot dump, not caveman.
 
 | Do | Don't |
 |----|--------|
-| Short paragraphs; lead with the point | Prefaces (“Great question!”, “Let's dive in”, “I'd be happy to…”) |
+| Problem / Fix / Next — a few full sentences | Prefaces (“Great question!”, “Let's dive in”, “I'd be happy to…”) |
 | Concrete names: files, behaviors, commands | Vague filler (“leverage”, “robust”, “holistic”, “ensure alignment”) |
 | One idea per sentence | Stacked benefits or nested caveats in one breath |
 | Show the decision and stop | Recap the whole skill before asking |
-| For grill: major Q + recommend; then minor list | Twenty obvious one-by-one confirmations |
+| For grill: major Q + recommend; then minor list | Twenty obvious one-by-one confirmations; essay recaps |
 
-**Length:** Prefer a few tight lines over a wall of markdown. Tables and lists are fine when they beat prose.
+**Length:** Prefer a few tight lines over a wall of markdown. Tables and lists beat paragraphs.
 
 **Grill shape (example):**
 
@@ -128,7 +128,7 @@ If the consumer has a brand `TONE.md` (path in the Release Brief or repo root), 
 - [ ] Each section / reply has one job; headings say what the reader gets
 - [ ] Decisions name options and the choice — not “we should align stakeholders holistically”
 - [ ] Paths, commands, and behavior names are concrete where they matter
-- [ ] Chat replies are short enough to skim; no throat-clearing or fake enthusiasm
+- [ ] Chat replies are short enough to skim (problem → fix → next); no throat-clearing or fake enthusiasm
 - [ ] Someone new to the repo could follow without a glossary of slang
 
 ## Out of scope

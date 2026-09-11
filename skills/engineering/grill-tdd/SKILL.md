@@ -32,7 +32,7 @@ Same hybrid as domain grill — keep TDD planning sharp:
 
 When unsure, treat it as **major**.
 
-**How to talk:** [`anti-slop`](../../productivity/anti-slop/SKILL.md) `/ss-*` chat voice — short, plain, no hype. Major = question + recommend + one-line why. Minors = assumption → default list. Do not dump full contract cards until the end.
+**How to talk:** [`anti-slop`](../../productivity/anti-slop/SKILL.md) `/ss-*` chat voice — simple, concise, no hype. Major = question + recommend + one-line why. Minors = assumption → default list. Do not dump full contract cards until the end.
 
 ## Prerequisites
 

@@ -61,7 +61,7 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 4. **No `testing-expert` in this loop** — encyclopedic reference; use `tdd` + stack skill instead.
 5. **Locators** — [accessible-locator-priority.md](./accessible-locator-priority.md) when writing or reviewing **UI / end-to-end (E2E)** tests only.
 6. **State is the contract** — after plan, `Behavior & Test Contracts` and `RED→GREEN Plan` in **`.harness/state.md`** replace re-reading `grill-tdd` at review. Hand off artifacts between agents, not threads.
-7. **Prose & chat** — all `/ss-*` agent replies and written artifacts follow [`anti-slop`](../skills/productivity/anti-slop/SKILL.md): plain teammate English, short, no hype. Expand abbreviations on first use. Skip for pure code and mechanical evidence tables. Marketing packs still finish with a full anti-slop pass. This is **not** [`caveman`](../skills/productivity/caveman/SKILL.md) (no telegraphic fragments unless the user asked for caveman).
+7. **Prose & chat** — all `/ss-*` agent replies and written artifacts follow [`anti-slop`](../skills/productivity/anti-slop/SKILL.md): simple, concise, full sentences, no hype. Chat shape: problem → fix → next. Expand abbreviations on first use. Skip for pure code and mechanical evidence tables. Marketing packs still finish with a full anti-slop pass. This is **not** [`caveman`](../skills/productivity/caveman/SKILL.md) unless the user asked.
 
 ### Further savings
 

@@ -1,6 +1,6 @@
 # ss-plan
 
-**REQUIRED voice:** plain, short teammate chat ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md) `/ss-*` chat voice). Grill = **majors** one-at-a-time; **minors** as assumption→answer batches. No relentless obvious Q&A. Link rule `ss-delivery-voice.mdc` in consumers (`alwaysApply`).
+**REQUIRED voice:** simple, concise teammate chat ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md): problem → fix → next). Grill = **majors** one-at-a-time; **minors** as assumption→answer batches. Link rule `ss-delivery-voice.mdc` in consumers (`alwaysApply`).
 
 **Phase: planning** — Story Plan agent under [`/ss-flow`](./ss-flow.md). Map: [`harness/ss-flow.md`](../harness/ss-flow.md).
 

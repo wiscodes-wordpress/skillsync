@@ -42,7 +42,7 @@ Do **not** interview relentlessly about every aspect. Assert defaults for the re
 
 ## How to talk
 
-Follow [`anti-slop`](../anti-slop/SKILL.md) **`/ss-*` chat voice**. Plain English. Short. No hype, no “Great question!”, no essay before the ask.
+Follow [`anti-slop`](../anti-slop/SKILL.md) **`/ss-*` chat voice**. Simple. Concise. Clear. No hype, no “Great question!”, no essay before the ask.
 
 **Major turn** — three lines max before you wait:
 

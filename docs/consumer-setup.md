@@ -106,7 +106,7 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 | `ui-ux-planner` | `/ss-ui-ux-plan` |
 | `improve-codebase-architecture` | Optional with `/ss-arch-plan` |
 
-Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for `grill-me` in plan step 1a — productivity skill, link if desired). Add stack skills only when needed (e.g. `jest-react-testing`, `bulletproof-react`, `wordpress-testing-qa`) — not required for the generic loop. Do **not** link **`testing-expert`** for the loop; it is an optional encyclopedia.
+Add **`anti-slop`** for chat + plan prose (always; see context budget rule 7). Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for `grill-me` in plan step 1a — productivity skill, link if desired). Add stack skills only when needed (e.g. `jest-react-testing`, `bulletproof-react`, `wordpress-testing-qa`) — not required for the generic loop. Do **not** link **`testing-expert`** for the loop; it is an optional encyclopedia.
 
 ### `linkedCommands` (typical — Story spine + Initiative + Ship)
 
@@ -138,7 +138,7 @@ Prefer this order so the palette reads by belt. Daily Story entry is **`/ss-flow
 
 For post-ship go-to-market, also link productivity skills **`anti-slop`**, **`release-distribution`**, and **`release-marketing`** (see [`skills/productivity/README.md`](../skills/productivity/README.md)).
 
-Link **`anti-slop`** even when you skip release marketing: the delivery loop uses it for plan / HTML / issue prose (see [`harness/ss-flow.md`](../harness/ss-flow.md) context budget rule 7).
+Link **`anti-slop`** even when you skip release marketing: the delivery loop uses it for chat and plan / HTML / issue prose (see [`harness/ss-flow.md`](../harness/ss-flow.md) context budget rule 7).
 
 ### Personal journal handoff (optional)
 
@@ -203,7 +203,7 @@ Omit `link-rules` / `verify-rules` if `linkedRules` is empty; omit `link-command
 
 Cursor loads **project rules** from **`.cursor/rules/`** only — not from paths under `vendor/`. Canonical `.mdc` files live in this repo under **`rules/`**; list them in **`linkedRules`** and run **`link-rules.cjs`** / **`verify-rules.cjs`**. Confirm under **Settings → Rules → Project Rules**.
 
-**Strongly recommended:** include **`ss-delivery-voice.mdc`** in `linkedRules` (it is `alwaysApply: true`). That is the practical way to “force” plain `/ss-*` chat and major/minor grilling — skills alone are easy to skip.
+**Strongly recommended:** include **`ss-delivery-voice.mdc`** in `linkedRules` (it is `alwaysApply: true`). That forces **simple, concise, human** chat (problem → fix → next) and major/minor grilling — skills alone are easy to skip.
 
 For personal journal privacy, also link **`journal-vault-privacy.mdc`** and keep DenMercs **`.cursorignore`** allowlisting only `Journal/` + `_Templates/` (skills alone are soft; ignore is the hard filesystem gate when the vault is in Cursor’s scope).
 

@@ -37,7 +37,7 @@ See **`docs/consumer-setup.md`**. Typical flow:
 1. Keep additions **reusable** across consumers; push product flavor into consumer wrappers or harness addenda.
 2. After changing skills, commands, or **`tools/`** ss-* helpers, run **`yarn preflight`** before commit and **`yarn preflight:full`** before opening a PR (or **`node tools/preflight-local.cjs . [--full]`**) — catch failures locally so GitHub Actions is confirmation, not discovery.
 3. Prefer **symlink** `linkMode` in consumers unless the platform cannot create directory symlinks.
-4. Link **`ss-delivery-voice.mdc`** in `linkedRules` (always-on) so `/ss-*` chat and grill rules apply without relying on the agent to open a skill.
+4. Link **`ss-delivery-voice.mdc`** in `linkedRules` (always-on) so chat stays **simple, concise, and human** (problem → fix → next) without relying on the agent to open a skill.
 5. **Prose** — follow [`skills/productivity/anti-slop`](skills/productivity/anti-slop/SKILL.md): expand abbreviations on first use (architecture decision record (ADR), end-to-end (E2E), source of truth, human-in-the-loop (HITL), away-from-keyboard (AFK), …); cut AI-marker density and empty hype; prefer concrete paths and behaviors over jargon.
 
 ## Naming

@@ -1,6 +1,6 @@
 # ss-flow
 
-**REQUIRED voice:** every Story phase — plain, short, human ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md)). Consumers: link `rules/ss-delivery-voice.mdc` (`alwaysApply: true`).
+**REQUIRED voice:** every Story phase — simple, concise, human ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md): problem → fix → next). Consumers: link `rules/ss-delivery-voice.mdc` (`alwaysApply: true`).
 
 **Story spine — three fresh agents.** Daily path only (not Initiative / Ship). Belt map and context budget: [`harness/ss-flow.md`](../harness/ss-flow.md). Full belt index: [`ss-workflow`](./ss-workflow.md).
 
@@ -24,6 +24,6 @@ Do **not** keep one mega-session from plan through Done. Do **not** split Plan i
 
 **Context budget:** three fresh agents + `.harness/state.md` handoff. Practical savings (thin state, `/ss-loop` for long Remaining, skip optional phases, re-run leaves only): [`harness/ss-flow.md`](../harness/ss-flow.md) → **Context budget rules** / **Further savings**.
 
-**Voice:** keep chat human and short — [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) `/ss-*` chat voice (all Story phases).
+**Voice:** keep chat human and short — [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) (all Story phases). Put the durable plan in **`.harness/state.md`**, not a recap.
 
 Available as `/ss-flow` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

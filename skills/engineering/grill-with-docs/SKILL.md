@@ -26,7 +26,7 @@ If the codebase or docs can answer something, **explore instead of asking**.
 
 When unsure, treat it as **major**. Do **not** interview relentlessly about every aspect.
 
-**How to talk:** [`anti-slop`](../../productivity/anti-slop/SKILL.md) `/ss-*` chat voice — short, plain, no hype. Major = three lines (question, recommend, why). Minors = numbered assumption → default. No essay between turns.
+**How to talk:** [`anti-slop`](../../productivity/anti-slop/SKILL.md) `/ss-*` chat voice — simple, concise, no hype. Major = three lines (question, recommend, why). Minors = numbered assumption → default. No essay between turns.
 
 </what-to-do>
 
