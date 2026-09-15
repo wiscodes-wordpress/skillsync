@@ -20,6 +20,7 @@ const fixturesDir = path.join(toolsDir, 'fixtures');
 
 const REQUIRED_TOOLS = [
 	'harness-reset.cjs',
+	'bugfix-debug-log.cjs',
 	'validate-state.cjs',
 	'init-state.cjs',
 	'render-pr-body.cjs',
@@ -136,6 +137,9 @@ function main() {
 		failed = true;
 	}
 	console.log('OK: harness-reset integration');
+
+	runTool(path.join(toolsDir, 'bugfix-debug-log.cjs'), ['--self-test']);
+	console.log('OK: bugfix-debug-log self-test');
 
 	const planConsumer = makeTempConsumer();
 	fs.mkdirSync(path.join(planConsumer, '.harness'), { recursive: true });

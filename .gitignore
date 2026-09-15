@@ -17,6 +17,9 @@
 .gitnexus/
 .claude/
 
+# Tool self-test scratch
+.tmp/
+
 # OS / editor
 .DS_Store
 *.swp

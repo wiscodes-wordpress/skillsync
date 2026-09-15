@@ -1,6 +1,6 @@
 ---
 name: diagnose
-description: Disciplined diagnosis loop for hard bugs and performance regressions. Reproduce → minimise → hypothesise → instrument → fix → regression-test. Use when user says "diagnose this" / "debug this", reports a bug, says something is broken/throwing/failing, describes a performance regression, or runs `/ss-bug-fix`.
+description: Disciplined diagnosis loop for hard bugs and performance regressions. Reproduce → minimise → hypothesise → instrument → fix → regression-test. Use when the user says "diagnose this", or the bug is flaky/perf and has no ready runtime path. For instrument-likely-files → run the app → inspect logs → propose a small fix, use bugfix / /ss-bugfix.
 ---
 
 # Diagnose

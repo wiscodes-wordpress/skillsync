@@ -35,6 +35,8 @@ Lighter than Story — no grill-tdd unless the bug needs multi-cycle contracts.
 
 Leaf Done commands ([`ss-review`](./ss-review.md), [`ss-security-audit`](./ss-security-audit.md), [`ss-handoff`](./ss-handoff.md), [`ss-feature-evidence`](./ss-feature-evidence.md), [`ss-submit-pr`](./ss-submit-pr.md), [`ss-close-story`](./ss-close-story.md)) remain for partial re-runs.
 
+**Ad-hoc bug:** [`ss-bugfix`](./ss-bugfix.md) — instrument likely files, run the repro if the agent can, inspect logs, wait for apply. Not a Story phase.
+
 ### Initiative (major / foggy feature)
 
 **Entry:** [`ss-roadmap`](./ss-roadmap.md) — wayfind (local HTML) → draft initiative markdown → lens gates + pack → lock lenses → **publish Jira** → regenerate app map → hand off to `/ss-plan`.

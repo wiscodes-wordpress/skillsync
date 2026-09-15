@@ -108,6 +108,7 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 | `security-plan` | `/ss-security-plan` (trust posture; not PR gate) |
 | `ui-ux-planner` | `/ss-ui-ux-plan` |
 | `improve-codebase-architecture` | Optional with `/ss-arch-plan` |
+| `bugfix` | `/ss-bugfix` (optional; runtime-log bug loop, not Story implement) |
 
 Add **`anti-slop`** for chat + plan prose (always; see context budget rule 7). Add **`grill-with-docs`** when the repo uses `CONTEXT.md` / ADRs (substitute for `grill-me` in plan step 1a — productivity skill, link if desired). Add stack skills only when needed (e.g. `jest-react-testing`, `bulletproof-react`, `wordpress-testing-qa`) — not required for the generic loop. Do **not** link **`testing-expert`** for the loop; it is an optional encyclopedia.
 
@@ -122,6 +123,7 @@ Prefer this order so the palette reads by belt. Daily Story entry is **`/ss-flow
   "ss-plan.md",
   "ss-to-issues.md",
   "ss-implement.md",
+  "ss-bugfix.md",
   "ss-loop.md",
   "ss-finish.md",
   "ss-review.md",
@@ -227,6 +229,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-plan` | Grill + TDD plan → `.harness/state.md` (Story Plan agent) |
 | `/ss-to-issues` | Publish slices to tracker (optional) |
 | `/ss-implement` | All Remaining RED→GREEN cycles (or sprint slices), sequential (interactive) |
+| `/ss-bugfix` | Ad-hoc — instrument likely files, run repro if possible, inspect logs, wait to apply (not a Story phase) |
 | `/ss-loop` | AFK Remaining walk — fresh Paseo Cursor agent per cycle ([`docs/ss-loop.md`](./ss-loop.md)) |
 | `/ss-finish` | **Done agent** — review → fix → security → handoff → submit; close after merge |
 | `/ss-review` | Critic / quality gate (leaf; usually via `/ss-finish`) |

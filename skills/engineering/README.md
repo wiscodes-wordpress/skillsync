@@ -15,7 +15,7 @@ Commands: type **`ss`** — daily Story [`/ss-flow`](../../commands/ss-flow.md);
 
 ## From [Matt Pocock](https://github.com/mattpocock/skills) (upstream)
 
-- **[diagnose](./diagnose/SKILL.md)** — Disciplined diagnosis loop for hard bugs and performance regressions.
+- **[diagnose](./diagnose/SKILL.md)** — Disciplined diagnosis loop for hard bugs and performance regressions (no ready runtime path).
 - **[grill-with-docs](./grill-with-docs/SKILL.md)** — Grilling session against the domain model; updates `CONTEXT.md` and architecture decision records (ADRs) inline.
 - **[grill-tdd](./grill-tdd/SKILL.md)** — Test-driven development grilling after domain align: behaviors, expectations, RED contracts, locator strategy, false-positive audit (`/ss-plan` step 1b).
 - **[improve-codebase-architecture](./improve-codebase-architecture/SKILL.md)** — Find deepening opportunities informed by `CONTEXT.md` and ADRs.
@@ -30,6 +30,7 @@ Commands: type **`ss`** — daily Story [`/ss-flow`](../../commands/ss-flow.md);
 
 ## Skillsync shared
 
+- **[bugfix](./bugfix/SKILL.md)** — Cursor Debug Mode loop in Agent: local debug log (`.harness/debug-<tag>.log`), agent-run repro, evidence, then a human apply gate (`/ss-bugfix`).
 - **[app-map](./app-map/SKILL.md)** — Plugin grand plan `.harness/app-map.html` via deterministic `render-app-map.cjs` (Mind-elixir).
 - **[arch-plan](./arch-plan/SKILL.md)** — Architecture direction; Markdown SoT + derived HTML (`/ss-arch-plan`); epic/story keys; one-way Jira refresh on run.
 - **[ui-ux-planner](./ui-ux-planner/SKILL.md)** — Flows + surfaces; Markdown SoT before `/ss-plan` (`/ss-ui-ux-plan`).
