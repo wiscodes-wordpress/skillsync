@@ -21,9 +21,9 @@ Three altitudes. **Most days use Story only** via `/ss-flow`. Initiative and Shi
 | Branch | consumer wrapper | — |
 | **Plan** | [`ss-plan`](./ss-plan.md) (+ optional [`ss-to-issues`](./ss-to-issues.md)) | Fresh |
 | **Implement** | [`ss-implement`](./ss-implement.md) or [`ss-loop`](./ss-loop.md) | Fresh (loop = per Remaining cycle) |
-| **Done** | [`ss-finish`](./ss-finish.md) | Fresh: review → fix → security → handoff → submit; close after merge |
+| **Done** | [`ss-finish`](./ss-finish.md) | Fresh: review → fix → security → feature evidence → handoff? → submit; close after merge |
 
-Leaf Done commands ([`ss-review`](./ss-review.md), [`ss-security-audit`](./ss-security-audit.md), [`ss-handoff`](./ss-handoff.md), [`ss-submit-pr`](./ss-submit-pr.md), [`ss-close-story`](./ss-close-story.md)) remain for partial re-runs.
+Leaf Done commands ([`ss-review`](./ss-review.md), [`ss-security-audit`](./ss-security-audit.md), [`ss-handoff`](./ss-handoff.md), [`ss-feature-evidence`](./ss-feature-evidence.md), [`ss-submit-pr`](./ss-submit-pr.md), [`ss-close-story`](./ss-close-story.md)) remain for partial re-runs.
 
 ### Initiative (major / foggy feature)
 

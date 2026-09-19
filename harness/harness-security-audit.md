@@ -109,7 +109,7 @@ Overall **Status: PASS** requires Phase A PASS **and** Phase B PASS.
 
 ### Next
 - FAIL → fix → re-run `/ss-security-audit`
-- PASS → optional `/ss-handoff` (human walkthrough) → `/ss-submit-pr`
+- PASS → `/ss-feature-evidence` → optional `/ss-handoff` (human walkthrough) → `/ss-submit-pr`
 ```
 
 ## Submit PR gate

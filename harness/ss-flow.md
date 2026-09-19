@@ -20,6 +20,7 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 | **Done** (agent 3) | `/ss-finish` | orchestrates leaves below | — |
 | → Review (+ fix) | `/ss-review` (via finish) | [`harness-critic.md`](./harness-critic.md) | auto: [`critic-tdd-testing.md`](./critic-tdd-testing.md) when state has TDD contracts |
 | → Security gate | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; DB: `postgresql-security-best-practices`, `supabase-security`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
+| → Feature video | `/ss-feature-evidence` | — | [`feature-video-evidence`](../skills/engineering/feature-video-evidence/SKILL.md) — after audit PASS; clip + `.harness/feature-evidence.md`; skip if no UI / no browser E2E |
 | → Human walkthrough (optional) | `/ss-handoff` | — | [`code-handoff`](../skills/engineering/code-handoff/SKILL.md) — `.harness/code-handoff.html`; before `/ss-submit-pr` |
 | → PR | `/ss-submit-pr` | — | linked PR skills; **stop for merge** |
 | → Close (after merge) | `/ss-close-story` | — | linked Jira/close skills; harness reset |
@@ -49,7 +50,9 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 
 **Enter Ship when:** post-merge go-to-market. Does **not** block `/ss-submit-pr`.
 
-**Human walkthrough order:** inside `/ss-finish` after review + security PASS → `/ss-handoff` → human opens `.harness/code-handoff.html` → `/ss-submit-pr`. Optional; does **not** replace critic or security. Skip when the human already understands the diff.
+**Human walkthrough order:** inside `/ss-finish` after review + security PASS → `/ss-feature-evidence` → `/ss-handoff` → human opens `.harness/code-handoff.html` → `/ss-submit-pr`. Handoff is optional and does **not** replace critic or security. Skip handoff when the human already understands the diff.
+
+**Feature video:** `/ss-feature-evidence` runs **after audit PASS**. Playwright `@evidence` clip + `.harness/feature-evidence.md`. Skip when there is no UI or no browser E2E. Not Ship `@release` demos.
 
 ## Context budget rules
 
@@ -69,7 +72,7 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 2. **Prefer `/ss-loop` on long Remaining lists** — interactive `/ss-implement` is fine for a few cycles; for many Remaining cycles, one fresh agent per cycle usually beats one long implement chat. See [`docs/ss-loop.md`](../docs/ss-loop.md).
 3. **Scope Implement when blocked** — `only Cycle N` / `through Cycle N` / `stop after Cycle N` instead of burning later cycles while stuck.
 4. **Prefer one `/ss-finish` over five leaf agents** — review → fix → security → handoff → PR in one Done session unless re-running a single gate.
-5. **Skip optional work** — no `/ss-to-issues` unless slicing; no `/ss-handoff` when the human already knows the diff; no Initiative / Ship when the story is already clear; call GitNexus tools when needed, do not load GitNexus skill docs every turn.
+5. **Skip optional work** — no `/ss-to-issues` unless slicing; no `/ss-handoff` when the human already knows the diff; no `/ss-feature-evidence` when there is no UI or no browser E2E; no Initiative / Ship when the story is already clear; call GitNexus tools when needed, do not load GitNexus skill docs every turn.
 6. **Pointed tools over re-exploration** — prefer vendored `run-verification.cjs`, `tdd-audit.cjs`, `security-audit.cjs`, etc. over asking the model to re-walk the tree.
 7. **Point at paths; do not paste large artifacts** — `.harness/state.md`, plan HTML, diffs. Pasting full docs into chat double-pays.
 8. **Keep consumer `AGENTS.md` short** — branch, verification commands, which stack skills apply. Long always-on rules are re-read every agent.

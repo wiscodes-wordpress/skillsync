@@ -19,7 +19,7 @@ Invoke via **`/ss-release-distribution`** or as the distribution phase of **`/ss
 | Use this | Skip / use something else |
 |----------|---------------------------|
 | Need believable demo data + recorded feature journeys | Channel copy only → [`release-marketing`](../release-marketing/SKILL.md) |
-| Release reel / What’s new clips from existing E2E | Everyday TDD E2E spines → stay in delivery loop |
+| Release reel / What’s new clips from existing E2E | Story human-check clip → [`feature-video-evidence`](../../engineering/feature-video-evidence/SKILL.md) (`@evidence`); everyday TDD spines stay in delivery |
 | Indexing clip/still paths onto the brief | Auto-upload to YouTube / social |
 
 **Non-goals:** no CapCut/FFmpeg stitch automation (v1 lists ordered clips only); no ESP/social APIs; no product-specific seed scripts (document conventions; consumer owns entrypoints).

@@ -27,6 +27,8 @@ function main() {
 		{ type: 'delete', path: path.join(dir, 'pr-body.md') },
 		{ type: 'delete', path: path.join(dir, 'code-handoff.html') },
 		{ type: 'delete', path: path.join(dir, 'code-handoff.md') }, // SoT markdown (+ derived HTML above)
+		{ type: 'delete', path: path.join(dir, 'feature-evidence.md') },
+		{ type: 'delete-dir', path: path.join(dir, 'evidence') },
 	];
 
 	for (const action of actions) {
@@ -49,7 +51,7 @@ function main() {
 			continue;
 		}
 
-		if (action.type === 'delete') {
+		if (action.type === 'delete' || action.type === 'delete-dir') {
 			if (!fs.existsSync(action.path)) {
 				if (dryRun) {
 					console.log(`skip delete (absent): ${path.relative(consumerRoot, action.path)}`);
@@ -58,6 +60,8 @@ function main() {
 			}
 			if (dryRun) {
 				console.log(`would delete: ${path.relative(consumerRoot, action.path)}`);
+			} else if (action.type === 'delete-dir') {
+				fs.rmSync(action.path, { recursive: true, force: true });
 			} else {
 				fs.unlinkSync(action.path);
 			}
@@ -66,7 +70,7 @@ function main() {
 
 	if (!dryRun) {
 		console.log(
-			'harness-reset: cleared .harness/state.md, .harness/qa-current.md; removed pr-body.md and code-handoff.md/.html if present.',
+			'harness-reset: cleared .harness/state.md, .harness/qa-current.md; removed pr-body.md, code-handoff.md/.html, and feature-evidence.md / evidence/ if present.',
 		);
 	}
 }

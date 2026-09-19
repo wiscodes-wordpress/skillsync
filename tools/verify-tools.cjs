@@ -105,6 +105,9 @@ function main() {
 	fs.writeFileSync(path.join(temp, '.harness', 'pr-body.md'), 'draft', 'utf8');
 	fs.writeFileSync(path.join(temp, '.harness', 'code-handoff.html'), 'walkthrough', 'utf8');
 	fs.writeFileSync(path.join(temp, '.harness', 'code-handoff.md'), 'legacy', 'utf8');
+	fs.writeFileSync(path.join(temp, '.harness', 'feature-evidence.md'), 'watch', 'utf8');
+	fs.mkdirSync(path.join(temp, '.harness', 'evidence'), { recursive: true });
+	fs.writeFileSync(path.join(temp, '.harness', 'evidence', 'save-draft.webm'), 'clip', 'utf8');
 	runTool(harnessReset, [temp]);
 
 	const stateFile = path.join(temp, '.harness', 'state.md');
@@ -122,6 +125,14 @@ function main() {
 	}
 	if (fs.existsSync(path.join(temp, '.harness', 'code-handoff.md'))) {
 		console.error('harness-reset: code-handoff.md (SoT) should be deleted');
+		failed = true;
+	}
+	if (fs.existsSync(path.join(temp, '.harness', 'feature-evidence.md'))) {
+		console.error('harness-reset: feature-evidence.md should be deleted');
+		failed = true;
+	}
+	if (fs.existsSync(path.join(temp, '.harness', 'evidence'))) {
+		console.error('harness-reset: evidence/ should be deleted');
 		failed = true;
 	}
 	console.log('OK: harness-reset integration');

@@ -10,7 +10,7 @@ Start a **new agent** at each phase. Pass **artifacts** (especially `.harness/st
 |-------|------------------|-------|
 | **Plan** | [`/ss-plan`](./ss-plan.md) | Optional [`/ss-to-issues`](./ss-to-issues.md) in the same plan agent if slicing |
 | **Implement** | [`/ss-implement`](./ss-implement.md) or [`/ss-loop`](./ss-loop.md) | Interactive vs AFK; loop = one agent per Remaining cycle |
-| **Done** | [`/ss-finish`](./ss-finish.md) | Review → fix → security → handoff → submit; close after merge |
+| **Done** | [`/ss-finish`](./ss-finish.md) | Review → fix → security → feature evidence → handoff? → submit; close after merge |
 
 ## How to use
 

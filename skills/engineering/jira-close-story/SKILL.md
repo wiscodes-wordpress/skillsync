@@ -4,7 +4,7 @@ description: >
   Close or transition Jira issues to Done after merge (or when updating the board):
   subtasks first when closing a parent, optional assignee and fix version updates,
   then transitions via Atlassian MCP. Clears local .harness handoff files and removes
-  pr-body.md and code-handoff.html on success.
+  pr-body.md, code-handoff.html, and feature-evidence artifacts on success.
   Use when user closes a Jira story/task, says post-merge Jira cleanup, /ss-close-story,
   or wants subtasks marked Done before the parent.
 ---
@@ -44,8 +44,9 @@ At repository root (adjust only if consumer docs define different paths):
 2. Write **empty** **`.harness/state.md`** and **`.harness/qa-current.md`** (normal file write — **not** via MCP).
 3. **Delete** **`.harness/pr-body.md`** if it exists (PR draft artifact from **`/ss-submit-pr`**; remove — do not empty).
 4. **Delete** **`.harness/code-handoff.html`** if it exists (human walkthrough from **`/ss-handoff`**; remove — do not empty). Also delete legacy **`.harness/code-handoff.md`** if present. Prefer **`harness-reset.cjs`**, which clears these.
+5. **Delete** **`.harness/feature-evidence.md`** and **`.harness/evidence/`** if present (video check from **`/ss-feature-evidence`**). `harness-reset.cjs` clears these.
 
-This clears planner/QA handoff context, PR body drafts, and code walkthroughs for the next slice.
+This clears planner/QA handoff context, PR body drafts, code walkthroughs, and feature clips for the next slice.
 
 ## Ask mode / no MCP / read-only
 
@@ -55,7 +56,7 @@ Print a **manual checklist** for the human:
 - [ ] Assignee / fix version per team policy (Jira UI or REST).
 - [ ] Transition issue(s) to Done.
 - [ ] Empty `.harness/state.md` and `.harness/qa-current.md` after Jira is correct.
-- [ ] Delete `.harness/pr-body.md` and `.harness/code-handoff.html` if present.
+- [ ] Delete `.harness/pr-body.md`, `.harness/code-handoff.html`, `.harness/feature-evidence.md`, and `.harness/evidence/` if present.
 
 ## Consumer wrappers
 

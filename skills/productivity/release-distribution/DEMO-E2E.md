@@ -8,6 +8,7 @@ Prefer Playwright (or equivalent) tags:
 
 - `@release` — included in the release reel set
 - `@demo` — alias / subset for marketing demos
+- Not `@evidence` — that tag is Story human-check ([`feature-video-evidence`](../../engineering/feature-video-evidence/SKILL.md))
 
 Example:
 

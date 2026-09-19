@@ -16,7 +16,7 @@ description: >
 **Does not:** Replace `/ss-review`, `/ss-security-audit`, open a PR, merge, or close Jira.  
 **Not the same as:** [`handoff`](../../productivity/handoff/SKILL.md) (agent→agent session dump) or [`journal-handoff`](../../personal/journal-handoff/SKILL.md) (Obsidian weekly).
 
-Invoke via **`/ss-handoff`**. Typical order: after `/ss-review` PASS (and ideally `/ss-security-audit`), **before** `/ss-submit-pr`.
+Invoke via **`/ss-handoff`**. Typical order: after `/ss-security-audit` PASS and `/ss-feature-evidence`, **before** `/ss-submit-pr`.
 
 **Presentation:** follow [HTML-REPORT.md](HTML-REPORT.md) for sections. Humans open the **derived HTML**; agents edit **Markdown only**.
 
@@ -97,6 +97,7 @@ Use when it clarifies structure. For **`#frontend`**: **Platform** line first; *
 
 | Command / skill | Relationship |
 |-----------------|--------------|
+| `/ss-feature-evidence` | Running-UI clip + watch card — complementary; this skill is the diff |
 | `/ss-review` | Critic PASS/FAIL — usually via `/ss-finish`; run before handoff when following ss-flow |
 | `/ss-security-audit` | PR security gate — ideally PASS before handoff or before submit |
 | `/ss-submit-pr` | Open PR; may reuse **Intent** from the HTML when drafting `.harness/pr-body.md` (Purpose / Changes only — not the whole handoff) |

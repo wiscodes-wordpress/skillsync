@@ -66,6 +66,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 - Write **empty** `.harness/state.md` and `.harness/qa-current.md`.
 - Delete `.harness/pr-body.md` if present (do not truncate to empty).
 - Delete `.harness/code-handoff.html` if present (do not truncate to empty). Also delete legacy `.harness/code-handoff.md` if present.
+- Delete `.harness/feature-evidence.md` and `.harness/evidence/` if present.
 - Exit `0` on success; non-zero on filesystem error.
 - `--dry-run` prints actions without writing.
 
@@ -278,6 +279,7 @@ Implement in order unless a slice is blocked. Each slice = one PR to **skillsync
 
 - [ ] Running twice is idempotent (empty files stay empty).
 - [ ] `pr-body.md` and `code-handoff.html` (and legacy `code-handoff.md`) removed when present; absent files do not error.
+- [ ] `feature-evidence.md` and `evidence/` removed when present; absent files do not error.
 - [ ] `--dry-run` makes no filesystem changes.
 - [ ] Documented in consumer-setup.md.
 

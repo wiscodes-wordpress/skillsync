@@ -18,7 +18,7 @@ Linking a **skill** is not the same as a slash command. **`ss-*`** is the filter
 
 | Belt | When | Commands |
 |------|------|----------|
-| **Story** (default) | Most days | `/ss-plan` → `/ss-implement` or `/ss-loop` → `/ss-review` → `/ss-security-audit` → `/ss-submit-pr` → `/ss-close-story` (+ optional `/ss-to-issues`) |
+| **Story** (default) | Most days | `/ss-plan` → `/ss-implement` or `/ss-loop` → `/ss-review` → `/ss-security-audit` → `/ss-feature-evidence` → `/ss-submit-pr` → `/ss-close-story` (+ optional `/ss-to-issues`, `/ss-handoff`) |
 | **Initiative** | Major / foggy feature | **`/ss-roadmap`** entry (wayfind → draft → lenses → publish Jira → `render-app-map.cjs`). Resume lenses via `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` |
 | **Ship** | After merge | `/ss-release` (+ distribution / marketing partials) |
 
@@ -35,6 +35,8 @@ Living architecture / UX / security plans use **Markdown as source of truth** un
   state.md / qa-current.md          # delivery-loop scratch (usually gitignored)
   code-handoff.md                   # optional PR walkthrough SoT (scratch)
   code-handoff.html                 # derived — open in browser
+  feature-evidence.md               # optional human watch card (scratch)
+  evidence/                         # Playwright/Cypress clips (gitignored)
   specs/                            # epic / story AC markdown (optional)
   release/                          # channel packs (optional / gitignored)
   initiatives/<slug>/
@@ -96,6 +98,7 @@ git submodule add https://github.com/wiscodes-wordpress/skillsync.git .cursor/ve
 | `ponytail` | `/ss-implement` |
 | `submit-github-pr` | `/ss-submit-pr` |
 | `code-handoff` | `/ss-handoff` (optional; human walkthrough before PR) |
+| `feature-video-evidence` | `/ss-feature-evidence` (after `/ss-security-audit`; Playwright clip + watch card) |
 | `jira-close-story` | `/ss-close-story` |
 | `to-issues` | `/ss-to-issues` (optional Story slice publish) |
 | `major-feature-roadmap` | `/ss-roadmap` draft |
@@ -123,6 +126,7 @@ Prefer this order so the palette reads by belt. Daily Story entry is **`/ss-flow
   "ss-finish.md",
   "ss-review.md",
   "ss-security-audit.md",
+  "ss-feature-evidence.md",
   "ss-handoff.md",
   "ss-submit-pr.md",
   "ss-close-story.md",
@@ -227,6 +231,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-review` | Critic / quality gate (leaf; usually via `/ss-finish`) |
 | `/ss-security-audit` | Security gate (scripts + agent) — after review, before PR |
 | `/ss-handoff` | Human code walkthrough → `.harness/code-handoff.md` + derived `.html` (optional; before PR) |
+| `/ss-feature-evidence` | Human feature check after audit PASS → Playwright `@evidence` clip + `.harness/feature-evidence.md` (before handoff / PR) |
 | `/ss-submit-pr` | Open GitHub PR (does not merge; requires Security Evidence PASS) |
 | `/ss-close-story` | Tracker Done + clear harness files (after merge) |
 | `/ss-release` | Post-ship go-to-market — brief → demo proof → channel pack → anti-slop (optional; not a PR gate). **`anti-slop`** also applies to delivery-loop prose (plans, HTML, issues) per harness ss-flow rule 7. |
@@ -285,7 +290,7 @@ Orientation: **`/ss-flow`** (Story) · **`commands/ss-workflow.md`** (all belts)
 
 ```text
 branch (consumer) → /ss-plan → /ss-to-issues? → /ss-implement | /ss-loop → /ss-review
-  → /ss-security-audit → /ss-handoff? → /ss-submit-pr → merge (consumer) → /ss-close-story
+  → /ss-security-audit → /ss-feature-evidence → /ss-handoff? → /ss-submit-pr → merge (consumer) → /ss-close-story
 ```
 
 `/ss-loop` is the away-from-keyboard (AFK) alternative to `/ss-implement` — see [`ss-loop.md`](./ss-loop.md).

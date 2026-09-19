@@ -6,7 +6,7 @@ Code work, delivery workflow, and technical review skills.
 
 | Belt | Skills (typical) |
 |------|------------------|
-| **Story** | `grill-tdd`, `tdd`, `ponytail`, `to-issues`, `submit-github-pr`, `jira-close-story` |
+| **Story** | `grill-tdd`, `tdd`, `ponytail`, `to-issues`, `submit-github-pr`, `code-handoff`, `feature-video-evidence`, `jira-close-story` |
 | **Initiative** | `wayfinder`, `major-feature-roadmap`, `arch-plan`, `ui-ux-planner`, `security-plan`, `app-map` |
 | **Ship** | (productivity) `anti-slop`, `release-distribution`, `release-marketing` |
 
@@ -34,6 +34,7 @@ Commands: type **`ss`** — daily Story [`/ss-flow`](../../commands/ss-flow.md);
 - **[ui-ux-planner](./ui-ux-planner/SKILL.md)** — Flows + surfaces; Markdown SoT before `/ss-plan` (`/ss-ui-ux-plan`).
 - **[security-plan](./security-plan/SKILL.md)** — Trust posture Markdown SoT; optional whole-plugin assess; does not replace `/ss-security-audit`.
 - **[code-handoff](./code-handoff/SKILL.md)** — Human walkthrough → `.harness/code-handoff.md` + derived HTML (`/ss-handoff`); before `/ss-submit-pr`.
+- **[feature-video-evidence](./feature-video-evidence/SKILL.md)** — Playwright (or existing browser E2E) clip + watch card (`/ss-feature-evidence`); human check of the running feature.
 - **[dependabot-batch-merge](./dependabot-batch-merge/SKILL.md)** — Batch-merge Dependabot PRs safely.
 - **[bulletproof-react](./bulletproof-react/SKILL.md)** — Feature-based React app architecture (shared → features → app); link when consumer has a React SPA/app.
 - **[frontend-react-best-practices](./frontend-react-best-practices/SKILL.md)** — React performance and composition patterns.

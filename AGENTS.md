@@ -17,6 +17,7 @@ This repository is the **shared home** for portable Cursor **Agent Skills**, **p
 
 - **GitNexus** (code knowledge graph + Cursor MCP) — optional beside `ss-*`; see **`docs/gitnexus.md`**. Commercial product use needs a commercial license from Akon Labs.
 - **`/ss-loop`** (AFK Remaining cycles via Paseo + Cursor) — optional beside interactive `/ss-implement`; see **`docs/ss-loop.md`**. When spawning Cursor agents through Paseo, enable Auto Accept at create (skill **`paseo-cursor-auto-accept`**); `/ss-loop` does this in code when Paseo is installed.
+- **`/ss-feature-evidence`** — optional Playwright (or existing browser E2E) clip + human watch card for one feature; see **`skills/engineering/feature-video-evidence`**. Not Ship launch demos.
 - **App map** — `.harness/app-map.html` via `tools/render-app-map.cjs` (deterministic grand plan; Initiative belt).
 - **Living plans** — Markdown SoT + `tools/render-plan-html.cjs` → derived HTML for humans (arch / UX / security / wayfinder / handoff). Optional IDE safety net: `tools/watch-plan-html.cjs` / `yarn plans:watch` (not default Story `yarn dev`).
 

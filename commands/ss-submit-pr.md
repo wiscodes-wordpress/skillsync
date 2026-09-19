@@ -2,7 +2,7 @@
 
 **REQUIRED:** terse PR body + writing rules in [`submit-github-pr`](../skills/engineering/submit-github-pr/SKILL.md); preflight `--full` before open. No harness dumps.
 
-**Phase: open PR** — follow [`harness/ss-flow.md`](../harness/ss-flow.md) (after critic PASS, **security PASS**, optional [`/ss-handoff`](./ss-handoff.md), or human sign-off). Usually via [`/ss-finish`](./ss-finish.md).
+**Phase: open PR** — follow [`harness/ss-flow.md`](../harness/ss-flow.md) (after critic PASS, **security PASS**, [`/ss-feature-evidence`](./ss-feature-evidence.md), optional [`/ss-handoff`](./ss-handoff.md), or human sign-off). Usually via [`/ss-finish`](./ss-finish.md).
 
 Opens a **GitHub pull request** from the **current branch**. **Does not merge.**
 
