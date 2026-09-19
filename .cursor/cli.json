@@ -49,6 +49,5 @@
 			"Shell(git push -f)",
 			"Shell(git reset --hard)"
 		]
-	},
-	"approvalMode": "auto-review"
+	}
 }
