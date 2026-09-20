@@ -3,7 +3,7 @@
  * Validate .harness/state.md section contract.
  *
  * Usage:
- *   node path/to/skillsync/tools/validate-state.cjs [/path/to/consumer-repo] [--mode plan|implement|review]
+ *   node path/to/skillsync/tools/validate-state.cjs [/path/to/consumer-repo] [--mode plan|implement|review|bug-fix]
  */
 
 const fs = require('node:fs');
@@ -77,6 +77,27 @@ function validate(content, mode) {
 		}
 	}
 
+	if (mode === 'bug-fix') {
+		if (!hasSection(content, 'Current Task')) {
+			errors.push('Missing required section: ## Current Task');
+		}
+		if (!hasSection(content, 'Root Cause')) {
+			errors.push('Missing required section: ## Root Cause');
+		}
+		if (!hasSection(content, 'Investigation Evidence')) {
+			errors.push('Missing required section: ## Investigation Evidence');
+		}
+		if (!hasSection(content, 'Verification Plan')) {
+			errors.push('Missing required section: ## Verification Plan');
+		}
+		if (!hasSection(content, 'Regression Evidence')) {
+			errors.push('Missing required section: ## Regression Evidence');
+		}
+		if (!hasSection(content, 'Surface-fix veto')) {
+			errors.push('Missing required section: ## Surface-fix veto');
+		}
+	}
+
 	return errors;
 }
 
@@ -87,8 +108,8 @@ function main() {
 	const file = statePath(consumerRoot);
 
 	assertOrExit(
-		['plan', 'implement', 'review'].includes(mode),
-		`Invalid --mode "${mode}". Use plan, implement, or review.`,
+		['plan', 'implement', 'review', 'bug-fix'].includes(mode),
+		`Invalid --mode "${mode}". Use plan, implement, review, or bug-fix.`,
 	);
 
 	if (!fs.existsSync(file)) {

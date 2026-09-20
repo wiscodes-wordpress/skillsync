@@ -6,7 +6,7 @@ This repository is the **shared home** for portable Cursor **Agent Skills**, **p
 
 - **Generic** skills under **`skills/`** with a **`SKILL.md`** entry point. Workflow and stack skills live in category folders: **`skills/engineering/`** (includes WordPress `wordpress-*` / `wp-*` packs), **`skills/productivity/`**, **`skills/personal/`**.
 - **Shared rules** under **`rules/`** (ss-* delivery voice, TypeScript, React, frontend testing conventions).
-- **Product-neutral commands** under **`commands/`** using the **`ss-*`** prefix (**s**kill**s**ync). Consumers symlink these into **`.cursor/commands/`** so Cursor discovers **`/ss-flow`** (Story: Plan → Implement → Done), **`/ss-finish`**, **`/ss-plan`**, **`/ss-implement`**, **`/ss-loop`**, **`/ss-workflow`** (belt index), Initiative/Ship commands, etc.
+- **Product-neutral commands** under **`commands/`** using the **`ss-*`** prefix (**s**kill**s**ync). Consumers symlink these into **`.cursor/commands/`** so Cursor discovers **`/ss-flow`** (Story: Plan → Implement → Done), **`/ss-bug-fix`** (root-cause bug fix), **`/ss-finish`**, **`/ss-plan`**, **`/ss-implement`**, **`/ss-loop`**, **`/ss-workflow`** (belt index), Initiative/Ship commands, etc.
 - **Harness skeletons** under **`harness/`** — **`harness/ss-flow.md`** is the belt map + context budget (distinct from slash **`/ss-flow`**); planner, generator, critic referenced by **`ss-*`** commands.
 
 ## What does *not* belong here
@@ -23,7 +23,7 @@ This repository is the **shared home** for portable Cursor **Agent Skills**, **p
 
 ## Delivery belts
 
-Type **`ss`** in Cursor to filter delivery commands. Default path is **Story** via **`/ss-flow`** (three fresh agents). **Initiative** (`/ss-roadmap`) and **Ship** (`/ss-release*`) are enter-when-needed — **`commands/ss-workflow.md`**.
+Type **`ss`** in Cursor to filter delivery commands. Default path is **Story** via **`/ss-flow`** (three fresh agents). **Bug** (`/ss-bug-fix`) when something is broken — lighter belt, no grill-tdd. **Initiative** (`/ss-roadmap`) and **Ship** (`/ss-release*`) are enter-when-needed — **`commands/ss-workflow.md`**.
 
 ## Consumer setup
 

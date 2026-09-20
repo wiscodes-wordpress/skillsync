@@ -6,6 +6,24 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 
 ## Belts
 
+### Bug (broken / regression)
+
+**Agent policy:** one session for fix + Done tail, or resume for review/PR. Pass **`.harness/state.md`**, not chat history.
+
+| Phase | Command | Harness (read one) | Skills |
+|-------|---------|-------------------|--------|
+| Branch | consumer wrapper | — | — |
+| **Fix** | `/ss-bug-fix` | [`harness-bug-fix.md`](./harness-bug-fix.md) | [`diagnose`](../skills/engineering/diagnose/SKILL.md) · [`ponytail`](../skills/engineering/ponytail/SKILL.md) on the fix diff |
+| **Done** | `/ss-review` → `/ss-security-audit` → `/ss-submit-pr` | [`harness-critic.md`](./harness-critic.md) · [`harness-security-audit.md`](./harness-security-audit.md) | — |
+
+**Enter Bug belt when:** reported defect, failing test, throw, or regression — not a new feature.
+
+**Skip Story plan/implement:** no `/ss-plan`, `/ss-implement`, or `/ss-feature-evidence` unless the user asks.
+
+**State:** `init-state.cjs --mode bug` · validate `validate-state.cjs --mode bug-fix`.
+
+**Investigation:** tagged `[DEBUG-*]` logs at hypothesis boundaries; capture console snippets in **Investigation Evidence**; remove debug before review.
+
 ### Story (default daily path)
 
 **Agent policy:** three fresh agents — see slash command [`/ss-flow`](../commands/ss-flow.md). Pass `.harness/state.md` (and evidence), not chat history.
@@ -114,6 +132,8 @@ Run from vendored **`tools/`** (see [`docs/consumer-setup.md`](../docs/consumer-
 | Grand plan / mind map | `render-app-map.cjs` (deterministic; do not freehand mind-map JSON) |
 | Plan (post-write) | `validate-state.cjs --mode plan` |
 | New story | `init-state.cjs --task "KEY title"` |
+| Bug fix state | `init-state.cjs --mode bug --task "KEY title"` |
+| Bug fix validate | `validate-state.cjs --mode bug-fix` |
 | Implement / review | `run-verification.cjs`, `tdd-audit.cjs`, `re-break.cjs` |
 | AFK implement | `ss-loop.cjs` (Paseo + Cursor; see [`docs/ss-loop.md`](../docs/ss-loop.md)) |
 | Security (PR gate) | `security-audit.cjs` (`--write-state`, `--set-phase-b`, `--check-state`) |

@@ -367,6 +367,21 @@ implementing
 	runTool(path.join(toolsDir, 'init-state.cjs'), [initConsumer], { expectFail: true });
 	console.log('OK: init-state writes skeleton and refuses overwrite');
 
+	const bugInitConsumer = makeTempConsumer();
+	runTool(path.join(toolsDir, 'init-state.cjs'), [
+		bugInitConsumer,
+		'--mode',
+		'bug',
+		'--task',
+		'DEMO-2 bug fixture',
+	]);
+	runTool(path.join(toolsDir, 'validate-state.cjs'), [
+		bugInitConsumer,
+		'--mode',
+		'bug-fix',
+	]);
+	console.log('OK: init-state bug mode + validate-state bug-fix mode');
+
 	const renderConsumer = makeTempConsumer();
 	fs.mkdirSync(path.join(renderConsumer, '.harness'), { recursive: true });
 	const bodyPath = runTool(path.join(toolsDir, 'render-pr-body.cjs'), [

@@ -21,7 +21,7 @@ Shared **Cursor Agent Skills**, **project rules**, **`ss-*` slash commands**, **
 | `tools/verify-commands.cjs` | Verify linked commands. |
 | `tools/harness-reset.cjs` | Clear `.harness/` handoff files after story close. |
 | `tools/validate-state.cjs` | Validate `.harness/state.md` section contract. |
-| `tools/init-state.cjs` | Write skeleton harness state for a new story. |
+| `tools/init-state.cjs` | Write skeleton harness state for a new story (`--mode story`) or bug fix (`--mode bug`). |
 | `tools/render-pr-body.cjs` / `open-pr.cjs` | Build PR body and open via `gh`. |
 | `tools/tdd-audit.cjs` | TDD hard gates (contract cards, tampering, RED evidence) before critic. |
 | `tools/run-verification.cjs` | Run Verification Plan commands from state. |

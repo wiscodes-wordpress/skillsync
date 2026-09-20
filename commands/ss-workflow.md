@@ -12,7 +12,17 @@ Consumer repos use **thin wrappers** (`qb-*`, `qp-*`, etc.) for tracker-specific
 
 ## Belts (not one flat checklist)
 
-Three altitudes. **Most days use Story only** via `/ss-flow`. Initiative and Ship are enter-when-needed.
+Four altitudes. **Most days use Story** via `/ss-flow`. **Bug** when something is broken. Initiative and Ship are enter-when-needed.
+
+### Bug — `/ss-bug-fix`
+
+| Phase | Command | Notes |
+|-------|---------|-------|
+| Branch | consumer wrapper | — |
+| **Fix** | [`ss-bug-fix`](./ss-bug-fix.md) | Repro → root cause → investigate → fix → regression — [`diagnose`](../skills/engineering/diagnose/SKILL.md) + [`harness-bug-fix.md`](../harness/harness-bug-fix.md) |
+| **Done** | review → security → PR (same session or resume) | Skip plan, feature evidence, handoff by default |
+
+Lighter than Story — no grill-tdd unless the bug needs multi-cycle contracts.
 
 ### Story (default) — `/ss-flow`
 
@@ -50,6 +60,7 @@ Not a PR gate. [`ss-release`](./ss-release.md), or partial [`ss-release-distribu
 | [`ss-flow.md`](../harness/ss-flow.md) | Belt map · context budget · Story agent policy |
 | [`harness-planner-tdd.md`](../harness/harness-planner-tdd.md) | Default planner |
 | [`harness-planner.md`](../harness/harness-planner.md) | Legacy feature-first |
+| [`harness-bug-fix.md`](../harness/harness-bug-fix.md) | Bug fix (`/ss-bug-fix`) |
 | [`harness-generator.md`](../harness/harness-generator.md) | Implement |
 | [`harness-loop.md`](../harness/harness-loop.md) | AFK implement (`/ss-loop`) |
 | [`harness-critic.md`](../harness/harness-critic.md) | Review (via `/ss-finish` or `/ss-review`) |

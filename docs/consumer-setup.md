@@ -218,7 +218,8 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | Command | Phase |
 |---------|--------|
 | `/ss-flow` | **Story spine** — three fresh agents: Plan → Implement → Done |
-| `/ss-workflow` | Belt index — Initiative / Ship entry; points at `/ss-flow` for daily Story |
+| `/ss-bug-fix` | **Bug belt** — repro → root cause → investigate → fix → regression → review → security → PR |
+| `/ss-workflow` | Belt index — Bug / Initiative / Ship entry; points at `/ss-flow` for daily Story |
 | `/ss-roadmap` | Initiative orchestrator — draft roadmap (story map + spec) → lens pack (arch / UX / security) → **then** publish Jira epics/stories → `/ss-plan` |
 | `/ss-arch-plan` | Architecture plan SoT (Markdown; HTML derived); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
 | `/ss-security-plan` | Security posture SoT (Markdown; HTML derived); optional whole-plugin **assess** — does **not** replace `/ss-security-audit` |

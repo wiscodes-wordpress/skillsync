@@ -8,6 +8,7 @@
 		"app-map",
 		"grill-tdd",
 		"ponytail",
+		"diagnose",
 		"tdd",
 		"submit-github-pr",
 		"code-handoff",
@@ -47,6 +48,7 @@
 	"linkedCommands": [
 		"ss-flow.md",
 		"ss-workflow.md",
+		"ss-bug-fix.md",
 		"ss-plan.md",
 		"ss-to-issues.md",
 		"ss-implement.md",

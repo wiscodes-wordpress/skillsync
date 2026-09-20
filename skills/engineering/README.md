@@ -7,6 +7,7 @@ Code work, delivery workflow, and technical review skills.
 | Belt | Skills (typical) |
 |------|------------------|
 | **Story** | `grill-tdd`, `tdd`, `ponytail`, `to-issues`, `submit-github-pr`, `code-handoff`, `feature-video-evidence`, `jira-close-story` |
+| **Bug** | `diagnose`, `ponytail` — via [`/ss-bug-fix`](../../commands/ss-bug-fix.md) |
 | **Initiative** | `wayfinder`, `major-feature-roadmap`, `arch-plan`, `ui-ux-planner`, `security-plan`, `app-map` |
 | **Ship** | (productivity) `anti-slop`, `release-distribution`, `release-marketing` |
 
