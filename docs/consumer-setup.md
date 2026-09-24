@@ -138,7 +138,8 @@ Prefer this order so the palette reads by belt. Daily Story entry is **`/ss-flow
   "ss-ui-ux-plan.md",
   "ss-release.md",
   "ss-release-distribution.md",
-  "ss-release-marketing.md"
+  "ss-release-marketing.md",
+  "ss-prod-pulse.md"
 ]
 ```
 

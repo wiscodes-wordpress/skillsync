@@ -37,6 +37,8 @@ Leaf Done commands ([`ss-review`](./ss-review.md), [`ss-security-audit`](./ss-se
 
 **Ad-hoc bug:** [`ss-bugfix`](./ss-bugfix.md) — instrument likely files, run the repro if the agent can, inspect logs, wait for apply. Not a Story phase.
 
+**Post-ship pulse:** [`ss-prod-pulse`](./ss-prod-pulse.md) — Sentry (if connected) + recent deploy → Findings / Things to note / Potential actions. Read-only.
+
 ### Initiative (major / foggy feature)
 
 **Entry:** [`ss-roadmap`](./ss-roadmap.md) — wayfind (local HTML) → draft initiative markdown → lens gates + pack → lock lenses → **publish Jira** → regenerate app map → hand off to `/ss-plan`.

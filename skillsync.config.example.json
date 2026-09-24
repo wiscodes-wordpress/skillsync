@@ -12,6 +12,8 @@
 		"diagnose",
 		"tdd",
 		"submit-github-pr",
+		"peer-review",
+		"production-pulse",
 		"code-handoff",
 		"feature-video-evidence",
 		"jira-close-story",
@@ -57,6 +59,8 @@
 		"ss-loop.md",
 		"ss-finish.md",
 		"ss-review.md",
+		"ss-peer-review.md",
+		"ss-prod-pulse.md",
 		"ss-security-audit.md",
 		"ss-feature-evidence.md",
 		"ss-handoff.md",
@@ -71,6 +75,12 @@
 		"ss-release-marketing.md",
 		"journal.md"
 	],
+	"sentry": {
+		"org": "",
+		"project": "",
+		"environment": "production",
+		"projects": []
+	},
 	"prBaseBranch": "main",
 	"issueKeyPattern": "^([A-Z][A-Z0-9]+-\\d+)[-/_.]?(.*)$",
 	"issueTracker": "github",

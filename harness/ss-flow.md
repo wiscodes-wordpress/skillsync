@@ -45,6 +45,14 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 
 **Legacy:** feature-first planning only → [`harness-planner.md`](./harness-planner.md) (skip grill-tdd).
 
+### Inbound review (someone else's pull request)
+
+| Phase | Command | Skill |
+|-------|---------|-------|
+| Peer review | `/ss-peer-review` | [`peer-review`](../skills/engineering/peer-review/SKILL.md) — reconstruct intent, read code around the diff, severity-ranked line comments, post only on human go |
+
+**Off the belts entirely** — no `.harness/state.md`, no PASS/FAIL, no branch of your own. `/ss-review` grades **your** generator output against a contract you wrote; `/ss-peer-review` reviews a colleague's change whose intent you must reconstruct. Never approves and never writes to the author's branch. Entry point with no argument: [`list-prs.cjs`](../tools/list-prs.cjs).
+
 ### Initiative (enter when major / foggy)
 
 | Phase | Command | Skills / tools |
@@ -65,6 +73,7 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 | Phase | Command | Skills |
 |-------|---------|--------|
 | Release / GTM | `/ss-release`, `/ss-release-distribution`, `/ss-release-marketing` | [`anti-slop`](../skills/productivity/anti-slop/SKILL.md) · [`release-distribution`](../skills/productivity/release-distribution/SKILL.md) · [`release-marketing`](../skills/productivity/release-marketing/SKILL.md) |
+| Prod pulse (optional) | `/ss-prod-pulse` | [`production-pulse`](../skills/engineering/production-pulse/SKILL.md) — Sentry if connected; Findings / Things to note / Potential actions |
 
 **Enter Ship when:** post-merge go-to-market. Does **not** block `/ss-submit-pr`.
 
