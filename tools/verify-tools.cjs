@@ -49,6 +49,8 @@ const REQUIRED_TOOLS = [
 	'lib/ss-tools.cjs',
 	'lib/plan-md.cjs',
 	'lib/plan-paths.cjs',
+	'ensure-skillsync.cjs',
+	'install-git-hooks.cjs',
 ];
 
 /**
@@ -1225,6 +1227,35 @@ implementing
 	fs.rmSync(preflightDiffConsumer, { recursive: true, force: true });
 	fs.rmSync(preflightNoE2eConsumer, { recursive: true, force: true });
 	fs.rmSync(preflightFullConsumer, { recursive: true, force: true });
+
+	const ensureConsumer = makeTempConsumer();
+	const ensureVendorRelative = '.cursor/vendor/skillsync';
+	fs.mkdirSync(path.join(ensureConsumer, '.cursor', 'commands'), {
+		recursive: true,
+	});
+	fs.cpSync(skillsyncRoot, path.join(ensureConsumer, ensureVendorRelative), {
+		recursive: true,
+	});
+	fs.writeFileSync(
+		path.join(ensureConsumer, 'skillsync.config.json'),
+		JSON.stringify(
+			{
+				vendorRoot: ensureVendorRelative,
+				linkedSkills: ['anti-slop'],
+				linkedRules: ['ss-delivery-voice.mdc'],
+				linkedCommands: ['ss-flow.md'],
+			},
+			null,
+			'\t',
+		) + '\n',
+		'utf8',
+	);
+	runTool(path.join(toolsDir, 'ensure-skillsync.cjs'), [ensureConsumer, '--quiet']);
+	runTool(path.join(toolsDir, 'verify-commands.cjs'), [ensureConsumer]);
+	runTool(path.join(toolsDir, 'verify-skills.cjs'), [ensureConsumer]);
+	runTool(path.join(toolsDir, 'verify-rules.cjs'), [ensureConsumer]);
+	console.log('OK: ensure-skillsync links ss-* assets');
+	fs.rmSync(ensureConsumer, { recursive: true, force: true });
 
 	if (failed) {
 		console.error('');

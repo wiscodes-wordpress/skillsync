@@ -1,5 +1,6 @@
 {
 	"vendorRoot": ".cursor/vendor/skillsync",
+	"vendorGitUrl": "https://github.com/wiscodes-wordpress/skillsync.git",
 	"linkMode": "symlink",
 	"linkedSkills": [
 		"arch-plan",

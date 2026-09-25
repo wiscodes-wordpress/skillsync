@@ -200,6 +200,46 @@ You can wire these into `package.json` (chaining is typical):
 
 Omit `link-rules` / `verify-rules` if `linkedRules` is empty; omit `link-commands` / `verify-commands` if `linkedCommands` is empty.
 
+## Worktrees and Paseo (keep `/ss-*` on every checkout)
+
+Git worktrees (including **Paseo** `isolation: worktree`) copy **tracked** files only. Gitignored **`.cursor/vendor/skillsync`** and symlinked **`.cursor/commands/ss-*.md`** are **local** — a new worktree starts without `/ss-*` until you re-link.
+
+**One-time setup** (consumer repo root):
+
+```bash
+node .cursor/vendor/skillsync/tools/install-git-hooks.cjs .
+```
+
+That installs a shared **`post-checkout`** hook (all worktrees of the repo). Each checkout / worktree add runs **`ensure-skillsync.cjs`** quietly.
+
+**Also wire postinstall** so the first `yarn` in a worktree heals even before a hook runs:
+
+```json
+{
+	"scripts": {
+		"postinstall": "node ./scripts/ensure-skillsync.cjs",
+		"skillsync:heal": "node ./.cursor/vendor/skillsync/tools/ensure-skillsync.cjs .",
+		"skillsync:hooks": "node ./.cursor/vendor/skillsync/tools/install-git-hooks.cjs ."
+	}
+}
+```
+
+Keep a thin **`scripts/ensure-skillsync.cjs`** in the consumer that delegates to the vendored tool when present, or bootstraps the submodule first (see **`tools/ensure-skillsync.cjs`** in this repo).
+
+**Vendor bootstrap order** (`ensure-skillsync.cjs`):
+
+1. Submodule init when **`.gitmodules`** lists `vendorRoot`
+2. Symlink vendor from **another worktree** of the same repo (shares one checkout — typical when the main tree already has vendor)
+3. Shallow **`git clone`** when **`vendorGitUrl`** is set, or when there is no submodule and clone is needed
+
+Optional **`postLink`** in `skillsync.config.json` — shell commands after link scripts (e.g. consumer harness symlinks):
+
+```json
+"postLink": ["node ./scripts/skillsync-link-harness.cjs ."]
+```
+
+Manual heal: **`yarn skillsync:heal`** or **`yarn skillsync:link`**.
+
 ## Symlink confidence checklist
 
 - Cursor documents discovery under `.cursor/skills/`, but does not explicitly guarantee every internal tool path follows symlinks.
