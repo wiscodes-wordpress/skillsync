@@ -40,7 +40,7 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 | → Security gate | `/ss-security-audit` | [`harness-security-audit.md`](./harness-security-audit.md) | optional: linked `wordpress-security-validation`; DB: `postgresql-security-best-practices`, `supabase-security`; FE: [fallow](https://github.com/fallow-rs/fallow) when installed |
 | → Feature video | `/ss-feature-evidence` | — | [`feature-video-evidence`](../skills/engineering/feature-video-evidence/SKILL.md) — after audit PASS; clip + `.harness/feature-evidence.md`; skip if no UI / no browser E2E |
 | → Human walkthrough (optional) | `/ss-handoff` | — | [`code-handoff`](../skills/engineering/code-handoff/SKILL.md) — `.harness/code-handoff.html`; before `/ss-submit-pr` |
-| → PR | `/ss-submit-pr` | — | linked PR skills; **stop for merge** |
+| → PR | `/ss-submit-pr` | — | linked PR skills; watch head-branch CI and push fix commits; **stop for merge** |
 | → Close (after merge) | `/ss-close-story` | — | linked Jira/close skills; harness reset |
 
 **Legacy:** feature-first planning only → [`harness-planner.md`](./harness-planner.md) (skip grill-tdd).

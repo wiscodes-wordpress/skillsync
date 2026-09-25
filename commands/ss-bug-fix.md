@@ -26,7 +26,7 @@ After fix + regression evidence in state:
 
 1. [`/ss-review`](./ss-review.md) — critic; on FAIL, fix scoped to findings, re-review until PASS.
 2. [`/ss-security-audit`](./ss-security-audit.md) — when vendored; required before PR.
-3. [`/ss-submit-pr`](./ss-submit-pr.md) — PR body must include **Root cause** (symptom + mechanism). Stop for merge.
+3. [`/ss-submit-pr`](./ss-submit-pr.md) — PR body must include **Root cause** (symptom + mechanism). That command watches CI. Stop for merge.
 
 Close tracker after merge via consumer wrapper or [`/ss-close-story`](./ss-close-story.md).
 

@@ -279,7 +279,7 @@ Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared co
 | `/ss-security-audit` | Security gate (scripts + agent) — after review, before PR |
 | `/ss-handoff` | Human code walkthrough → `.harness/code-handoff.md` + derived `.html` (optional; before PR) |
 | `/ss-feature-evidence` | Human feature check after audit PASS → Playwright `@evidence` clip + `.harness/feature-evidence.md` (before handoff / PR) |
-| `/ss-submit-pr` | Open GitHub PR (does not merge; requires Security Evidence PASS) |
+| `/ss-submit-pr` | Open GitHub PR, then watch head-branch CI and push fix commits (does not merge; requires Security Evidence PASS) |
 | `/ss-close-story` | Tracker Done + clear harness files (after merge) |
 | `/ss-release` | Post-ship go-to-market — brief → demo proof → channel pack → anti-slop (optional; not a PR gate). **`anti-slop`** also applies to delivery-loop prose (plans, HTML, issues) per harness ss-flow rule 7. |
 | `/ss-release-distribution` | Legit seed + tagged E2E clips/screenshots → proof on brief |

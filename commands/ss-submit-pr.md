@@ -39,6 +39,8 @@ In **Ask** mode, print the skill checklist and exact tool commands.
 
 Consumer wrappers (e.g. `qp-submit-pr` on Lifeway) add workplace extras (DCD checklist, draft, Jira `Ready for Review`) **after** this shared flow — see [`docs/consumer-setup.md`](../docs/consumer-setup.md) → **Product PR wrappers**.
 
-**Optional — journal handoff:** If consumer `skillsync.config.json` has `journal.enabled` (or `JOURNAL_HANDOFF=1` + vault), after the PR URL is printed follow [`journal-handoff`](../skills/personal/journal-handoff/SKILL.md) with `mode: submit-pr` (weekly note only; do not mark todos done).
+**Optional — journal handoff:** If consumer `skillsync.config.json` has `journal.enabled` (or `JOURNAL_HANDOFF=1` + vault), after the PR URL is printed follow [`journal-handoff`](../skills/personal/journal-handoff/SKILL.md) with `mode: submit-pr` (weekly note only; do not mark todos done). Do this before the CI watch ends the turn.
+
+**Watch CI (required after the PR URL):** follow [Watch CI](../skills/engineering/submit-github-pr/SKILL.md#watch-ci) in [`submit-github-pr`](../skills/engineering/submit-github-pr/SKILL.md). Subscribe this chat to GitHub CI on the PR **head branch**, say which branch you are waiting on, and end the turn. On red, read the failing log, fix only what this PR broke, verify that check locally, then commit and push (no force-push). On green, report it and do not merge. Skip when the human said `--no-ci-watch` / "don't watch CI", this is Ask mode, the PR is from a fork, or `subscribe_github_ci` is unavailable — say that CI was not watched.
 
 Available as `/ss-submit-pr` when linked into **`.cursor/commands/`** (`docs/consumer-setup.md`).

@@ -12,9 +12,9 @@ Runs the post-implement leaf commands **in order**. Prefer this over opening fiv
 2. [`/ss-security-audit`](./ss-security-audit.md) — required before PR when vendored.
 3. [`/ss-feature-evidence`](./ss-feature-evidence.md) — after audit PASS; skip if no UI, no browser E2E, or the human already saw the feature.
 4. [`/ss-handoff`](./ss-handoff.md) — optional; skip if the human already knows the diff.
-5. [`/ss-submit-pr`](./ss-submit-pr.md) — open PR; **stop here** and report the PR URL.
+5. [`/ss-submit-pr`](./ss-submit-pr.md) — open PR, report the URL, then watch CI on the head branch and push fix commits until green or blocked.
 
-Do not merge. Do not close the tracker yet.
+Do not merge. Do not close the tracker yet. Stay in this session for the CI result.
 
 ## After merge (resume)
 
