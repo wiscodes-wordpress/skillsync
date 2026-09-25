@@ -1,0 +1,6 @@
+{
+  "id": "skillsync-delivery",
+  "requirements": {
+    "paseo": ">=0.9.0"
+  }
+}

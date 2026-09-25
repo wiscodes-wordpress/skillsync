@@ -10,6 +10,8 @@
 
 **Optional — `/ss-loop`:** AFK Remaining-cycle implement via Paseo + Cursor. Setup: [`ss-loop.md`](./ss-loop.md).
 
+**Optional — Paseo Story buttons:** One-tap `/ss-plan` · `/ss-implement` · `/ss-loop` · `/ss-finish` via the **skillsync-delivery** plugin (Paseo 0.9+). Install: [`paseo-delivery-plugin.md`](./paseo-delivery-plugin.md).
+
 **Permissions popups:** When using **Paseo + Cursor**, enable Auto Accept at spawn (`settings.features.auto_accept` on MCP create, or `ss-loop` / `paseo-set-feature.cjs`). Skill: `paseo-cursor-auto-accept`. Fallback: `paseo-permit-watch.cjs`. Plain Cursor IDE chats skip this. Details: [`ss-loop.md` Permissions](./ss-loop.md#permissions-afk-without-babysitting-prompts).
 
 ## Delivery belts (type `ss` to filter)

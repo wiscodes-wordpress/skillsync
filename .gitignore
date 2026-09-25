@@ -23,3 +23,6 @@
 # OS / editor
 .DS_Store
 *.swp
+
+# Paseo plugin local installs
+node_modules/
