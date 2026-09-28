@@ -133,6 +133,8 @@ node tools/journal-standup.cjs
 node tools/journal-standup.cjs --date YYYY-MM-DD
 ```
 
+The vault is outside the repo, so run journal CLIs **unsandboxed** — a sandboxed shell fails the write with `EPERM: operation not permitted` on the target note.
+
 3. Writes `Journal/Standup/YYYY/YYYY-MM-DD.md`:
    - **`## Focus`** — from `planning.json`: **work** track + status **`in progress`** (Lifeway only; rebuilt every regen; empty → `(none in progress)`)
    - Yesterday / Today / Blockers / Talking points — from weekly Daily log (**Work + Meetings**). Today includes meetings that are not blockers; lines matching “things to talk” go to Talking points only.

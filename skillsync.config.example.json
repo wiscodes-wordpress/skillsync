@@ -45,6 +45,8 @@
 	"linkedRules": [
 		"ss-delivery-voice.mdc",
 		"typescript-ai-rules.mdc",
+		"frontend-engineering.mdc",
+		"backend-engineering.mdc",
 		"react-patterns.mdc",
 		"frontend-testing.mdc",
 		"journal-vault-privacy.mdc"

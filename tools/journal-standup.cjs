@@ -231,6 +231,24 @@ ${bullets(linkifyList(talkingPoints), '(none)')}
 	};
 }
 
+/**
+ * The vault lives outside the repo, so a sandboxed shell fails the write with a
+ * bare EPERM that reads like a corrupt note rather than a permission gate.
+ *
+ * @param {unknown} err
+ */
+function errorMessage(err) {
+	const e = /** @type {NodeJS.ErrnoException} */ (err);
+	if (e && (e.code === 'EPERM' || e.code === 'EACCES')) {
+		return [
+			`Cannot write ${e.path || 'the standup note'} (${e.code}).`,
+			'The vault is outside this repo, so a sandboxed shell cannot write to it.',
+			'Re-run with write access to the vault path, and check Google Drive is mounted.',
+		].join('\n');
+	}
+	return e instanceof Error ? e.message : String(err);
+}
+
 function main() {
 	const { vault, date } = parseArgs(process.argv.slice(2));
 	const target = date ? new Date(`${date}T12:00:00`) : new Date();
@@ -247,7 +265,7 @@ function main() {
 			`From weekly ${result.weeklyPath} · Focus ${result.focusCount} in progress`,
 		);
 	} catch (err) {
-		console.error(err instanceof Error ? err.message : err);
+		console.error(errorMessage(err));
 		process.exit(1);
 	}
 }
