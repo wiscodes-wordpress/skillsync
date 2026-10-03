@@ -21,6 +21,7 @@ Linking a **skill** is not the same as a slash command. **`ss-*`** is the filter
 | Belt | When | Commands |
 |------|------|----------|
 | **Story** (default) | Most days | `/ss-plan` → `/ss-implement` or `/ss-loop` → `/ss-review` → `/ss-security-audit` → `/ss-feature-evidence` → `/ss-submit-pr` → `/ss-close-story` (+ optional `/ss-to-issues`, `/ss-handoff`) |
+| **Epic** | One tracker epic, many stories | **`/ss-epic-orchestrator`** — Paseo worktrees + Story phases; one localhost preview before each PR |
 | **Initiative** | Major / foggy feature | **`/ss-roadmap`** entry (wayfind → draft → lenses → publish Jira → `render-app-map.cjs`). Resume lenses via `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` |
 | **Ship** | After merge | `/ss-release` (+ distribution / marketing partials) |
 
@@ -134,6 +135,7 @@ Prefer this order so the palette reads by belt. Daily Story entry is **`/ss-flow
   "ss-handoff.md",
   "ss-submit-pr.md",
   "ss-close-story.md",
+  "ss-epic-orchestrator.md",
   "ss-roadmap.md",
   "ss-arch-plan.md",
   "ss-security-plan.md",
@@ -258,13 +260,14 @@ For personal journal privacy, also link **`journal-vault-privacy.mdc`** and keep
 
 ## Slash commands and `ss-*`
 
-Cursor discovers slash commands from **`.cursor/commands/*.md`** only. Shared commands use the **`ss-*`** prefix and live under **`commands/`** here. List basenames in **`linkedCommands`** and run **`link-commands.cjs`** / **`verify-commands.cjs`**.
+Cursor discovers slash commands from **`.cursor/commands/*.md`**. Claude Code / Paseo Claude use **`.claude/commands/*.md`**. Shared commands use the **`ss-*`** prefix and live under **`commands/`** here. List basenames in **`linkedCommands`** and run **`link-commands.cjs`** / **`verify-commands.cjs`** (both trees).
 
 | Command | Phase |
 |---------|--------|
 | `/ss-flow` | **Story spine** — three fresh agents: Plan → Implement → Done |
 | `/ss-bug-fix` | **Bug belt** — repro → root cause → investigate → fix → regression → review → security → PR |
 | `/ss-workflow` | Belt index — Bug / Initiative / Ship entry; points at `/ss-flow` for daily Story |
+| `/ss-epic-orchestrator` | **Epic belt** — one tracker epic; Paseo worktrees; invoke Story `/ss-*` per story; human localhost preview before PR |
 | `/ss-roadmap` | Initiative orchestrator — draft roadmap (story map + spec) → lens pack (arch / UX / security) → **then** publish Jira epics/stories → `/ss-plan` |
 | `/ss-arch-plan` | Architecture plan SoT (Markdown; HTML derived); epic keys join Jira; refresh status on run — before `/ss-plan` when structure is in flux |
 | `/ss-security-plan` | Security posture SoT (Markdown; HTML derived); optional whole-plugin **assess** — does **not** replace `/ss-security-audit` |

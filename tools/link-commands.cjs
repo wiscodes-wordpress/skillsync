@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 /**
- * Links (or copies) shared Cursor slash-command bodies (`.md`) from a vendored
- * skillsync checkout into the consumer's `.cursor/commands/` so Cursor discovers them.
- *
- * Cursor discovers project commands from `.cursor/commands/` — not from arbitrary
- * paths under `vendor/`. Same pattern as skills and rules.
+ * Links (or copies) shared slash-command bodies (`.md`) from a vendored
+ * skillsync checkout into the consumer's `.cursor/commands/` (Cursor) and
+ * `.claude/commands/` (Claude Code / Paseo Claude).
  *
  * Usage:
  *   node path/to/skillsync/tools/link-commands.cjs /path/to/consumer-repo
@@ -115,8 +113,13 @@ function main() {
 
 	ensureCommandsVendorPresent(vendorRoot);
 
-	const cursorCommandsRoot = path.join(consumerRoot, '.cursor', 'commands');
-	fs.mkdirSync(cursorCommandsRoot, { recursive: true });
+	const commandRoots = [
+		path.join(consumerRoot, '.cursor', 'commands'),
+		path.join(consumerRoot, '.claude', 'commands'),
+	];
+	for (const root of commandRoots) {
+		fs.mkdirSync(root, { recursive: true });
+	}
 
 	for (const name of linkedCommands) {
 		if (name.includes('/') || name.includes('..')) {
@@ -126,16 +129,18 @@ function main() {
 			process.exit(1);
 		}
 		const fromFile = path.join(vendorRoot, 'commands', name);
-		const toFile = path.join(cursorCommandsRoot, name);
-		linkOrCopyCommandFile(fromFile, toFile, linkMode);
-		console.log(
-			`${linkMode === 'copy' ? 'copied' : 'linked'} command: ${name} → .cursor/commands/${name}`,
-		);
+		for (const root of commandRoots) {
+			const toFile = path.join(root, name);
+			linkOrCopyCommandFile(fromFile, toFile, linkMode);
+			console.log(
+				`${linkMode === 'copy' ? 'copied' : 'linked'} command: ${name} → ${path.relative(consumerRoot, toFile)}`,
+			);
+		}
 	}
 
 	console.log('');
 	console.log(
-		'Next: run verify-commands.cjs, reload Cursor, and confirm slash commands (e.g. /ss-plan).',
+		'Next: run verify-commands.cjs, reload Cursor/Claude, and confirm slash commands (e.g. /ss-plan).',
 	);
 }
 

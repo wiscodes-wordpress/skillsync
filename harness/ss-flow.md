@@ -53,6 +53,17 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 
 **Off the belts entirely** — no `.harness/state.md`, no PASS/FAIL, no branch of your own. `/ss-review` grades **your** generator output against a contract you wrote; `/ss-peer-review` reviews a colleague's change whose intent you must reconstruct. Never approves and never writes to the author's branch. Entry point with no argument: [`list-prs.cjs`](../tools/list-prs.cjs).
 
+### Epic (one epic, many stories)
+
+**Agent policy:** one Paseo orchestrator. Each story still uses the Story belt (fresh plan / implement / done). Pass **`.harness/epics/current.json`**, not chat history. Per-story contract stays that worktree’s `.harness/state.md`.
+
+| Phase | Command | Notes |
+|-------|---------|--------|
+| Orchestrate | `/ss-epic-orchestrator` | One epic at a time. Max two non-overlapping implementers. One localhost preview before each `/ss-submit-pr`. |
+| Story phases | `/ss-plan` → … → `/ss-close-story` | Unchanged. Do **not** run `/ss-loop` on the epic (AFK is one-story). |
+
+**Enter Epic when:** the human named a tracker epic and wants Paseo to walk its stories. **Skip** and stay on Story when there is only one issue.
+
 ### Initiative (enter when major / foggy)
 
 | Phase | Command | Skills / tools |
