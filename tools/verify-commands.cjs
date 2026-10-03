@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Verifies skillsync-linked command `.md` files resolve under `.cursor/commands/`.
- * Run after link-commands.cjs.
+ * Verifies skillsync-linked command `.md` files resolve under `.cursor/commands/`
+ * and `.claude/commands/`. Run after link-commands.cjs.
  *
  * Usage:
  *   node path/to/skillsync/tools/verify-commands.cjs /path/to/consumer-repo
@@ -41,28 +41,32 @@ function main() {
 	let failed = false;
 
 	for (const name of linkedCommands) {
-		const commandFile = path.join(consumerRoot, '.cursor', 'commands', name);
+		for (const relDir of ['.cursor/commands', '.claude/commands']) {
+			const commandFile = path.join(consumerRoot, relDir, name);
 
-		if (!fs.existsSync(commandFile)) {
-			console.error(`MISSING: ${path.relative(consumerRoot, commandFile)}`);
-			failed = true;
-			continue;
+			if (!fs.existsSync(commandFile)) {
+				console.error(`MISSING: ${path.relative(consumerRoot, commandFile)}`);
+				failed = true;
+				continue;
+			}
+
+			let realFile;
+			try {
+				realFile = fs.realpathSync(commandFile);
+			} catch {
+				console.error(
+					`BROKEN LINK: ${path.relative(consumerRoot, commandFile)}`,
+				);
+				failed = true;
+				continue;
+			}
+
+			const stat = fs.lstatSync(commandFile);
+			const mode = stat.isSymbolicLink() ? 'symlink' : 'file';
+			console.log(
+				`OK (${mode}): ${relDir}/${name} → ${path.relative(consumerRoot, realFile)}`,
+			);
 		}
-
-		let realFile;
-		try {
-			realFile = fs.realpathSync(commandFile);
-		} catch {
-			console.error(`BROKEN LINK: ${path.relative(consumerRoot, commandFile)}`);
-			failed = true;
-			continue;
-		}
-
-		const stat = fs.lstatSync(commandFile);
-		const mode = stat.isSymbolicLink() ? 'symlink' : 'file';
-		console.log(
-			`OK (${mode}): ${name} → ${path.relative(consumerRoot, realFile)}`,
-		);
 	}
 
 	if (failed) {
