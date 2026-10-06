@@ -45,6 +45,8 @@ Commands: type **`ss`** — daily Story [`/ss-flow`](../../commands/ss-flow.md);
 - **[jira-close-story](./jira-close-story/SKILL.md)** — Close Jira stories and reset harness state (MCP).
 - **[major-feature-roadmap](./major-feature-roadmap/SKILL.md)** — Multi-epic initiative planning with story map, initiative spec, and Jira epic/story publish via MCP.
 - **[ponytail](./ponytail/SKILL.md)** — Lazy senior dev: YAGNI ladder, stdlib first, shortest diff ([upstream](https://github.com/DietrichGebert/ponytail)). Wired into **`/ss-implement`**.
+- **[peer-review](./peer-review/SKILL.md)** — Review a colleague's PR: intent, code around the diff, severity-ranked comments posted only on a go (`/ss-peer-review`).
+- **[review-patterns](./review-patterns/SKILL.md)** — Mine merged-PR reviews into anonymous, portable team review principles for the peer-review rubric (`/ss-review-patterns`).
 - **[pr-review](./pr-review/SKILL.md)** — Structured pull request review workflow.
 - **[submit-github-pr](./submit-github-pr/SKILL.md)** — Open a GitHub PR via `gh`, then watch head-branch CI and push fix commits.
 - **[typescript-react-reviewer](./typescript-react-reviewer/SKILL.md)** — TypeScript + React code review expert.

@@ -133,7 +133,7 @@ Present the review **in chat first**, in this shape:
 |---|----------|-----------|---------|---------------|
 
 ### Draft comments
-<each comment exactly as it would post, with its file:line anchor>
+<each comment exactly as it would post, with its file:line anchor — see Comment shape below>
 
 ### Verification
 - Ran: <commands + result>
@@ -148,20 +148,45 @@ Present the review **in chat first**, in this shape:
 
 Findings first, change summary last or not at all — the author already knows what they wrote.
 
+### Comment shape
+
+Each inline comment is what a teammate would type, not a report. Run it through [`anti-slop`](../../productivity/anti-slop/SKILL.md) before showing the draft.
+
+- **Visible part: one to three sentences.** Severity label, then the concern in plain words, then the consequence if it isn't obvious. Lead with a question when you're inferring intent (see the rubric's [Team review patterns](REVIEW-RUBRIC.md#team-review-patterns)). No headers, no bullet lists, no restating the diff.
+- **Fix prompt: blocking and should-fix only.** Append a collapsed block the author can paste into whichever coding agent they use (Claude, Cursor, Kiro, …). It must stand alone — the session starts with no review context — so carry the location, the problem, the reason, the fix direction, and how to tell it's done. Five lines at most. Questions and nits get no prompt: a question needs the author's answer first, and a small concrete fix is better as a ```suggestion block.
+
+````markdown
+**should-fix:** Should this fall back to the cached profile when the fetch fails? Right now a timeout leaves the screen blank with no retry.
+
+<details><summary>Agent prompt</summary>
+
+```text
+PR #<n>, <path>:<line>. When <fetch> fails, the screen renders blank and never retries.
+Show the cached profile if one exists, otherwise the shared error state with a retry action.
+Read this comment's thread on the PR first in case the author already replied.
+Keep the change to this failure path. Done when a test covers fetch failure with and without a cached profile.
+```
+
+</details>
+````
+
+The prompt names files, functions and behaviors from the diff, never the reviewer or the author. Don't write "as an AI" or "I noticed"; write the finding.
+
 Stop there. On an explicit go, post:
 
 ```bash
-# line-anchored comments, one review
-gh api repos/{owner}/{repo}/pulls/<n>/reviews \
-  -f event=COMMENT -f body="<summary>" \
-  -f 'comments[][path]=<file>' -F 'comments[][line]=<line>' -f 'comments[][body]=<text>'
+# line-anchored comments, one review — build the payload as JSON so multi-line
+# bodies with fix prompts and nested backticks survive intact
+#   <tmp>/review.json: {"event":"COMMENT","body":"<summary>",
+#     "comments":[{"path":"<file>","line":<line>,"side":"RIGHT","body":"<text>"}]}
+gh api repos/{owner}/{repo}/pulls/<n>/reviews --input <tmp>/review.json
 
 # or a single summary review
 gh pr review <n> --comment --body-file <tmp>/review.md
 gh pr review <n> --request-changes --body-file <tmp>/review.md
 ```
 
-Write bodies via a temp file, never inline heredocs with unescaped backticks. Post as **one review**, not a burst of separate comments. If the human edits or drops findings, post the edited set and nothing else.
+Write the payload with a script or `jq` (e.g. `jq -n --rawfile b body.md ...`), never a hand-escaped heredoc. Post as **one review**, not a burst of separate comments. If the human edits or drops findings, post the edited set and nothing else.
 
 `--approve` is not yours to run, even on a go for the others: if the human wants an approval, tell them to click it or run `gh pr review <n> --approve` themselves.
 
@@ -172,5 +197,6 @@ You are a colleague, not a gate. Concretely:
 - Ask about intent where you suspect a mistake but can't prove one: *"Was the `null` case meant to fall through here? A caller in `x.ts:88` passes undefined."* Never *"you forgot to handle null."*
 - Attack the code, never the author. No "sloppy", "obviously", "as anyone knows".
 - Prefix optional things with `nit:` so they are visibly ignorable, and honor the budget in the rubric.
-- Praise at most once, specifically, and only for something non-obvious. Generic "great work!" reads as filler.
+- Praise specifically, on the line where it happens (a cleanup, a useful helper, a good test). Generic "great work!" reads as filler.
+- Phrase-level habits mined from real reviews live in the rubric's [Team review patterns](REVIEW-RUBRIC.md#team-review-patterns) — match them.
 - Prose follows [`anti-slop`](../../productivity/anti-slop/SKILL.md): concrete paths and behaviors, abbreviations expanded on first use, no hype.

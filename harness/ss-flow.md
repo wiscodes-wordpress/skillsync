@@ -50,6 +50,7 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 | Phase | Command | Skill |
 |-------|---------|-------|
 | Peer review | `/ss-peer-review` | [`peer-review`](../skills/engineering/peer-review/SKILL.md) — reconstruct intent, read code around the diff, severity-ranked line comments, post only on human go |
+| Rubric upkeep (occasional) | `/ss-review-patterns` | [`review-patterns`](../skills/engineering/review-patterns/SKILL.md) — mine merged-PR reviews into anonymous team principles for the peer-review rubric |
 
 **Off the belts entirely** — no `.harness/state.md`, no PASS/FAIL, no branch of your own. `/ss-review` grades **your** generator output against a contract you wrote; `/ss-peer-review` reviews a colleague's change whose intent you must reconstruct. Never approves and never writes to the author's branch. Entry point with no argument: [`list-prs.cjs`](../tools/list-prs.cjs).
 

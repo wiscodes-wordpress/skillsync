@@ -46,6 +46,8 @@ const REQUIRED_TOOLS = [
 	'init-feature-pack.cjs',
 	'validate-feature-pack.cjs',
 	'render-app-map.cjs',
+	'mine-review-patterns.cjs',
+	'lib/review-scrub.cjs',
 	'lib/ss-tools.cjs',
 	'lib/plan-md.cjs',
 	'lib/plan-paths.cjs',
@@ -142,6 +144,51 @@ function main() {
 
 	runTool(path.join(toolsDir, 'bugfix-debug-log.cjs'), ['--self-test']);
 	console.log('OK: bugfix-debug-log self-test');
+
+	const { scrubText, nameTokens, hashToken } = require('./lib/review-scrub.cjs');
+	const reviewNames = nameTokens(['jane-doe42', 'Jane Doe', 'copilot-pull-request-reviewer']);
+	const scrubbed = scrubText(
+		'@jane-doe42 see ABC-123 at https://x.example/y, token: abcd1234, cc jane@x.io ```const a = 1``` per Jane; a separate request from 3f9c2a1b',
+		reviewNames,
+		['acme'],
+	);
+	for (const leak of ['jane', 'ABC-123', 'https', 'abcd1234', 'const a', '3f9c2a1b']) {
+		if (scrubbed.toLowerCase().includes(leak.toLowerCase())) {
+			console.error(`review-scrub: leaked "${leak}" in: ${scrubbed}`);
+			failed = true;
+		}
+	}
+	if (!scrubbed.includes('separate request')) {
+		console.error(`review-scrub: over-redacted a role word in: ${scrubbed}`);
+		failed = true;
+	}
+	const reviewDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ss-review-patterns-'));
+	const salt = 'fixture';
+	const corpusPath = path.join(reviewDir, 'corpus.json');
+	fs.writeFileSync(
+		corpusPath,
+		JSON.stringify({
+			meta: { salt, nameHashes: reviewNames.map((n) => hashToken(salt, n)), termHashes: [hashToken(salt, 'acme')] },
+			comments: [
+				{ id: 'c1', pr: 'p1', reviewer: 'r1' },
+				{ id: 'c2', pr: 'p2', reviewer: 'r2' },
+				{ id: 'c3', pr: 'p3', reviewer: 'r1' },
+			],
+		}),
+	);
+	const candidatesPath = path.join(reviewDir, 'candidates.json');
+	const writeCandidates = (/** @type {any[]} */ principles) =>
+		fs.writeFileSync(candidatesPath, JSON.stringify({ principles }));
+	const reviewTool = path.join(toolsDir, 'mine-review-patterns.cjs');
+	const checkArgs = ['check', '--candidates', candidatesPath, '--corpus', corpusPath];
+	writeCandidates([{ id: 'ok', principle: 'Ask how the change was tested.', evidence: ['c1', 'c2', 'c3'] }]);
+	runTool(reviewTool, checkArgs);
+	writeCandidates([{ id: 'thin', principle: 'Ask how it was tested.', evidence: ['c1', 'c3'] }]);
+	runTool(reviewTool, checkArgs, { expectFail: true });
+	writeCandidates([{ id: 'named', principle: 'Jane prefers small PRs at Acme.', evidence: ['c1', 'c2', 'c3'] }]);
+	runTool(reviewTool, checkArgs, { expectFail: true });
+	fs.rmSync(reviewDir, { recursive: true, force: true });
+	console.log('OK: mine-review-patterns scrub + check gate');
 
 	const planConsumer = makeTempConsumer();
 	fs.mkdirSync(path.join(planConsumer, '.harness'), { recursive: true });

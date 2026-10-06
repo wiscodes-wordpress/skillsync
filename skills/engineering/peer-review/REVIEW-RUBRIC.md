@@ -21,7 +21,7 @@ Nit spam is the characteristic failure of machine PR review. Enforce:
 
 - **≤3 nits per PR.** Over that, drop the weakest ones — do not "just mention" them all.
 - **Zero nits about anything the repo's formatter owns.** If Prettier, Biome, Scalafmt, or `bsfmt` would rewrite it, CI already owns it. Say nothing.
-- **One comment per distinct issue.** The same mistake in eight files is one comment naming the pattern and listing the locations, not eight comments.
+- **One comment per distinct issue.** The same mistake in eight files is one full comment naming the pattern; the other locations get a short "same as above" pointer, not a rewritten comment. It counts once against the budget.
 - **No comment that only restates the diff.** "This adds a new prop" tells the author nothing.
 - **No comment already made by a human on the PR.** Read the existing threads first.
 
@@ -91,3 +91,83 @@ Score only what the diff actually touches. Each finding gets `file:line` + failu
 | Nothing material | approve, and state residual risk and what you did not verify |
 
 Never recommend approve while a critical check was skipped on a high-risk change. Say what needs running first.
+
+## Team review patterns
+
+Mined from real review history by [`review-patterns`](../review-patterns/SKILL.md) (`/ss-review-patterns`), then scrubbed, generalized and gated: every line below was raised in **at least 3 PRs by at least 2 different reviewers**, and it names no person, product or repo. Counts show strength. **older only** means nobody has raised it in the last 12 months — still sound, but lower priority. **recent** means it only appeared in the last 12 months.
+
+These sharpen the dimensions above with what reviewers on real teams actually flag. Use them to pick findings and to phrase them. They do not change the severity ladder or the comment budget.
+
+_Last mined: 2026-10 · 3,338 merged PRs · 2,745 reviewer comments · 18 reviewers._
+
+### Correctness
+
+- On every new call site, ask what happens with null, missing, or unexpected input, especially when sibling call sites already guard against it. _(56 PRs · 8 reviewers)_
+- Let the type system enforce correctness: no casts or suppressed type errors to quiet the checker, validate untrusted data at the boundary, and make matches over a closed set exhaustive so a new case fails to compile. _(41 PRs · 4 reviewers)_
+- When a fix or feature lands on one platform or client, ask whether the sibling platforms need it too, and either include it or say why not. Shared code must work on every target. _(14 PRs · 5 reviewers)_
+- Every subscription, timer, listener, or in-flight request gets cancelled or released when its owner goes away, so nothing leaks, double-fires, or updates stale state. _(13 PRs · 3 reviewers · older only)_
+- Don't paper over missing or impossible values with fake defaults like empty strings. Represent absence explicitly, and assert or fail loudly when something that must exist doesn't. _(10 PRs · 3 reviewers)_
+
+### Security
+
+- Treat dynamically loaded third-party scripts, keys shipped in client code, and anything newly made public as security questions the author must answer, not style notes. _(9 PRs · 4 reviewers)_
+
+### Tests
+
+- Ask how each behavior change was verified. Pure logic gets a unit test; platform and device user interface gets tried on real hardware, and "tested on device" in a review is valued. _(38 PRs · 7 reviewers)_
+- Tests do what a user does: query by visible text and accessible roles, assert the visible outcome, wait on state changes rather than fixed sleeps, and mock only true external boundaries. Shared setup lives in shared helpers. _(23 PRs · 4 reviewers)_
+
+### Architecture
+
+- Shared components don't know about any one caller. Logic lives in the module that owns the concern, and callers pass in a decision (a flag, a display value) rather than raw data the component must interpret. _(28 PRs · 4 reviewers)_
+- Configuration comes from deploy-time environment variables, not from branching on hostnames or hard-coded per-environment values. An integration turns on because its ID is supplied, not because of an if-check. _(12 PRs · 7 reviewers)_
+- Import from a feature's public entry point, never deep into its files. If something is missing, export it from the owning feature. _(7 PRs · 2 reviewers)_
+- Third-party integrations such as analytics or support widgets go through the app's own provider or adapter layer, not straight to the vendor's SDK. Turning one vendor off must not affect the others. _(6 PRs · 2 reviewers)_
+
+### Maintainability
+
+- Names say what a thing actually is or does, use the shared domain vocabulary, and stay accurate as scope grows. Rename vague, misleading, inverted, or misspelled names before they spread. _(46 PRs · 5 reviewers)_
+- When the same logic appears on two screens or in two hooks, ask whether it should be one shared utility before it drifts. _(41 PRs · 10 reviewers)_
+- Code comments describe what the code does and why, not the history of this change. Timings, version numbers, "used to do X", and comments tied to one specific case go stale; that context belongs in the commit message. _(12 PRs · 4 reviewers)_
+- Name or explain numeric literals like delays, sizes, and thresholds so it's clear why that value was chosen and where else it applies. _(5 PRs · 2 reviewers · older only)_
+- When the codebase already has a library or pattern for a job, use it instead of introducing a second way. _(4 PRs · 2 reviewers · older only)_
+- When a file keeps growing, move self-contained pieces into their own files near where they're used, and keep entry and routing files thin. _(3 PRs · 2 reviewers)_
+
+### Simplicity
+
+- Question flexibility nobody needs yet (extra IDs, unused props, guards for unlikely races) and remove code and properties that are no longer used. _(73 PRs · 9 reviewers)_
+- Don't store state you can derive, and don't keep two copies of one value. Model mutually exclusive states as one status value, not several booleans. _(8 PRs · 3 reviewers · older only)_
+
+### Intent and process
+
+- Any change to a default, a visibility level, a version, an ignore list, or an allowed-vulnerability count needs a stated reason. Reviewers ask "why now, when it wasn't needed before?" _(26 PRs · 6 reviewers)_
+- Unrelated fixes go in a follow-up PR. When you spot something outside the change, label it "not from this PR" and don't block on it. _(35 PRs · 5 reviewers)_
+- When a change touches compiled or native layers that downstream builds depend on, bump the build version in the same change so those builds regenerate. _(9 PRs · 3 reviewers · older only)_
+- If a lint rule keeps getting disabled inline, change the shared lint config (or a scoped override) instead of scattering ignore comments. Let linters, not reviewers, police style. _(8 PRs · 2 reviewers · older only)_
+- Shared dependency versions and the runtime version come from one central catalog or version file, never pinned per package. _(3 PRs · 2 reviewers · recent)_
+
+### Observability
+
+- Every operation that can fail has a deliberate error path: what the user sees, whether it retries, and what gets reported with enough context to debug. Never swallow errors silently, and pick log severity on purpose. _(30 PRs · 4 reviewers)_
+- Use the project's logger, never `console`, and question new logs that only helped while debugging. _(21 PRs · 5 reviewers)_
+
+### User interface
+
+- Reuse existing design tokens and shared constants instead of adding near-duplicate colors or hard-coded sizes. Values owned by the design pipeline are not edited by hand. _(36 PRs · 4 reviewers)_
+- Watch for work repeated on every render, tick, or call: unstable callbacks and objects passed down, effects with too-broad dependencies, and stored state where a derived value would do. _(37 PRs · 5 reviewers)_
+- All user-facing text, including accessibility labels and fallbacks, goes through the localization layer. Reuse shared strings before adding new ones, and avoid building sentences by gluing variables into them. _(14 PRs · 3 reviewers)_
+- Check visual changes against the design source (spacing, sizes, copy, focus states, assets). When the design and the code disagree, raise it with design instead of inventing values. _(12 PRs · 2 reviewers)_
+- Every interactive element has an accessible label (and a hint when the action isn't obvious) that says what it is and what happens. Skip empty or redundant labels. _(11 PRs · 5 reviewers)_
+- Let content and the user's text-size settings drive layout. Question fixed heights, fixed widths, and character-count truncation that break with larger fonts or other screens. _(6 PRs · 2 reviewers · older only)_
+
+### AI-assisted changes
+
+- When AI helped write the change, look for narrating comments and edits to generated or owned files. Fix the root cause in the agent instructions or a hook, not just in the diff. _(8 PRs · 4 reviewers · recent)_
+
+### How comments are written
+
+- Phrase most comments as questions ("Should this…?", "Any reason…?"), which leaves room for context the reviewer lacks. Use direct statements for clear rule violations. _(37 PRs · 6 reviewers)_
+- Mark non-blocking feedback explicitly ("suggestion (non-blocking)", "nitpick, don't worry about it", "good either way") so the author knows what must change before merge. _(47 PRs · 8 reviewers)_
+- When the fix is small and concrete, use a suggestion block so the author can apply it in one click. _(52 PRs · 6 reviewers)_
+- For a repeated issue, write the full comment once, then leave short "same question" pointers on the other lines. _(26 PRs · 4 reviewers)_
+- Call out specific good work (a cleanup, a useful helper, a good test) in the line comment where it happens, not a generic "LGTM". _(51 PRs · 6 reviewers)_
