@@ -26,6 +26,8 @@ Shared **Cursor Agent Skills**, **project rules**, **`ss-*` slash commands**, **
 | `tools/tdd-audit.cjs` | TDD hard gates (contract cards, tampering, RED evidence) before critic. |
 | `tools/run-verification.cjs` | Run Verification Plan commands from state. |
 | `tools/ss-loop.cjs` | AFK Remaining-cycle walker (Paseo + Cursor). |
+| `tools/epic-loop.cjs` | Local epic orchestrator: story by story plan → implement → review → PR → CI fix ([`docs/epic-loop.md`](docs/epic-loop.md)). |
+| `tools/pr-watch.cjs` | Watch a PR's CI checks; optional fix agent on failure. |
 | `tools/re-break.cjs` | Re-break evidence helper for TDD cycles. |
 | `tools/publish-slices-from-state.cjs` | Dry-run or publish plan slices to tracker. |
 | `tools/jira-close.cjs` | Jira REST close + harness reset (optional). |

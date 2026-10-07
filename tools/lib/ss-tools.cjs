@@ -305,8 +305,9 @@ function parseCompletedRemaining(state) {
 	const completedMatch = block.match(/\*\*Completed:\*\*\s*(.+)/i);
 	const remainingMatch = block.match(/\*\*Remaining:\*\*\s*(.+)/i);
 	return {
-		completed: parseCycleList(completedMatch?.[1] ?? ''),
-		remaining: parseCycleList(remainingMatch?.[1] ?? ''),
+		// Planner output may also use separate `## Completed` / `## Remaining` sections.
+		completed: parseCycleList(completedMatch?.[1] ?? sections.get('Completed') ?? ''),
+		remaining: parseCycleList(remainingMatch?.[1] ?? sections.get('Remaining') ?? ''),
 	};
 }
 
@@ -490,6 +491,23 @@ function gitCurrentBranch(consumerRoot) {
 }
 
 /**
+ * Keep a local-only path out of `git status` and `git add -A` in every worktree of this
+ * repo, via the shared `.git/info/exclude`. No-op outside a git checkout.
+ *
+ * @param {string} cwd any checkout of the repo (main or worktree)
+ * @param {string} pattern exclude line, e.g. `.harness/`
+ */
+function gitExclude(cwd, pattern) {
+	const common = runCommand(cwd, 'git rev-parse --path-format=absolute --git-common-dir');
+	if (common.status !== 0 || !common.stdout.trim()) return;
+	const exclude = path.join(common.stdout.trim(), 'info', 'exclude');
+	const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	if (fs.existsSync(exclude) && new RegExp(`^${escaped}$`, 'm').test(fs.readFileSync(exclude, 'utf8'))) return;
+	fs.mkdirSync(path.dirname(exclude), { recursive: true });
+	fs.appendFileSync(exclude, `\n${pattern}\n`, 'utf8');
+}
+
+/**
  * @param {string} consumerRoot
  * @param {string} [base]
  * @returns {string}
@@ -526,7 +544,7 @@ function upsertMarkdownSection(content, sectionName, sectionBody) {
 	const body = sectionBody.trim();
 	const block = `${heading}\n\n${body}\n`;
 	const re = new RegExp(
-		`^## ${sectionName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$[\\s\\S]*?(?=^## |\\Z)`,
+		`^## ${sectionName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$[\\s\\S]*?(?=^## |(?![\\s\\S]))`,
 		'm',
 	);
 
@@ -576,6 +594,7 @@ module.exports = {
 	runCommand,
 	titleFromBranch,
 	gitCurrentBranch,
+	gitExclude,
 	gitMergeBase,
 	assertOrExit,
 };

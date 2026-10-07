@@ -423,22 +423,51 @@ function auditContractsVsDiff(state, testDiff, changedTestPaths) {
 	return { errors, warnings };
 }
 
+const TEST_CASE_RE = /\b(it|test)\s*\(/;
+
+/** Title of an `it(` / `test(` line, for reporting renames. */
+function testTitle(content) {
+	const m = content.match(/\b(?:it|test)\s*\(\s*(['"`])((?:\\.|(?!\1).)*)\1/);
+	return m ? m[2].replace(/\\(.)/g, '$1') : content.trim();
+}
+
 /**
+ * A test removed and another added in the same hunk is a rename, not a deletion:
+ * only removals beyond the hunk's additions count toward `removedTests`.
  * @param {string} diff
- * @returns {{ removedTests: number; removedExpect: number; skipAdded: boolean; expectDelta: number }}
+ * @returns {{ removedTests: number; renamedTests: string[]; removedExpect: number; skipAdded: boolean; expectDelta: number }}
  */
 function analyzeTestDiff(diff) {
 	let removedTests = 0;
-	let removedExpect = 0;
+	/** @type {string[]} */
+	const renamedTests = [];
 	let skipAdded = false;
 	let expectAdded = 0;
 	let expectRemoved = 0;
+	/** @type {string[]} */
+	let hunkRemoved = [];
+	/** @type {string[]} */
+	let hunkAdded = [];
+
+	const closeHunk = () => {
+		const pairs = Math.min(hunkRemoved.length, hunkAdded.length);
+		for (let i = 0; i < pairs; i++) {
+			renamedTests.push(`${hunkRemoved[i]} → ${hunkAdded[i]}`);
+		}
+		removedTests += hunkRemoved.length - pairs;
+		hunkRemoved = [];
+		hunkAdded = [];
+	};
 
 	for (const line of diff.split('\n')) {
+		if (line.startsWith('@@') || line.startsWith('diff --git')) {
+			closeHunk();
+			continue;
+		}
 		if (line.startsWith('-') && !line.startsWith('---')) {
 			const content = line.slice(1);
-			if (/\b(it|test)\s*\(/.test(content)) {
-				removedTests++;
+			if (TEST_CASE_RE.test(content)) {
+				hunkRemoved.push(testTitle(content));
 			}
 			const expects = content.match(/expect\s*\(/g);
 			if (expects) {
@@ -447,6 +476,9 @@ function analyzeTestDiff(diff) {
 		}
 		if (line.startsWith('+') && !line.startsWith('+++')) {
 			const content = line.slice(1);
+			if (TEST_CASE_RE.test(content)) {
+				hunkAdded.push(testTitle(content));
+			}
 			if (/\.(skip|only)\s*\(|^\s*(xit|xtest|fit|fdescribe)\s*\(/.test(content)) {
 				skipAdded = true;
 			}
@@ -456,9 +488,11 @@ function analyzeTestDiff(diff) {
 			}
 		}
 	}
+	closeHunk();
 
 	return {
 		removedTests,
+		renamedTests,
 		removedExpect: expectRemoved,
 		skipAdded,
 		expectDelta: expectAdded - expectRemoved,
@@ -615,6 +649,9 @@ function main() {
 	const analysis = analyzeTestDiff(fullDiff);
 	if (analysis.removedTests > 0) {
 		errors.push(`Removed ${analysis.removedTests} test case(s) in diff`);
+	}
+	for (const rename of analysis.renamedTests) {
+		warnings.push(`Renamed test (confirm same behavior): ${rename}`);
 	}
 	if (analysis.expectDelta < 0) {
 		errors.push(`Net fewer expect() assertions (${analysis.expectDelta})`);

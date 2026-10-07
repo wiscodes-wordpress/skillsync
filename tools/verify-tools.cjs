@@ -12,7 +12,7 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { execFileSync } = require('node:child_process');
+const { execFileSync, spawnSync } = require('node:child_process');
 
 const skillsyncRoot = path.join(__dirname, '..');
 const toolsDir = path.join(skillsyncRoot, 'tools');
@@ -31,6 +31,14 @@ const REQUIRED_TOOLS = [
 	'security-assess.cjs',
 	'run-verification.cjs',
 	'ss-loop.cjs',
+	'epic-loop.cjs',
+	'pr-watch.cjs',
+	'lib/epic.cjs',
+	'lib/pr-checks.cjs',
+	'lib/pr-fix.cjs',
+	'lib/agent-runner.cjs',
+	'lib/paseo-agent.cjs',
+	'lib/epic-session.cjs',
 	'paseo-set-feature.cjs',
 	'paseo-permit-watch.cjs',
 	're-break.cjs',
@@ -541,6 +549,49 @@ implementing
 		} else {
 			console.log('OK: tdd-audit completed-cycle name gate');
 		}
+	}
+
+	const renameDiff = [
+		'diff --git a/x.test.ts b/x.test.ts',
+		'@@ -1,3 +1,3 @@',
+		"-  it('lists ref and translation', () => {",
+		"+  it('lists book, chapter and verse', () => {",
+		'     expect(rows).toEqual([])',
+	].join('\n');
+	const deleteDiff = [
+		'diff --git a/x.test.ts b/x.test.ts',
+		'@@ -1,3 +0,0 @@',
+		"-  it('lists ref and translation', () => {",
+		'-    expect(rows).toEqual([])',
+		'-  })',
+		'@@ -9,0 +7,1 @@',
+		"+  it('unrelated new test', () => {})",
+	].join('\n');
+	const renamed = tddAudit.analyzeTestDiff(renameDiff);
+	const deleted = tddAudit.analyzeTestDiff(deleteDiff);
+	if (renamed.removedTests !== 0 || renamed.renamedTests.length !== 1) {
+		console.error('tdd-audit: a renamed test in one hunk should count as a rename, not a removal');
+		failed = true;
+	} else if (deleted.removedTests !== 1) {
+		console.error('tdd-audit: a test deleted in one hunk and added in another should still count as removed');
+		failed = true;
+	} else {
+		console.log('OK: tdd-audit rename vs removal');
+	}
+
+	const { upsertMarkdownSection } = require(path.join(toolsDir, 'lib', 'ss-tools.cjs'));
+	const lastSection = '# State\n\n## Notes\n\nkeep\n\n## Security Evidence\n\n**Ran at:** 2026-10-01T15:35:35.590Z\n\nold tail\n';
+	const upserted = upsertMarkdownSection(lastSection, 'Security Evidence', '**Ran at:** 2026-10-02T09:00:00.000Z\n\nnew tail');
+	if (
+		upserted.split('## Security Evidence').length !== 2 ||
+		upserted.includes('old tail') ||
+		!upserted.includes('new tail') ||
+		!upserted.includes('keep')
+	) {
+		console.error('ss-tools: upsertMarkdownSection should replace a last section whole, even when it contains "Z"');
+		failed = true;
+	} else {
+		console.log('OK: upsertMarkdownSection replaces the last section whole');
 	}
 
 	const securityAudit = require(path.join(toolsDir, 'security-audit.cjs'));
@@ -1303,6 +1354,571 @@ implementing
 	runTool(path.join(toolsDir, 'verify-rules.cjs'), [ensureConsumer]);
 	console.log('OK: ensure-skillsync links ss-* assets');
 	fs.rmSync(ensureConsumer, { recursive: true, force: true });
+
+	// epic-loop: next-story selection, status, approve gate, generated story table
+	const epicConsumer = makeTempConsumer();
+	const epicDir = path.join(epicConsumer, '.harness', 'epics', 'E9');
+	fs.cpSync(path.join(fixturesDir, 'epic'), epicDir, { recursive: true });
+	const epicLoop = path.join(toolsDir, 'epic-loop.cjs');
+	const epicArgs = [epicConsumer, '--epic', epicDir, '--json'];
+
+	const epicDry = JSON.parse(runTool(epicLoop, [...epicArgs, '--dry-run']));
+	if (epicDry.story !== 'E9-S2' || epicDry.action !== 'start') {
+		console.error(`epic-loop: expected dry run to skip E9-S1 (waits on E9-S2) and start E9-S2, got ${JSON.stringify(epicDry)}`);
+		failed = true;
+	} else {
+		console.log('OK: epic-loop picks first story whose dependencies are merged');
+	}
+
+	const s1File = path.join(epicDir, 'stories', 'E9-S1-reference.md');
+	fs.writeFileSync(s1File, fs.readFileSync(s1File, 'utf8').replace('status: todo', 'status: awaiting-approval'), 'utf8');
+	const epicActive = JSON.parse(runTool(epicLoop, [...epicArgs, '--dry-run']));
+	if (epicActive.story !== 'E9-S1' || epicActive.action !== 'await-approval') {
+		console.error(`epic-loop: expected in-progress E9-S1 to win over ready E9-S2, got ${JSON.stringify(epicActive)}`);
+		failed = true;
+	} else {
+		console.log('OK: epic-loop keeps one story in progress at a time');
+	}
+
+	// --story: a second loop can take a ready story while another one is in progress
+	const epicPinned = JSON.parse(runTool(epicLoop, [...epicArgs, '--dry-run', '--story', 'E9-S2']));
+	const epicNotReady = JSON.parse(runTool(epicLoop, [...epicArgs, '--dry-run', '--story', 'E9-S3']));
+	if (epicPinned.story !== 'E9-S2' || epicPinned.action !== 'start') {
+		console.error(`epic-loop --story: expected E9-S2 → start beside in-progress E9-S1, got ${JSON.stringify(epicPinned)}`);
+		failed = true;
+	} else if (epicNotReady.action !== 'idle' || !String(epicNotReady.detail).includes('blocked by backend API keys')) {
+		console.error(`epic-loop --story: expected blocked E9-S3 to be idle, got ${JSON.stringify(epicNotReady)}`);
+		failed = true;
+	} else {
+		console.log('OK: epic-loop --story runs one ready story and refuses one that is not ready');
+	}
+
+	// A story claimed by another live loop (this verify process stands in for it) is skipped.
+	const claimsDir = path.join(epicConsumer, '.harness', 'epic-loop', 'claims');
+	fs.mkdirSync(claimsDir, { recursive: true });
+	fs.writeFileSync(path.join(claimsDir, 'E9-S1.pid'), String(process.pid), 'utf8');
+	const epicSkip = JSON.parse(runTool(epicLoop, [...epicArgs, '--dry-run']));
+	const epicTaken = JSON.parse(runTool(epicLoop, [...epicArgs, '--dry-run', '--story', 'E9-S1']));
+	if (epicSkip.story !== 'E9-S2' || epicSkip.action !== 'start') {
+		console.error(`epic-loop claims: expected default loop to skip claimed E9-S1 and start E9-S2, got ${JSON.stringify(epicSkip)}`);
+		failed = true;
+	} else if (epicTaken.action !== 'idle' || !String(epicTaken.detail).includes('another epic-loop')) {
+		console.error(`epic-loop claims: expected --story on a claimed story to be idle, got ${JSON.stringify(epicTaken)}`);
+		failed = true;
+	} else {
+		console.log('OK: epic-loop skips stories claimed by another loop');
+	}
+	fs.rmSync(claimsDir, { recursive: true, force: true });
+
+	runTool(epicLoop, [...epicArgs, '--approve', 'E9-S1']);
+	const s1After = fs.readFileSync(s1File, 'utf8');
+	const epicTable = fs.readFileSync(path.join(epicDir, 'epic.md'), 'utf8');
+	if (!s1After.includes('status: implementing')) {
+		console.error('epic-loop --approve: expected E9-S1 status implementing');
+		failed = true;
+	} else if (!epicTable.includes('<!-- epic-loop:stories:start -->') || !/\| \[E9-S1\]\([^)]+\) \| Reference module \| E9-S2 \| implementing \|/.test(epicTable)) {
+		console.error('epic-loop --approve: expected generated story table in epic.md');
+		failed = true;
+	} else {
+		console.log('OK: epic-loop --approve + generated story table');
+	}
+	runTool(epicLoop, [...epicArgs, '--approve', 'E9-S1'], { expectFail: true });
+	console.log('OK: epic-loop --approve refuses a story not awaiting approval');
+	runTool(epicLoop, [...epicArgs, '--release', 'E9-S1'], { expectFail: true });
+	console.log('OK: epic-loop --release refuses a story with no session held');
+
+	const epicStatus = JSON.parse(runTool(epicLoop, [...epicArgs, '--status']));
+	const s3 = epicStatus.stories.find((/** @type {{ id: string }} */ s) => s.id === 'E9-S3');
+	if (epicStatus.next !== 'E9-S1' || s3?.status !== 'todo') {
+		console.error(`epic-loop --status: unexpected ${JSON.stringify(epicStatus)}`);
+		failed = true;
+	} else {
+		console.log('OK: epic-loop --status');
+	}
+	const { readDashboardState } = require('./lib/epic-dashboard.cjs');
+	const dash = readDashboardState({ root: epicConsumer, epicDir, loopDir: path.join(epicConsumer, '.harness', 'epic-loop') });
+	if (dash.stories.length !== 4 || dash.next.story !== 'E9-S1' || dash.loop.pid !== null || dash.agent !== null) {
+		console.error(`epic dashboard state: unexpected ${JSON.stringify({ n: dash.stories.length, next: dash.next, loop: dash.loop })}`);
+		failed = true;
+	} else {
+		console.log('OK: epic dashboard state');
+	}
+
+	// Preview: the review agent's `## Preview` routes reach the dashboard; the dev server runs in the story worktree
+	fs.mkdirSync(path.join(epicDir, 'state'), { recursive: true });
+	fs.writeFileSync(path.join(epicDir, 'state', 'E9-S1.md'), '## Preview\n\n- `/docs/reference` — endpoint list renders\n- /docs/reference/verses — params table\n', 'utf8');
+	fs.writeFileSync(path.join(epicDir, 'state', 'E9-S2.md'), '## Preview\n\n- none — library only\n', 'utf8');
+	const previewPort = 41000 + (process.pid % 1000);
+	const previewCfg = { command: `${JSON.stringify(process.execPath)} -e "require('node:http').createServer((q, s) => s.end('preview ok')).listen({port})"`, basePort: previewPort };
+	const { createPreviews } = require('./lib/epic-preview.cjs');
+	const dashPreview = readDashboardState({ root: epicConsumer, epicDir, loopDir: path.join(epicConsumer, '.harness', 'epic-loop'), previews: createPreviews({ root: epicConsumer, loopDir: path.join(epicConsumer, '.harness', 'epic-loop'), config: previewCfg }) });
+	const s1 = dashPreview.stories.find((s) => s.id === 'E9-S1')?.preview;
+	const s2 = dashPreview.stories.find((s) => s.id === 'E9-S2')?.preview;
+	if (
+		!dashPreview.previewEnabled ||
+		JSON.stringify(s1?.routes) !== JSON.stringify([{ path: '/docs/reference', check: 'endpoint list renders' }, { path: '/docs/reference/verses', check: 'params table' }]) ||
+		s2?.routes.length !== 0 ||
+		s2?.note !== 'none — library only'
+	) {
+		console.error(`epic dashboard preview: unexpected ${JSON.stringify({ enabled: dashPreview.previewEnabled, s1, s2 })}`);
+		failed = true;
+	} else {
+		console.log('OK: dashboard shows the review agent’s preview routes');
+	}
+	// Start / Retry buttons: which stories are ready to start, and where a blocked one resumes
+	const s0File = dashPreview.stories.find((s) => s.id === 'E9-S3');
+	const readyIds = dashPreview.stories.filter((s) => s.ready).map((s) => s.id);
+	const e9s3 = path.join(epicDir, 'stories', 'E9-S3-try-it.md');
+	const e9s3Before = fs.readFileSync(e9s3, 'utf8');
+	fs.writeFileSync(e9s3, e9s3Before.replace(/^status: .*$/m, 'status: blocked\nblocked_from: implementing\nblocked_reason: boom'), 'utf8');
+	const dashBlocked = readDashboardState({ root: epicConsumer, epicDir, loopDir: path.join(epicConsumer, '.harness', 'epic-loop') });
+	fs.writeFileSync(e9s3, e9s3Before, 'utf8');
+	if (!s0File || JSON.stringify(readyIds) !== JSON.stringify(['E9-S2']) || dashBlocked.stories.find((s) => s.id === 'E9-S3')?.retryAt !== 'implementing') {
+		console.error(`epic dashboard start/retry: unexpected ${JSON.stringify({ readyIds, retryAt: dashBlocked.stories.find((s) => s.id === 'E9-S3')?.retryAt })}`);
+		failed = true;
+	} else {
+		console.log('OK: dashboard knows which stories can start and where a blocked one resumes');
+	}
+	fs.mkdirSync(path.join(epicConsumer, '.harness', 'worktrees', 'E9-S1'), { recursive: true });
+	const previewScript = path.join(epicConsumer, 'preview-check.cjs');
+	fs.writeFileSync(
+		previewScript,
+		`const { createPreviews } = require(${JSON.stringify(path.join(toolsDir, 'lib', 'epic-preview.cjs'))});
+const p = createPreviews({ root: ${JSON.stringify(epicConsumer)}, loopDir: ${JSON.stringify(path.join(epicConsumer, '.harness', 'epic-loop'))}, config: ${JSON.stringify(previewCfg)} });
+(async () => {
+	const started = await p.start('E9-S1', 2);
+	const body = started.url ? await (await fetch(started.url.replace('localhost', '127.0.0.1'))).text() : '';
+	const again = await p.start('E9-S1', 2);
+	const noTree = await p.start('E9-S3', 3);
+	p.stop('E9-S1');
+	await new Promise((r) => setTimeout(r, 500));
+	const after = await fetch('http://127.0.0.1:' + (${previewPort} + 2)).then(() => 'up', () => 'down');
+	console.log(JSON.stringify({ url: started.url, error: started.error, body, again: again.url, noTree: noTree.error ?? '', after }));
+})();
+`,
+	);
+	const previewRun = spawnSync(process.execPath, [previewScript], { encoding: 'utf8', timeout: 60_000 });
+	/** @type {any} */
+	let pv = {};
+	try {
+		pv = JSON.parse(previewRun.stdout.trim());
+	} catch {
+		pv = { raw: previewRun.stdout + previewRun.stderr };
+	}
+	const agentLogsDir = path.join(epicConsumer, '.harness', 'epic-loop', 'logs');
+	const previewInAgentLogs = fs.existsSync(agentLogsDir) && fs.readdirSync(agentLogsDir).some((f) => f.startsWith('preview-'));
+	if (pv.url !== `http://localhost:${previewPort + 2}` || pv.body !== 'preview ok' || pv.again !== pv.url || !/no worktree/.test(pv.noTree) || pv.after !== 'down' || previewInAgentLogs) {
+		console.error(`epic preview server: unexpected ${JSON.stringify({ ...pv, previewInAgentLogs })}`);
+		failed = true;
+	} else {
+		console.log('OK: preview server starts in the story worktree on its port and stops');
+	}
+	fs.rmSync(epicConsumer, { recursive: true, force: true });
+
+	// pr-watch: latest run per check wins, CANCELLED ignored, failing → exit 3
+	const prWatch = spawnSync(
+		process.execPath,
+		[path.join(toolsDir, 'pr-watch.cjs'), '--fixture', path.join(fixturesDir, 'pr-checks-failing.example.json'), '--json'],
+		{ encoding: 'utf8' },
+	);
+	const prSummary = prWatch.stdout ? JSON.parse(prWatch.stdout.trim().split('\n')[0]) : null;
+	if (
+		prWatch.status !== 3 ||
+		prSummary?.state !== 'failing' ||
+		prSummary.failing.length !== 1 ||
+		prSummary.failing[0].name !== 'CI / Frontend (test and lint)' ||
+		prSummary.failing[0].runId !== '200' ||
+		prSummary.pending.join() !== 'CI / Docker build'
+	) {
+		console.error(`pr-watch --fixture: unexpected exit ${prWatch.status} ${prWatch.stdout}${prWatch.stderr}`);
+		failed = true;
+	} else {
+		console.log('OK: pr-watch summarizes failing checks');
+	}
+
+	// loop commits never include local .harness/ files, even when the base branch doesn't ignore them
+	const commitRepo = makeTempConsumer();
+	const git = (/** @type {string} */ cmd) => execFileSync('sh', ['-c', cmd], { cwd: commitRepo, encoding: 'utf8' });
+	git('git init -q && git config user.email t@t && git config user.name t && git commit -q --allow-empty -m init');
+	fs.mkdirSync(path.join(commitRepo, '.harness'), { recursive: true });
+	fs.writeFileSync(path.join(commitRepo, '.harness', 'state.md'), 'local', 'utf8');
+	fs.writeFileSync(path.join(commitRepo, 'CONTEXT.md'), 'glossary', 'utf8');
+	const { commitAll } = require('./lib/pr-fix.cjs');
+	const committed = commitAll(commitRepo, 'test');
+	const tracked = git('git ls-files').trim().split('\n');
+	if (!committed.committed || tracked.includes('.harness/state.md') || !tracked.includes('CONTEXT.md')) {
+		console.error(`commitAll: expected CONTEXT.md committed and .harness/ left out, got ${JSON.stringify(tracked)}`);
+		failed = true;
+	} else if (commitAll(commitRepo, 'again').committed) {
+		console.error('commitAll: only .harness/ changes left, expected no commit');
+		failed = true;
+	} else {
+		console.log('OK: loop commits leave .harness/ out');
+	}
+	fs.rmSync(commitRepo, { recursive: true, force: true });
+
+	// cycle commits are local checkpoints: squashed into one before the first push, never after
+	const squashRepo = makeTempConsumer();
+	const sq = (/** @type {string} */ cmd) => execFileSync('sh', ['-c', cmd], { cwd: squashRepo, encoding: 'utf8' }).trim();
+	sq('git init -q -b master && git config user.email t@t && git config user.name t && git commit -q --allow-empty -m init');
+	sq('git init -q --bare origin.git && git remote add origin ./origin.git && echo origin.git > .git/info/exclude && git push -q origin master');
+	sq('git checkout -q -b feature/s1 && for n in 1 2 3; do echo $n > f$n.txt && git add f$n.txt && git commit -q -m "S1: Cycle $n"; done');
+	const treeBefore = sq('git rev-parse HEAD^{tree}');
+	const { squashUnpushed } = require('./lib/pr-fix.cjs');
+	const squashed = squashUnpushed(squashRepo, 'feature/s1', 'master', 'S1: Story title');
+	const squashedLog = sq('git log --format=%s origin/master..HEAD');
+	sq('git push -q -u origin feature/s1 && echo 4 > f4.txt && git add f4.txt && git commit -q -m "Fix CI: lint" && echo 5 > f5.txt && git add f5.txt && git commit -q -m "Fix CI: test"');
+	const afterPush = squashUnpushed(squashRepo, 'feature/s1', 'master', 'S1: again');
+	if (!squashed.squashed || squashedLog !== 'S1: Story title' || sq('git rev-parse HEAD~2^{tree}') !== treeBefore) {
+		console.error(`squashUnpushed: expected one commit with the same tree, got ${JSON.stringify({ squashed, squashedLog })}`);
+		failed = true;
+	} else if (afterPush.squashed || afterPush.error || sq('git rev-list --count origin/master..HEAD') !== '3') {
+		console.error(`squashUnpushed: rewrote a pushed branch ${JSON.stringify(afterPush)}`);
+		failed = true;
+	} else {
+		console.log('OK: cycle commits squash into one before the first push, never after');
+	}
+	fs.rmSync(squashRepo, { recursive: true, force: true });
+
+	const { formatStreamLine } = require('./lib/agent-runner.cjs');
+	const toolLine = formatStreamLine(JSON.stringify({ type: 'assistant', message: { content: [{ type: 'tool_use', name: 'Bash', input: { command: 'npm test' } }] } }));
+	const doneLine = formatStreamLine(JSON.stringify({ type: 'result', subtype: 'success', duration_ms: 5000, total_cost_usd: 0.1 }));
+	if (toolLine !== '→ Bash: npm test' || doneLine !== 'agent finished (success) in 5s, $0.10' || formatStreamLine('{"type":"stream_event"}') !== null) {
+		console.error(`formatStreamLine: unexpected ${JSON.stringify([toolLine, doneLine])}`);
+		failed = true;
+	} else {
+		console.log('OK: agent stream lines render for --tail');
+	}
+
+	// agent.model: one id, or per phase with a default; passed to claude as --model
+	const { resolveModel, runAgent } = require('./lib/agent-runner.cjs');
+	const perPhase = { epicLoop: { agent: { runner: 'claude', model: { plan: 'opus-x', default: 'sonnet-x' } } } };
+	const modelLog = path.join(os.tmpdir(), `skillsync-model-${process.pid}.log`);
+	const modelRun = runAgent({ cwd: os.tmpdir(), prompt: 'p', logFile: modelLog, config: perPhase, phase: 'plan', dryRun: true });
+	const pinnedArgs = runAgent({ cwd: os.tmpdir(), prompt: 'p', logFile: modelLog, config: { epicLoop: { agent: { args: ['-p', '--model', 'mine'], model: 'opus-x' } } }, phase: 'plan', dryRun: true });
+	fs.rmSync(modelLog, { force: true });
+	const picks = [
+		resolveModel(perPhase, 'plan'),
+		resolveModel(perPhase, 'cycle3'),
+		resolveModel({ epicLoop: { agent: { model: { cycle: 'c-x' } } } }, 'cycle12'),
+		resolveModel({ epicLoop: { agent: { model: { plan: 'opus-x' } } } }, 'review'),
+		resolveModel({ epicLoop: { agent: { model: 'one-x' } } }, 'fix'),
+		resolveModel(null, 'plan'),
+	];
+	if (JSON.stringify(picks) !== JSON.stringify(['opus-x', 'sonnet-x', 'c-x', null, 'one-x', null])) {
+		console.error(`resolveModel: unexpected ${JSON.stringify(picks)}`);
+		failed = true;
+	} else if (!modelRun.command.includes('--model opus-x') || pinnedArgs.command.includes('opus-x')) {
+		console.error(`runAgent --model: unexpected ${JSON.stringify([modelRun.command, pinnedArgs.command])}`);
+		failed = true;
+	} else {
+		console.log('OK: agent model resolves per phase and reaches claude as --model');
+	}
+
+	// Unattended agents: auto mode approves routine shell work; commit/push stay denied (the loop owns them)
+	const denied = modelRun.command.split('--disallowedTools ')[1] ?? '';
+	if (!modelRun.command.includes('--permission-mode auto') || !/^\S*Bash\(git commit:\*\)/.test(denied) || !/Bash\(git push:\*\)/.test(denied)) {
+		console.error(`runAgent permissions: expected --permission-mode auto with git commit/push denied, got ${modelRun.command}`);
+		failed = true;
+	} else {
+		console.log('OK: agents run in auto permission mode with git commit/push denied');
+	}
+
+	// Paseo runner (default): one chat per phase, model and labels on `paseo run`
+	const { resolveAgent } = require('./lib/agent-runner.cjs');
+	const paseoDry = runAgent({ cwd: os.tmpdir(), prompt: 'p', logFile: modelLog, config: { epicLoop: { agent: { model: { plan: 'opus-x' } } } }, phase: 'plan', labels: { story: 'E9-S1' }, dryRun: true });
+	fs.rmSync(modelLog, { force: true });
+	const runners = [resolveAgent(null).runner, resolveAgent({ epicLoop: { agent: { args: ['-p'] } } }).runner, resolveAgent({ epicLoop: { agent: { runner: 'claude' } } }).runner];
+	if (
+		JSON.stringify(runners) !== JSON.stringify(['paseo', 'claude', 'claude']) ||
+		!/ run -d --json --provider claude --mode auto --model opus-x .*--label story=E9-S1 /.test(paseoDry.command) ||
+		paseoDry.runner !== 'paseo'
+	) {
+		console.error(`paseo runner: unexpected ${JSON.stringify({ runners, command: paseoDry.command })}`);
+		failed = true;
+	} else {
+		console.log('OK: agents default to Paseo sessions; a custom command or runner: claude keeps claude -p');
+	}
+
+	formatStreamLine('[Shell] npm test') === '→ Shell: npm test' && formatStreamLine('[User] why this?') === '» why this?'
+		? console.log('OK: Paseo timeline lines render for --tail')
+		: ((failed = true), console.error(`formatStreamLine paseo: ${JSON.stringify([formatStreamLine('[Shell] npm test'), formatStreamLine('[User] why this?')])}`));
+
+	// A fake paseo CLI with the real one's JSON shapes. FAKE_HUMAN=1 stamps a message from you
+	// after the loop's own; the agent record lives where Paseo keeps it ($PASEO_HOME/agents/…).
+	const paseoDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skillsync-paseo-'));
+	const fakePaseo = path.join(paseoDir, 'paseo');
+	fs.writeFileSync(
+		fakePaseo,
+		`#!${process.execPath}
+const fs = require('node:fs'), path = require('node:path');
+const [cmd, ...rest] = process.argv.slice(2);
+const home = process.env.PASEO_HOME;
+fs.appendFileSync(path.join(home, 'calls.log'), [cmd, ...rest.filter((a) => !a.includes('\\n'))].join(' ') + '\\n');
+const out = (v) => process.stdout.write(JSON.stringify(v));
+if (cmd === 'status') out({ localDaemon: 'running', providers: [{ provider: 'claude', available: true, error: null }] });
+else if (cmd === 'run') {
+  fs.mkdirSync(path.join(home, 'agents', 'ws'), { recursive: true });
+  const human = process.env.FAKE_HUMAN === '1' ? 60000 : 5;
+  fs.writeFileSync(path.join(home, 'agents', 'ws', 'agent-1.json'), JSON.stringify({ lastUserMessageAt: new Date(Date.now() + human).toISOString() }));
+  out({ agentId: 'agent-1', status: 'running' });
+} else if (cmd === 'inspect') out({ Status: 'idle', Archived: false, PendingPermissions: [] });
+else if (cmd === 'logs') console.log('[User] p\\n[Shell] npm test');
+else if (cmd === 'ls') out([{ id: 'agent-1' }, { id: 'agent-2' }]);
+else out({});
+`,
+	);
+	fs.chmodSync(fakePaseo, 0o755);
+	const paseoCwd = path.join(paseoDir, 'wt');
+	fs.mkdirSync(paseoCwd);
+	spawnSync('git', ['init', '-q'], { cwd: paseoCwd });
+	const paseoConfig = { epicLoop: { agent: { paseo: fakePaseo } } };
+	const savedHome = process.env.PASEO_HOME;
+	process.env.PASEO_HOME = paseoDir;
+	/** @param {Record<string, any>} extra */
+	const paseoRun = (extra) => {
+		/** @type {boolean[]} */
+		const holds = [];
+		const run = runAgent({ cwd: paseoCwd, prompt: 'p', logFile: path.join(paseoDir, 'agent.log'), config: paseoConfig, phase: 'cycle1', addDirs: ['/skills'], ownsCwd: true, pollMs: 20, waitSec: 1, onHold: (/** @type {boolean} */ h) => holds.push(h), ...extra });
+		return { ...run, holds };
+	};
+	try {
+		delete process.env.FAKE_HUMAN;
+		const alone = paseoRun({ ready: () => false });
+		const settings = JSON.parse(fs.readFileSync(path.join(paseoCwd, '.claude', 'settings.local.json'), 'utf8')).permissions;
+		const status = spawnSync('git', ['status', '--porcelain'], { cwd: paseoCwd, encoding: 'utf8' }).stdout.trim();
+		const aloneLog = fs.readFileSync(alone.logFile, 'utf8');
+		if (alone.status !== 0 || alone.intervened || alone.holds.length || !settings.deny.includes('Bash(git commit:*)') || !settings.additionalDirectories.includes('/skills') || status !== '' || aloneLog.split('[Shell] npm test').length !== 2) {
+			console.error(`paseo runner, nobody joins: unexpected ${JSON.stringify({ alone, settings, status, aloneLog })}`);
+			failed = true;
+		} else {
+			console.log('OK: Paseo phase ends when the agent goes idle; commit/push denied via a git-excluded settings file');
+		}
+
+		process.env.FAKE_HUMAN = '1';
+		let polls = 0;
+		const heldRun = paseoRun({ ready: () => false, released: () => ++polls >= 3 });
+		const readyRun = paseoRun({ ready: () => true, released: () => false });
+		if (heldRun.status !== 0 || !heldRun.intervened || JSON.stringify(heldRun.holds) !== '[true,false]' || polls !== 3 || !readyRun.intervened || readyRun.holds.length) {
+			console.error(`paseo runner, you join: unexpected ${JSON.stringify({ heldRun, polls, readyRun })}`);
+			failed = true;
+		} else {
+			console.log('OK: a session you messaged is held until its check passes or you release it');
+		}
+
+		// Not the loop's checkout (pr-watch --fix on yours): your settings file comes back as it was
+		delete process.env.FAKE_HUMAN;
+		const mine = '{ "permissions": { "allow": ["Bash(ls:*)"] } }\n';
+		fs.writeFileSync(path.join(paseoCwd, '.claude', 'settings.local.json'), mine);
+		paseoRun({ ownsCwd: false });
+		const restored = fs.readFileSync(path.join(paseoCwd, '.claude', 'settings.local.json'), 'utf8');
+		const { archiveSessions } = require('./lib/paseo-agent.cjs');
+		const archivedCount = archiveSessions(fakePaseo, paseoCwd, { story: 'E9-S1' });
+		const calls = fs.readFileSync(path.join(paseoDir, 'calls.log'), 'utf8');
+		if (restored !== mine || archivedCount !== 2 || !calls.includes('ls -g --json --label story=E9-S1')) {
+			console.error(`paseo runner, your checkout / archive: unexpected ${JSON.stringify({ restored, archivedCount })}`);
+			failed = true;
+		} else {
+			console.log('OK: settings restored outside loop worktrees; a merged story archives its sessions');
+		}
+	} finally {
+		if (savedHome === undefined) delete process.env.PASEO_HOME;
+		else process.env.PASEO_HOME = savedHome;
+		delete process.env.FAKE_HUMAN;
+		fs.rmSync(paseoDir, { recursive: true, force: true });
+	}
+
+	// Approve after talking to the planner: the newer copy of the plan wins and must still validate
+	const { approvePlan } = require('./lib/epic-session.cjs');
+	const approveRoot = makeTempConsumer();
+	const approveEpic = path.join(approveRoot, '.harness', 'epics', 'E9');
+	const sessionState = path.join(approveRoot, '.harness', 'worktrees', 'E9-S1', '.harness', 'state.md');
+	const epicState = path.join(approveEpic, 'state', 'E9-S1.md');
+	fs.mkdirSync(path.dirname(sessionState), { recursive: true });
+	fs.mkdirSync(path.dirname(epicState), { recursive: true });
+	const validPlan = fs.readFileSync(path.join(fixturesDir, 'plan-valid-state.md'), 'utf8');
+	fs.writeFileSync(epicState, '# old plan\n');
+	fs.writeFileSync(sessionState, validPlan);
+	fs.utimesSync(epicState, new Date(Date.now() - 60_000), new Date(Date.now() - 60_000));
+	const fromSession = approvePlan(approveRoot, approveEpic, 'E9-S1');
+	const copied = fs.readFileSync(epicState, 'utf8') === validPlan;
+	fs.writeFileSync(sessionState, '# broken\n');
+	const broken = approvePlan(approveRoot, approveEpic, 'E9-S1');
+	const noWorktree = approvePlan(approveRoot, approveEpic, 'E9-S2');
+	fs.rmSync(approveRoot, { recursive: true, force: true });
+	if (!fromSession.ok || fromSession.from !== 'session' || !copied || broken.ok || !noWorktree.ok) {
+		console.error(`approvePlan: unexpected ${JSON.stringify({ fromSession, copied, broken, noWorktree })}`);
+		failed = true;
+	} else {
+		console.log('OK: approve takes the planner session’s changes and refuses a plan that no longer validates');
+	}
+
+	// Retry a blocked story: back to the column it was blocked from; older blocks fall back to a safe guess
+	const { retryStory } = require('./lib/epic.cjs');
+	/** @param {Record<string, any>} over @param {Record<string, string>} [meta] */
+	const blockedStory = (over, meta = {}) => ({ id: 'X', title: 'X', status: 'blocked', dependsOn: [], blockedBy: '', branch: 'feature/x', pr: null, attempts: 2, body: '', file: '', meta: { blocked_reason: 'boom', ...meta }, ...over });
+	const fromReview = blockedStory({}, { blocked_from: 'reviewing' });
+	const fromPr = blockedStory({ pr: 7 }, { blocked_from: 'pr-open', fix_attempts: '3', fixed_sha: 'abc' });
+	const retried = [
+		retryStory(fromReview, ''),
+		retryStory(fromPr, ''),
+		retryStory(blockedStory({ pr: 12 }), ''),
+		retryStory(blockedStory({ branch: '' }), ''),
+		retryStory(blockedStory({}), '## Remaining\n\nCycle 1, Cycle 2\n'),
+		retryStory(blockedStory({}), '## Completed\n\nCycle 1\n\n## Remaining\n\nCycle 2\n'),
+		retryStory(blockedStory({}), '## Completed\n\nCycle 1, Cycle 2\n\n## Remaining\n\n(none)\n'),
+	];
+	const expectRetried = ['reviewing', 'pr-open', 'pr-open', 'todo', 'planning', 'implementing', 'reviewing'];
+	if (
+		JSON.stringify(retried) !== JSON.stringify(expectRetried) ||
+		fromReview.status !== 'reviewing' ||
+		fromReview.attempts !== 0 ||
+		fromReview.meta.blocked_reason !== undefined ||
+		fromReview.meta.blocked_from !== undefined ||
+		fromPr.meta.fix_attempts !== undefined ||
+		fromPr.meta.fixed_sha !== undefined
+	) {
+		console.error(`retryStory: unexpected ${JSON.stringify({ retried, fromReview: fromReview.meta, fromPr: fromPr.meta })}`);
+		failed = true;
+	} else {
+		console.log('OK: retry sends a blocked story back to where it was blocked, counters reset');
+	}
+
+	// Beads-style: --ready lists what can start now; --file adds discovered work as a todo story
+	{
+		const consumer = makeTempConsumer();
+		const dir = path.join(consumer, '.harness', 'epics', 'E9');
+		fs.cpSync(path.join(fixturesDir, 'epic'), dir, { recursive: true });
+		const loop = path.join(toolsDir, 'epic-loop.cjs');
+		const args = [consumer, '--epic', dir, '--json'];
+		const ready = JSON.parse(runTool(loop, [...args, '--ready']));
+		const ids = (/** @type {{ id: string }[]} */ list) => list.map((x) => x.id).join(',');
+		if (ids(ready.ready) !== 'E9-S2' || ids(ready.waiting) !== 'E9-S1,E9-S3' || ready.waiting[0].waitsOn[0] !== 'E9-S2' || ready.waiting[1].waitsOn[0] !== 'backend API keys') {
+			console.error(`epic-loop --ready: unexpected ${JSON.stringify(ready)}`);
+			failed = true;
+		} else {
+			console.log('OK: epic-loop --ready lists ready and waiting stories with what they wait on');
+		}
+		const filed = JSON.parse(runTool(loop, [...args, '--file', 'Fix the nav focus ring', '--from', 'E9-S2', '--depends-on', 'E9-S0', '--note', 'Focus ring hidden on dark theme']));
+		const again = JSON.parse(runTool(loop, [...args, '--file', 'fix the nav  focus ring', '--from', 'E9-S2']));
+		const { loadEpic } = require('./lib/epic.cjs');
+		const after = loadEpic(dir);
+		const s4 = after.stories.find((x) => x.id === 'E9-S4');
+		const readyAfter = JSON.parse(runTool(loop, [...args, '--ready']));
+		const table = fs.readFileSync(path.join(dir, 'epic.md'), 'utf8');
+		const progressLog = fs.readFileSync(path.join(consumer, '.harness', 'epic-loop', 'progress.log'), 'utf8');
+		if (
+			filed.id !== 'E9-S4' || !filed.created || again.id !== 'E9-S4' || again.created ||
+			s4?.status !== 'todo' || s4.meta.discovered_from !== 'E9-S2' || s4.dependsOn.join() !== 'E9-S0' || !s4.body.includes('Focus ring hidden') ||
+			ids(readyAfter.ready) !== 'E9-S2,E9-S4' || !table.includes('E9-S4') || !/E9-S4: filed \(found in E9-S2\)/.test(progressLog)
+		) {
+			console.error(`epic-loop --file: unexpected ${JSON.stringify({ filed, again, s4: s4 && { status: s4.status, meta: s4.meta, deps: s4.dependsOn }, ready: ids(readyAfter.ready) })}`);
+			failed = true;
+		} else {
+			console.log('OK: epic-loop --file adds a todo story with the next id, once per title');
+		}
+		runTool(loop, [...args, '--file', 'Needs a ghost', '--depends-on', 'E9-S99'], { expectFail: true });
+		runTool(loop, [...args, '--file', 'Second', '--from', 'E9-S2']);
+		runTool(loop, [...args, '--file', 'Third', '--from', 'E9-S2']);
+		runTool(loop, [...args, '--file', 'Fourth', '--from', 'E9-S2'], { expectFail: true });
+		console.log('OK: epic-loop --file refuses unknown dependencies and caps stories filed per story');
+		// Parallel: E9-S2 for this loop, the filed E9-S4/S5/S6 for --story loops, up to the limit
+		const par1 = JSON.parse(runTool(loop, [...args, '--dry-run']));
+		const par3 = JSON.parse(runTool(loop, [...args, '--dry-run', '--parallel', '3']));
+		const claims = path.join(consumer, '.harness', 'epic-loop', 'claims');
+		fs.mkdirSync(claims, { recursive: true });
+		fs.writeFileSync(path.join(claims, 'E9-S4.pid'), String(process.pid), 'utf8');
+		const par3Claimed = JSON.parse(runTool(loop, [...args, '--dry-run', '--parallel', '3']));
+		if (par1.parallel.length || par3.story !== 'E9-S2' || par3.parallel.join() !== 'E9-S4,E9-S5' || par3Claimed.parallel.join() !== 'E9-S5') {
+			console.error(`epic-loop --parallel: unexpected ${JSON.stringify({ par1: par1.parallel, par3: [par3.story, par3.parallel], claimed: par3Claimed.parallel })}`);
+			failed = true;
+		} else {
+			console.log('OK: epic-loop --parallel starts other ready stories up to the limit, counting running loops');
+		}
+		fs.rmSync(consumer, { recursive: true, force: true });
+	}
+
+	// Critic verdict: also read when the agent puts it in a same-level heading under `## Last Critic Verdict`
+	const { criticVerdict } = require('./epic-loop.cjs');
+	const verdicts = [
+		criticVerdict('## Last Critic Verdict\n\nPASS — all good\n\n## Notes\n\nFAIL earlier\n'),
+		criticVerdict('## Last Critic Verdict\n\n## Critic Verdict: PASS\n\nScores…\n'),
+		criticVerdict('## Last Critic Verdict\n\n## Critic Verdict\n\n**FAIL** — two findings\n'),
+		criticVerdict('## Last Critic Verdict\n\n## TDD Evidence\n\n| 1 | PASS |\n'),
+	];
+	if (JSON.stringify(verdicts) !== JSON.stringify(['PASS', 'PASS', 'FAIL', null])) {
+		console.error(`criticVerdict: unexpected ${JSON.stringify(verdicts)}`);
+		failed = true;
+	} else {
+		console.log('OK: critic verdict read even when written as its own heading');
+	}
+
+	// A plain `kill` of the loop also stops the agent it is blocked on
+	const killDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skillsync-kill-'));
+	const agentPidFile = path.join(killDir, 'agent.pid');
+	fs.writeFileSync(path.join(killDir, 'agent.cjs'), `require('node:fs').writeFileSync(${JSON.stringify(agentPidFile)}, String(process.pid)); setTimeout(() => {}, 60000);\n`);
+	const killConfig = { epicLoop: { agent: { command: process.execPath, args: [path.join(killDir, 'agent.cjs')] } } };
+	fs.writeFileSync(
+		path.join(killDir, 'loop.cjs'),
+		`require(${JSON.stringify(path.join(toolsDir, 'lib', 'agent-runner.cjs'))}).runAgent({ cwd: ${JSON.stringify(killDir)}, prompt: 'p', logFile: ${JSON.stringify(path.join(killDir, 'agent.log'))}, config: ${JSON.stringify(killConfig)} });\n`,
+	);
+	const killScript = [
+		`${JSON.stringify(process.execPath)} loop.cjs & L=$!`,
+		'for i in $(seq 50); do [ -s agent.pid ] && break; sleep 0.1; done',
+		'kill $L; sleep 2',
+		'kill -0 "$(cat agent.pid)" 2>/dev/null && { echo alive; kill "$(cat agent.pid)"; } || echo stopped',
+	].join('\n');
+	const killed = spawnSync('sh', ['-c', killScript], { cwd: killDir, encoding: 'utf8' }).stdout.trim();
+	fs.rmSync(killDir, { recursive: true, force: true });
+	if (killed !== 'stopped') {
+		console.error(`runAgent: agent still running after the loop was killed (${killed || 'no output'})`);
+		failed = true;
+	} else {
+		console.log('OK: killing the loop stops the running agent');
+	}
+
+	// Startup check: a configured model the installed CLI cannot run is caught before any story starts
+	const { checkAgentModels } = require('./lib/agent-runner.cjs');
+	const fakeBin = fs.mkdtempSync(path.join(os.tmpdir(), 'skillsync-claude-'));
+	fs.writeFileSync(
+		path.join(fakeBin, 'claude'),
+		[
+			'#!/bin/sh',
+			'case "$*" in',
+			'  *--version*) echo "1.0.0 (Claude Code)" ;;',
+			`  *new-model*) echo '{"type":"result","is_error":true,"result":"model needs a newer CLI"}' ;;`,
+			`  *) echo '{"type":"result","is_error":false,"result":"OK"}' ;;`,
+			'esac',
+			'',
+		].join('\n'),
+		{ mode: 0o755 },
+	);
+	const savedPath = process.env.PATH;
+	process.env.PATH = `${fakeBin}${path.delimiter}${savedPath}`;
+	let modelProblems;
+	let modelFine;
+	try {
+		modelProblems = checkAgentModels({ epicLoop: { agent: { model: { plan: 'new-model', default: 'old-model' } } } }, fakeBin);
+		modelFine = checkAgentModels({ epicLoop: { agent: { model: 'old-model' } } }, fakeBin);
+	} finally {
+		process.env.PATH = savedPath;
+		fs.rmSync(fakeBin, { recursive: true, force: true });
+	}
+	if (modelProblems.length !== 1 || !/new-model/.test(modelProblems[0]) || !/needs a newer CLI/.test(modelProblems[0]) || !/1\.0\.0/.test(modelProblems[0]) || modelFine.length !== 0) {
+		console.error(`checkAgentModels: unexpected ${JSON.stringify({ modelProblems, modelFine })}`);
+		failed = true;
+	} else {
+		console.log('OK: startup check catches a model the agent CLI cannot run');
+	}
+
+	const { parseCompletedRemaining } = require('./lib/ss-tools.cjs');
+	const split = parseCompletedRemaining('## Completed\n\nCycle 1\n\n## Remaining\n\nCycle 2, Cycle 3\n');
+	if (split.completed.join() !== '1' || split.remaining.join() !== '2,3') {
+		console.error(`parseCompletedRemaining: separate sections not read: ${JSON.stringify(split)}`);
+		failed = true;
+	} else {
+		console.log('OK: parseCompletedRemaining reads separate Completed / Remaining sections');
+	}
 
 	if (failed) {
 		console.error('');

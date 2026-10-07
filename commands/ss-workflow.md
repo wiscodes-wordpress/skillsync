@@ -82,6 +82,8 @@ Structural MCP (`impact`, `detect_changes`, …) during arch / implement / revie
 
 After `/ss-plan`, use [`/ss-loop`](./ss-loop.md) instead of interactive `/ss-implement` to walk Remaining cycles unattended. Setup: [`docs/ss-loop.md`](../docs/ss-loop.md). Then `/ss-finish`.
 
+To run the whole Story belt for every story in a local epic, use [`/ss-epic-loop`](./ss-epic-loop.md) ([`docs/epic-loop.md`](../docs/epic-loop.md)).
+
 ## `ss-*` prefix
 
 **s**kill**s**ync-hosted, product-neutral commands. Link via `link-commands.cjs` (`docs/consumer-setup.md`). Linking a **skill** is not the same as a slash command — `ss-*` is the filterable command set.
