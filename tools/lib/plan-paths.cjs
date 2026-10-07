@@ -2,9 +2,11 @@
 /**
  * Resolve living plan paths for skillsync consumers.
  *
- * Canonical layout (initiative pack):
+ * Canonical layout (initiative pack). The Orchestrator Paseo plugin owns and creates
+ * initiative.md and epics/ (server/harness-layout.ts); skillsync only adds lens files:
  *   .harness/initiatives/<slug>/
  *     initiative.md
+ *     epics/E<n>-<name>/{epic.md,stories/,state/}   ← plugin-created; see docs/epic-loop.md
  *     architecture-plan.md    ← lens source of truth (agent reads/writes)
  *     architecture-plan.html  ← derived via render-plan-html.cjs (human browser)
  *     ux-plan.md / ux-plan.html

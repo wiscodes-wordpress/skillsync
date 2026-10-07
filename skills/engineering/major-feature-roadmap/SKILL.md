@@ -54,7 +54,7 @@ Read consumer docs before planning:
 
 1. Path from `docs/agents/domain.md` or `docs/agents/initiative-specs.md`
 2. Existing convention in repo (e.g. `.harness/initiatives/<slug>/initiative.md`)
-3. Default: **`.harness/initiatives/<slug>/initiative.md`**
+3. Default: **`.harness/initiatives/<slug>/initiative.md`**. The Orchestrator Paseo plugin owns this layout (`initiative.md` + `epics/E<n>-<name>/`). Create the folder with its **New initiative** button rather than by hand, then write the spec into the `initiative.md` it made.
 
 Living plan Markdown for the same train lives **beside** that file (`architecture-plan.md`, `ux-plan.md`, `security-posture.md` → derived HTML) — see `docs/consumer-setup.md` harness layout. Do not leave plan files at `.harness/` root when an initiative pack exists.
 

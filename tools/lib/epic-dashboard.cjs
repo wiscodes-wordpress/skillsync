@@ -922,4 +922,21 @@ setInterval(refresh, 2000);
 </body>
 </html>`;
 
-module.exports = { launchStoryLoop, createEpicActions, epicDashboardOptions, readDashboardState, startDashboard };
+/**
+ * Runner for the Orchestrator Paseo plugin's Harness plan board (set this file as its Runner).
+ * The plugin picks the epic, so this takes it directly instead of reading epicLoop.epic.
+ * @param {{ root: string; epicDir: string }} opts
+ */
+function createHarnessRunner({ root, epicDir }) {
+	const config = readOptionalConfig(root);
+	const loopDir = path.join(harnessDir(root), 'epic-loop');
+	const actions = createEpicActions({ root, epicDir: path.resolve(root, epicDir), loopDir, preview: config?.epicLoop?.preview ?? null, config });
+	return {
+		state: actions.state,
+		act: actions.act,
+		stop: () => actions.previews.stopAll(),
+		reset: () => fs.rmSync(loopDir, { recursive: true, force: true }),
+	};
+}
+
+module.exports = { launchStoryLoop, createEpicActions, createHarnessRunner, epicDashboardOptions, readDashboardState, startDashboard };

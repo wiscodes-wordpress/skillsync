@@ -8,9 +8,13 @@ Each phase's agent runs as a [Paseo](https://paseo.sh/) session by default, so y
 
 ## Epic folder
 
+The layout is defined by the Orchestrator Paseo plugin (`server/harness-layout.ts` in github.com/denmercs/Orchestrator), which creates it: **Harness plan → Initiatives → New initiative** (or **New phase** on an existing one). It numbers epics `E1`, `E2`, … per initiative and writes `epic.md` with `id` / `title` frontmatter. **Open** puts an epic on the plugin's board. That choice lives in the plugin, so on the command line pass `--epic` or set `epicLoop.epic` yourself. Stories are written by `/ss-roadmap` or `epic-loop --file`.
+
+To run stories from the plugin's board, set its **Runner** to `tools/lib/epic-dashboard.cjs` in this repo. It exports `createHarnessRunner`, which drives this loop for the epic the board has open.
+
 ```
 .harness/initiatives/<slug>/epics/<epic-id>/
-  epic.md            # free-form; the loop regenerates the table between its markers
+  epic.md            # frontmatter id + title; free-form body; the loop regenerates the table between its markers
   stories/*.md       # one file per story, frontmatter below (file order = priority)
   state/<id>.md      # written by the loop: each story's harness state (plan, evidence, verdict)
 ```

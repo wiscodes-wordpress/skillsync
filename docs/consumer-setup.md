@@ -44,8 +44,9 @@ Living architecture / UX / security plans use **Markdown as source of truth** un
   evidence/                         # Playwright/Cypress clips (gitignored)
   specs/                            # epic / story AC markdown (optional)
   release/                          # channel packs (optional / gitignored)
-  initiatives/<slug>/
-    initiative.md                   # product scope
+  initiatives/<slug>/                # layout owned by the Orchestrator Paseo plugin (see below)
+    initiative.md                   # product scope; epics table between harness:epics markers
+    epics/E<n>-<name>/              # epic.md (frontmatter id + title), stories/, state/ — see docs/epic-loop.md
     architecture-plan.md            # Arch lens SoT
     architecture-plan.html          # derived (human)
     ux-plan.md / ux-plan.html
@@ -53,6 +54,8 @@ Living architecture / UX / security plans use **Markdown as source of truth** un
     assets/                         # optional mockups
     index.html                      # optional lens status hub (from init-feature-pack)
 ```
+
+**Who creates initiatives:** the Orchestrator Paseo plugin (`server/harness-layout.ts` in github.com/denmercs/Orchestrator). Its **Harness plan → Initiatives** panel lists every Paseo project's `.harness/initiatives`, and **New initiative** / **New phase** write `initiative.md` and `epics/E<n>-<name>/{epic.md,stories/,state/}`. Set the plugin's **Runner** to `tools/lib/epic-dashboard.cjs` to run the epic loop from its board. skillsync tools read that layout and add to it (lens plans, `index.html` hub, stories) but do not define it. Don't hand-roll initiative or epic folders.
 
 **Path resolve** for `/ss-arch-plan`, `/ss-ui-ux-plan`, `/ss-security-plan` and `init-plan-html.cjs` / `render-plan-html.cjs` / `validate-plan-html.cjs`:
 

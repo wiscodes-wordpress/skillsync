@@ -2,6 +2,9 @@
 /**
  * Scaffold an initiative feature pack under `.harness/initiatives/<slug>/`.
  *
+ * The initiative folder itself (initiative.md + epics/) is created by the Orchestrator Paseo
+ * plugin; run this afterwards to add the lens hub. An existing initiative.md is kept unless --force.
+ *
  * Layout (matches consumer harness architecture):
  *   initiative.md              — product scope (default SoT path)
  *   index.html                 — lens status hub (keys + gate table)

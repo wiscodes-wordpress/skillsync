@@ -39,7 +39,7 @@ In **Agent** mode:
    | Cross-cutting security capability, new trust surface, PII/egress ambiguity | `security` |
    | None of the above | Skip pack — go to publish (step 4) with epic/story titles from the draft |
 
-3. **Build the pack** (when ≥1 lens required):
+3. **Build the pack** (when ≥1 lens required). Create the initiative first in the Orchestrator Paseo plugin (`server/harness-layout.ts` in github.com/denmercs/Orchestrator): **Harness plan → Initiatives → New initiative**, using the slug from step 1. That writes `initiative.md` and the first `epics/E1-<name>/`. If the draft spec from step 1 already exists, the plugin keeps it. Then add the lens hub:
 
    ```bash
    node .cursor/vendor/skillsync/tools/init-feature-pack.cjs . \
@@ -68,6 +68,8 @@ In **Agent** mode:
 **Skip lenses honestly** — a pure API capability with agreed seams may need `security` only, or no pack at all. Do not draft three HTML files for ceremony.
 
 **One-pass roadmap (no lenses):** when step 2 gates require no lens, publish straight from the approved draft (step 5) — that is the whole flow; there is no separate roadmap command.
+
+**Local epics (no Jira):** add each epic with **New phase** in the Orchestrator panel, not by hand, so ids and folders stay `epics/E<n>-<name>/` in every repo. Then write its stories into `stories/`.
 
 **Pack layout:** living plans live under `.harness/initiatives/<slug>/` (`architecture-plan.md` / `ux-plan.md` / `security-posture.md` beside `initiative.md`; HTML derived). Prefer the pack for that train; do not spawn flat `.harness/ux-<slug>.html`. Legacy root `.harness/*.md` is only for simple single-plan repos. Grand plan: `.harness/app-map.html`.
 
