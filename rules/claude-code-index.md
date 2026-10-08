@@ -3,11 +3,14 @@
 Canonical source: `~/Desktop/Personal/skillsync/rules/`. This file is the single
 thing `~/.claude/CLAUDE.md` imports — **add or remove rules here, never there.**
 
-Cursor consumers get the same `.mdc` files via `linkedRules` +
-`tools/link-rules.cjs`. Both tools, one rule set.
+`yarn rules:link` (`tools/link-global-rules.cjs`) reads the `@` lines below and
+links those rules into `~/.claude/rules/` and `~/.kiro/steering/` (as `.md`, which
+is all Kiro loads). Re-run it after adding or removing a rule. Cursor consumers get
+the same `.mdc` files per repo via `linkedRules` + `tools/link-rules.cjs`. Three
+tools, one rule set.
 
 **Note:** the `globs:` frontmatter in each `.mdc` is a Cursor feature. Claude
-Code loads every rule in every repo regardless. Each rule self-scopes in its
+Code and Kiro load every rule in every repo regardless. Each rule self-scopes in its
 own opening line — honour that, and skip a rule whose stack is not in play.
 
 ## Scope
