@@ -61,6 +61,7 @@ const REQUIRED_TOOLS = [
 	'lib/plan-paths.cjs',
 	'ensure-skillsync.cjs',
 	'install-git-hooks.cjs',
+	'link-global-rules.cjs',
 ];
 
 /**
@@ -197,6 +198,31 @@ function main() {
 	runTool(reviewTool, checkArgs, { expectFail: true });
 	fs.rmSync(reviewDir, { recursive: true, force: true });
 	console.log('OK: mine-review-patterns scrub + check gate');
+
+	const rulesHome = fs.mkdtempSync(path.join(os.tmpdir(), 'skillsync-rules-home-'));
+	fs.mkdirSync(path.join(rulesHome, '.kiro', 'steering'), { recursive: true });
+	fs.writeFileSync(path.join(rulesHome, '.kiro', 'steering', 'Mine.md'), 'keep', 'utf8');
+	fs.symlinkSync(
+		path.join(skillsyncRoot, 'rules', 'ss-delivery-voice.mdc'),
+		path.join(rulesHome, '.kiro', 'steering', 'ss-delivery-voice.md'),
+	);
+	runTool(path.join(toolsDir, 'link-global-rules.cjs'), ['--home', rulesHome]);
+	const steering = fs.readdirSync(path.join(rulesHome, '.kiro', 'steering')).sort();
+	const claudeRules = fs.readdirSync(path.join(rulesHome, '.claude', 'rules'));
+	if (
+		!steering.includes('react-patterns.md') ||
+		!steering.includes('Mine.md') ||
+		steering.includes('ss-delivery-voice.md') ||
+		steering.some((f) => f.endsWith('.mdc')) ||
+		!claudeRules.includes('index.md') ||
+		!claudeRules.includes('react-patterns.mdc')
+	) {
+		console.error(`link-global-rules: unexpected links ${JSON.stringify({ steering, claudeRules })}`);
+		failed = true;
+	} else {
+		console.log('OK: link-global-rules links Claude + Kiro, prunes stale links, keeps real files');
+	}
+	fs.rmSync(rulesHome, { recursive: true, force: true });
 
 	const planConsumer = makeTempConsumer();
 	fs.mkdirSync(path.join(planConsumer, '.harness'), { recursive: true });
