@@ -80,6 +80,20 @@ Slash commands are thin entry points. Type **`ss`** in Cursor’s command palett
 
 **Posture vs audit:** `/ss-security-plan` does not replace `/ss-security-audit` on every PR.
 
+### Reference import (overlay — third-party builder → native output)
+
+**Enter when:** rebuilding an external builder (Bricks, etc.) as native blocks/markup; REA or bundle evidence lives outside the product repo.
+
+**Do not replace Story belt** — this is an extra lane discipline on top of Initiative + Story.
+
+| Phase | Command / skill | Notes |
+|-------|-----------------|-------|
+| Orient + phase pick | [`/ss-reference-import-flow`](../commands/ss-reference-import-flow.md) | Skill: [`reference-import-flow`](../skills/engineering/reference-import-flow/SKILL.md) |
+| Evidence (per slice) | REA / manual in **evidence checkout only** | Hints + deferred list; no mapper code in REA repo |
+| Product implement | `/ss-plan` → `/ss-implement` → `/ss-finish` | TDD **inside** implement ([`tdd`](../skills/engineering/tdd/SKILL.md)); consumer addendum names worktree + URLs |
+
+Consumer repos ship a thin addendum skill (Quick Builder: `qb-bricks-import-workflow`).
+
 ### Ship (enter after merge)
 
 | Phase | Command | Skills |
