@@ -2,7 +2,10 @@
 
 **REQUIRED voice:** short cycle status only — done / blocked / next. Detail in **`.harness/state.md`**, not chat ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md)).
 
-**Phase: implementation** — Story Implement agent under [`/ss-flow`](./ss-flow.md). Map: [`harness/ss-flow.md`](../harness/ss-flow.md).
+**Phase: implementation**
+
+**REQUIRED model:** New chat on **`composer-2.5`** (Composer latest — `storyPhaseModels.cycle`).
+ — Story Implement agent under [`/ss-flow`](./ss-flow.md). Map: [`harness/ss-flow.md`](../harness/ss-flow.md).
 
 **Default:** walk **all Remaining** RED→GREEN cycles (or legacy sprint slices) in one session — do not stop after Cycle 1 and wait for another `/ss-implement` unless blocked or the user scopes down.
 

@@ -35,6 +35,7 @@ Commands: type **`ss`** — daily Story [`/ss-flow`](../../commands/ss-flow.md);
 - **[arch-plan](./arch-plan/SKILL.md)** — Architecture direction; Markdown SoT + derived HTML (`/ss-arch-plan`); epic/story keys; one-way Jira refresh on run.
 - **[ui-ux-planner](./ui-ux-planner/SKILL.md)** — Flows + surfaces; Markdown SoT before `/ss-plan` (`/ss-ui-ux-plan`).
 - **[security-plan](./security-plan/SKILL.md)** — Trust posture Markdown SoT; optional whole-plugin assess; does not replace `/ss-security-audit`.
+- **[story-phase-models](./story-phase-models/SKILL.md)** — Per-phase Cursor models + **fresh agent per phase** (`storyPhaseModels` in config; `/ss-loop` reads `cycle`).
 - **[code-handoff](./code-handoff/SKILL.md)** — Human walkthrough → `.harness/code-handoff.md` + derived HTML (`/ss-handoff`); before `/ss-submit-pr`.
 - **[reference-import-flow](./reference-import-flow/SKILL.md)** — REA / reference-builder evidence lane + product lane overlay on Story TDD (`/ss-reference-import-flow`).
 - **[feature-video-evidence](./feature-video-evidence/SKILL.md)** — Playwright (or existing browser E2E) clip + watch card (`/ss-feature-evidence`); human check of the running feature.

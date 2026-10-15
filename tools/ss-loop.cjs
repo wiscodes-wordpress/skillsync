@@ -38,6 +38,7 @@ const {
 	extractCycleBlock,
 	checkCycleAgentOutcome,
 	assertOrExit,
+	readOptionalConfig,
 } = require('./lib/ss-tools.cjs');
 
 const DEFAULT_MAX_ITERATIONS = 20;
@@ -48,6 +49,8 @@ const DEFAULT_MAX_RETRIES = 0;
  * account/parent default which often resolves to gpt-5.4-mini + medium thinking.
  * Override with --model (e.g. default, gpt-5.4-mini, composer-2).
  */
+const { resolveStoryPhaseModel, resolveStoryPhaseProvider } = require('./lib/story-phase-models.cjs');
+
 const DEFAULT_CURSOR_MODEL = 'composer-2.5';
 /** How long each `paseo wait --timeout` blocks before we poll permits again. */
 const PERMIT_WAIT_SEC = 2;
@@ -612,15 +615,18 @@ function main() {
 		flags.through !== undefined
 			? Number.parseInt(String(flags.through), 10)
 			: null;
-	const provider = typeof flags.provider === 'string' ? flags.provider : 'cursor';
+	const config = readOptionalConfig(consumerRoot);
+	const provider =
+		typeof flags.provider === 'string'
+			? flags.provider
+			: resolveStoryPhaseProvider(config) ?? 'cursor';
 	const isCursor = isCursorProvider(provider);
-	/** Explicit --model wins; otherwise pin Composer for Cursor so loops stay off API credits. */
+	/** Explicit --model wins; else storyPhaseModels.cycle; else Composer for Cursor. */
 	const model =
 		typeof flags.model === 'string'
 			? flags.model
-			: isCursor
-				? DEFAULT_CURSOR_MODEL
-				: null;
+			: resolveStoryPhaseModel(config, 'cycle') ??
+				(isCursor ? DEFAULT_CURSOR_MODEL : null);
 	const mode =
 		typeof flags.mode === 'string'
 			? flags.mode

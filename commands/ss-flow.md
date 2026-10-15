@@ -4,7 +4,7 @@
 
 **Story spine — three fresh agents.** Daily path only (not Initiative / Ship). Belt map and context budget: [`harness/ss-flow.md`](../harness/ss-flow.md). Full belt index: [`ss-workflow`](./ss-workflow.md).
 
-Start a **new agent** at each phase. Pass **artifacts** (especially `.harness/state.md`), not the prior chat.
+Start a **new agent** at each phase. Pick the **model** per phase (`story-phase-models` / `storyPhaseModels`). Pass **artifacts** (especially `.harness/state.md`), not the prior chat.
 
 | Phase | Fresh agent runs | Notes |
 |-------|------------------|-------|

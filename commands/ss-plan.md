@@ -2,7 +2,10 @@
 
 **REQUIRED voice:** simple, concise teammate chat ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md): problem → fix → next). Grill = **majors** one-at-a-time; **minors** as assumption→answer batches. Link rule `ss-delivery-voice.mdc` in consumers (`alwaysApply`).
 
-**Phase: planning** — Story Plan agent under [`/ss-flow`](./ss-flow.md). Map: [`harness/ss-flow.md`](../harness/ss-flow.md).
+**Phase: planning**
+
+**REQUIRED model:** New chat on **`cursor-grok-4.6-high-fast`** (Grok latest — `storyPhaseModels.plan` in `skillsync.config.json`). Skill: [`story-phase-models`](../skills/engineering/story-phase-models/SKILL.md).
+ — Story Plan agent under [`/ss-flow`](./ss-flow.md). Map: [`harness/ss-flow.md`](../harness/ss-flow.md).
 
 **Before:** story branch per consumer docs (see [`ss-workflow.md`](./ss-workflow.md) phase Branch). For **UI-heavy** work, run [`ss-ui-ux-plan`](./ss-ui-ux-plan.md) first and pass the living UX HTML path (`.harness/ux-plan.html`) into this session.
 

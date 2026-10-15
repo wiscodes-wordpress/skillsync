@@ -1,0 +1,21 @@
+---
+description: >
+  Story belt model routing — Grok for plan/review, Composer for implement/fix.
+  Read story-phase-models skill and skillsync.config.json storyPhaseModels.
+alwaysApply: false
+---
+
+# Story phase model routing (required for `/ss-*` Story belt)
+
+Before executing a Story-phase slash command, confirm the chat model matches `storyPhaseModels` in **`skillsync.config.json`** (skill: **`story-phase-models`**).
+
+| Phase | Commands | Expected model (QuickPress default) |
+|-------|----------|-------------------------------------|
+| plan | `/ss-plan`, lens plans that feed plan | `cursor-grok-4.6-high-fast` |
+| cycle | `/ss-implement`, `/ss-loop` | `composer-2.5` |
+| review | `/ss-review` | `cursor-grok-4.6-high-fast` |
+| fix | FAIL fixes inside `/ss-finish`, CI fix commits | `composer-2.5` |
+
+If the human is on the wrong model, **stop** and ask them to open a **new chat** with the correct model, then re-run the same slash command. Do not improvise a different routing scheme mid-initiative.
+
+Reference-import work still uses this table for phases 3–5 (plan → implement → review).

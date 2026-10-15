@@ -8,6 +8,7 @@
 		"wayfinder",
 		"app-map",
 		"grill-tdd",
+		"story-phase-models",
 		"bugfix",
 		"ponytail",
 		"diagnose",
@@ -44,6 +45,7 @@
 		"journal-handoff"
 	],
 	"linkedRules": [
+		"ss-story-model-routing.mdc",
 		"ss-delivery-voice.mdc",
 		"typescript-ai-rules.mdc",
 		"frontend-engineering.mdc",
@@ -105,5 +107,13 @@
 			"DCD": "https://lifeway.atlassian.net",
 			"QUICK": "https://YOUR-SITE.atlassian.net"
 		}
+	},
+	"storyPhaseModels": {
+		"provider": "cursor",
+		"plan": "cursor-grok-4.6-high-fast",
+		"cycle": "composer-2.5",
+		"review": "cursor-grok-4.6-high-fast",
+		"fix": "composer-2.5",
+		"default": "composer-2.5"
 	}
 }

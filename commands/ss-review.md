@@ -2,7 +2,10 @@
 
 **REQUIRED voice:** verdict first (PASS/FAIL), then a short findings list ([`anti-slop`](../skills/productivity/anti-slop/SKILL.md)).
 
-**Phase: critic** — follow [`harness/ss-flow.md`](../harness/ss-flow.md). Prefer [`/ss-finish`](./ss-finish.md) for the full Done agent; use this leaf for critic-only or re-review.
+**Phase: critic**
+
+**REQUIRED model:** New chat on **`cursor-grok-4.6-high-fast`** (Grok latest — `storyPhaseModels.review`).
+ — follow [`harness/ss-flow.md`](../harness/ss-flow.md). Prefer [`/ss-finish`](./ss-finish.md) for the full Done agent; use this leaf for critic-only or re-review.
 
 **Pre-step (Agent, when vendored):** run hard gates before the rubric:
 
