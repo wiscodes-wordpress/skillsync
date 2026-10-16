@@ -28,6 +28,8 @@ const REQUIRED_TOOLS = [
 	'preflight-local.cjs',
 	'tdd-audit.cjs',
 	'security-audit.cjs',
+	'review-handoff-evidence.cjs',
+	'lib/review-handoff-evidence.cjs',
 	'security-assess.cjs',
 	'run-verification.cjs',
 	'ss-loop.cjs',
@@ -120,6 +122,7 @@ function main() {
 	fs.writeFileSync(path.join(temp, '.harness', 'code-handoff.html'), 'walkthrough', 'utf8');
 	fs.writeFileSync(path.join(temp, '.harness', 'code-handoff.md'), 'legacy', 'utf8');
 	fs.writeFileSync(path.join(temp, '.harness', 'feature-evidence.md'), 'watch', 'utf8');
+	fs.writeFileSync(path.join(temp, '.harness', 'review-handoff-evidence.md'), 'card', 'utf8');
 	fs.mkdirSync(path.join(temp, '.harness', 'evidence'), { recursive: true });
 	fs.writeFileSync(path.join(temp, '.harness', 'evidence', 'save-draft.webm'), 'clip', 'utf8');
 	runTool(harnessReset, [temp]);
@@ -145,11 +148,41 @@ function main() {
 		console.error('harness-reset: feature-evidence.md should be deleted');
 		failed = true;
 	}
+	if (fs.existsSync(path.join(temp, '.harness', 'review-handoff-evidence.md'))) {
+		console.error('harness-reset: review-handoff-evidence.md should be deleted');
+		failed = true;
+	}
 	if (fs.existsSync(path.join(temp, '.harness', 'evidence'))) {
 		console.error('harness-reset: evidence/ should be deleted');
 		failed = true;
 	}
 	console.log('OK: harness-reset integration');
+
+	const reviewHandoffLib = require('./lib/review-handoff-evidence.cjs');
+	const reviewTemp = makeTempConsumer();
+	fs.mkdirSync(path.join(reviewTemp, '.harness'), { recursive: true });
+	fs.writeFileSync(
+		path.join(reviewTemp, 'skillsync.config.json'),
+		JSON.stringify({ reviewHandoffHumanEvidence: 'required' }),
+		'utf8',
+	);
+	const notOk = reviewHandoffLib.evaluateReviewHandoff(reviewTemp);
+	if (notOk.ok) {
+		console.error('review-handoff: should fail when card missing');
+		failed = true;
+	}
+	fs.writeFileSync(
+		path.join(reviewTemp, '.harness', 'review-handoff-evidence.md'),
+		'- [x] Accept — continue to `/ss-security-audit`\n',
+		'utf8',
+	);
+	fs.writeFileSync(path.join(reviewTemp, '.harness', 'code-handoff.html'), '<html></html>', 'utf8');
+	const ok = reviewHandoffLib.evaluateReviewHandoff(reviewTemp);
+	if (!ok.ok) {
+		console.error(`review-handoff: expected OK after accept: ${ok.reason}`);
+		failed = true;
+	}
+	console.log('OK: review-handoff-evidence gate');
 
 	runTool(path.join(toolsDir, 'bugfix-debug-log.cjs'), ['--self-test']);
 	console.log('OK: bugfix-debug-log self-test');

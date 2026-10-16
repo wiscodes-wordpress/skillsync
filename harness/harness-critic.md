@@ -126,6 +126,13 @@ After evaluation:
 2. **Set or replace `## Next Action`** so it **matches** the verdict (no contradictions: FAIL must not pair with “human: merge” as **Do**). Exactly one `## Next Action` in the active task region; remove stale duplicates.
 3. Prefer the same **section order** as **harness-generator** when editing: **Current Task** → **Status** → **Next Action** → **Last Critic Verdict** → harness output / checklists / spec.
 
+### On PASS (review handoff)
+
+Before ending the session:
+
+1. Run **[`/ss-review-handoff`](../commands/ss-review-handoff.md)** (walkthrough HTML + `.harness/review-handoff-evidence.md`).
+2. Set **`## Next Action`**: **Actor:** human · **Do:** tick **Accept** on the review handoff card (open `.harness/code-handoff.html`) · **If:** before `/ss-security-audit` (or record waiver in **`## Review handoff evidence`** when the human explicitly skips).
+
 ## Rules
 
 - Be **strict** and **evidence-based**; never praise without proof.
