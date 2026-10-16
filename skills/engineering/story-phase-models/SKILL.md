@@ -17,9 +17,9 @@ In repo-root `skillsync.config.json`:
 ```json
 "storyPhaseModels": {
   "provider": "cursor",
-  "plan": "cursor-grok-4.6-high-fast",
+  "plan": "claude-opus-5-5-medium",
   "cycle": "composer-2.5",
-  "review": "cursor-grok-4.6-high-fast",
+  "review": "claude-opus-5-5-medium",
   "fix": "composer-2.5",
   "default": "composer-2.5"
 }
@@ -27,12 +27,12 @@ In repo-root `skillsync.config.json`:
 
 | Phase | Slash commands | Model role |
 |-------|----------------|------------|
-| **plan** | `/ss-plan`, `/ss-ui-ux-plan`, `/ss-arch-plan` (story-sized) | Reasoning / scope / TDD contracts — **Grok latest** in QuickPress |
+| **plan** | `/ss-plan`, `/ss-ui-ux-plan`, `/ss-arch-plan` (story-sized) | Reasoning / scope / TDD contracts — **Claude Opus** (medium thinking) |
 | **cycle** | `/ss-implement`, `/ss-loop` | Code + tests — **Composer latest** |
-| **review** | `/ss-review` (critic-only or inside `/ss-finish`) | Adversarial read — **Grok latest** |
+| **review** | `/ss-review` (critic-only or inside `/ss-finish`) | Adversarial read — **Claude Opus** (medium thinking) |
 | **fix** | Critic FAIL remediation, CI fix commits inside `/ss-finish` | Patch diff — **Composer latest** |
 
-**Aliases (QuickPress pins):** “Grok latest” → `cursor-grok-4.6-high-fast`; “Composer latest” → `composer-2.5`. Bump ids when Cursor ships newer defaults; keep config in sync.
+**Cursor model ids:** append thinking tier when needed (e.g. `claude-opus-5-5-medium` = Opus 5.5 + medium thinking). **Composer latest** → `composer-2.5`. Bump ids when Cursor ships newer defaults; keep consumer `skillsync.config.json` in sync.
 
 
 ## Fresh session policy (required)

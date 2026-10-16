@@ -130,7 +130,7 @@ Consumer repos ship a thin addendum skill (Quick Builder: `qb-bricks-import-work
 7. **Point at paths; do not paste large artifacts** — `.harness/state.md`, plan HTML, diffs. Pasting full docs into chat double-pays.
 8. **Keep consumer `AGENTS.md` short** — branch, verification commands, which stack skills apply. Long always-on rules are re-read every agent.
 
-11. **Phase models + fresh sessions** — when `storyPhaseModels` is in `skillsync.config.json`, each phase uses a **new agent** and the matching model ([`story-phase-models`](../skills/engineering/story-phase-models/SKILL.md), rule `ss-story-model-routing.mdc`). Done tail = separate review (Grok) and fix (Composer) chats, not one `/ss-finish` thread.
+11. **Phase models + fresh sessions** — when `storyPhaseModels` is in `skillsync.config.json`, each phase uses a **new agent** and the matching model ([`story-phase-models`](../skills/engineering/story-phase-models/SKILL.md), rule `ss-story-model-routing.mdc`). Done tail = separate review (Claude Opus) and fix (Composer) chats, not one `/ss-finish` thread.
 
 9. **Re-run leaves, not the whole spine** — failed security → `/ss-security-audit` only; do not re-plan or re-implement from scratch.
 

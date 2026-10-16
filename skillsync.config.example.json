@@ -110,9 +110,9 @@
 	},
 	"storyPhaseModels": {
 		"provider": "cursor",
-		"plan": "cursor-grok-4.6-high-fast",
+		"plan": "claude-opus-5-5-medium",
 		"cycle": "composer-2.5",
-		"review": "cursor-grok-4.6-high-fast",
+		"review": "claude-opus-5-5-medium",
 		"fix": "composer-2.5",
 		"default": "composer-2.5"
 	}
