@@ -18,6 +18,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { assertReviewHandoffOrExit } = require('./lib/review-handoff-evidence.cjs');
 const {
 	parseArgs,
 	resolveConsumerRoot,
@@ -706,10 +707,15 @@ function main() {
 	const { positional, flags } = parseArgs(process.argv.slice(2));
 	const consumerRoot = resolveConsumerRoot(positional[0]);
 	const allowSkipPhaseB = Boolean(flags['allow-skip-phase-b']);
+	const skipReviewHandoff = Boolean(flags['skip-review-handoff']);
 
 	if (flags['check-state']) {
 		checkState(consumerRoot, { allowSkipPhaseB });
 		return;
+	}
+
+	if (!skipReviewHandoff) {
+		assertReviewHandoffOrExit(consumerRoot);
 	}
 
 	if (typeof flags['set-phase-b'] === 'string') {

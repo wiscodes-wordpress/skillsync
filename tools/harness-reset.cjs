@@ -28,6 +28,7 @@ function main() {
 		{ type: 'delete', path: path.join(dir, 'code-handoff.html') },
 		{ type: 'delete', path: path.join(dir, 'code-handoff.md') }, // SoT markdown (+ derived HTML above)
 		{ type: 'delete', path: path.join(dir, 'feature-evidence.md') },
+		{ type: 'delete', path: path.join(dir, 'review-handoff-evidence.md') },
 		{ type: 'delete-dir', path: path.join(dir, 'evidence') },
 	];
 
@@ -70,7 +71,7 @@ function main() {
 
 	if (!dryRun) {
 		console.log(
-			'harness-reset: cleared .harness/state.md, .harness/qa-current.md; removed pr-body.md, code-handoff.md/.html, and feature-evidence.md / evidence/ if present.',
+			'harness-reset: cleared .harness/state.md, .harness/qa-current.md; removed pr-body.md, code-handoff.md/.html, feature-evidence.md, review-handoff-evidence.md, and evidence/ if present.',
 		);
 	}
 }

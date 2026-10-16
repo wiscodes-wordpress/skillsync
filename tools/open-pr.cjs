@@ -40,6 +40,7 @@ function main() {
 	const noPush = Boolean(flags['no-push']);
 	const forceNew = Boolean(flags['force-new']);
 	const skipSecurity = Boolean(flags['skip-security']);
+	const skipReviewHandoff = Boolean(flags['skip-review-handoff']);
 	const skipPreflight = Boolean(flags['skip-preflight']);
 	const skipFullE2e = Boolean(flags['skip-full-e2e']);
 	const base =
@@ -51,6 +52,7 @@ function main() {
 	const renderScript = path.join(toolsDir, 'render-pr-body.cjs');
 	const securityScript = path.join(toolsDir, 'security-audit.cjs');
 	const preflightScript = path.join(toolsDir, 'preflight-local.cjs');
+	const reviewHandoffScript = path.join(toolsDir, 'review-handoff-evidence.cjs');
 
 	if (!skipPreflight) {
 		/** @type {string[]} */
@@ -72,6 +74,29 @@ function main() {
 				console.error(
 					'Local preflight failed. Fix failures before opening a PR (saves GitHub Actions). Pass --skip-preflight to override, or --skip-full-e2e for scoped-only.',
 				);
+				process.exit(1);
+			}
+		}
+	}
+
+	if (!skipReviewHandoff) {
+		if (dryRun) {
+			console.log(`would check review handoff: ${reviewHandoffScript} --check-state`);
+		} else {
+			try {
+				execFileSync(process.execPath, [reviewHandoffScript, consumerRoot, '--check-state'], {
+					cwd: consumerRoot,
+					encoding: 'utf8',
+					stdio: ['pipe', 'pipe', 'pipe'],
+				});
+			} catch (err) {
+				const e = /** @type {NodeJS.ErrnoException & { stderr?: string; stdout?: string }} */ (
+					err
+				);
+				console.error(
+					'Review handoff evidence is not accepted. Run /ss-review-handoff after critic PASS, or pass --skip-review-handoff to override.',
+				);
+				console.error(e.stderr || e.stdout || e.message);
 				process.exit(1);
 			}
 		}
